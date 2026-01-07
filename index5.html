@@ -1,0 +1,4072 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Battlegrafía · Guardianes de la Pluma</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    :root{
+      --bg:#020617;
+      --panel:#0f172a;
+      --panel-light:#111827;
+      --text:#f9fafb;
+      --muted:#9ca3af;
+      --accent:#fbbf24;
+      --accent-soft:#fde68a;
+      --danger:#f87171;
+      --success:#4ade80;
+      --border:#000;
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:radial-gradient(circle at top,#111827 0,#020617 55%,#000 100%);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:1rem;
+    }
+    .game-shell{
+      width:100%;
+      max-width:1100px;
+      background:var(--panel);
+      border:4px solid var(--border);
+      box-shadow:0 0 0 4px #020617,0 18px 40px rgba(0,0,0,.8);
+      padding:1rem;
+      image-rendering:pixelated;
+      position:relative;
+      overflow:hidden;
+    }
+    .game-title{
+      font-weight:800;
+      text-align:center;
+      letter-spacing:2px;
+      margin-bottom:.5rem;
+      text-transform:uppercase;
+      font-size:1rem;
+    }
+    .game-title span{ color:var(--accent); }
+
+    .top-nav{
+      display:flex;
+      justify-content:center;
+      gap:.5rem;
+      margin-bottom:.7rem;
+      flex-wrap:wrap;
+    }
+    .nav-btn{
+      border:2px solid var(--border);
+      padding:.25rem .9rem;
+      font-size:.8rem;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      cursor:pointer;
+      background:#e5e7eb;
+      color:#111827;
+      box-shadow:0 3px 0 #4b5563;
+    }
+    .nav-btn.nav-active{
+      background:#facc15;
+      box-shadow:0 3px 0 #92400e;
+    }
+    .nav-btn:active{
+      transform:translateY(2px);
+      box-shadow:0 1px 0 rgba(0,0,0,.6);
+    }
+
+    .layout{
+      display:grid;
+      grid-template-columns: minmax(0,3fr) minmax(0,2fr);
+      gap:1rem;
+    }
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr;}
+    }
+    /* Cuando no estamos en batalla, usar una sola columna centrada */
+    .layout.single-column{
+      grid-template-columns: minmax(0,1fr);
+    }
+    .layout.single-column .panel-right{ display:none; }
+    .layout.single-column .battle-column{ width:100%; }
+
+    /* Pantalla de inicio */
+    .start-screen{
+      position:absolute;
+      inset:0;
+      background:linear-gradient(135deg,#020617 0,#111827 45%,#020617 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:20;
+    }
+    .start-panel{
+      width:100%;
+      max-width:520px;
+      background:var(--panel-light);
+      border:3px solid var(--border);
+      padding:1rem;
+      box-shadow:0 12px 30px rgba(0,0,0,.9);
+    }
+    .start-title{
+      text-align:center;
+      text-transform:uppercase;
+      letter-spacing:2px;
+      margin-bottom:.5rem;
+      color:var(--accent);
+      font-weight:800;
+      font-size:.9rem;
+    }
+    .start-sub{
+      text-align:center;
+      font-size:.8rem;
+      color:var(--muted);
+      margin-bottom:.75rem;
+    }
+    .start-section-title{
+      font-size:.75rem;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      color:var(--accent-soft);
+      margin:.75rem 0 .25rem;
+    }
+    .input-row{
+      display:flex;
+      flex-direction:column;
+      gap:.25rem;
+      margin-bottom:.5rem;
+    }
+    label{
+      font-size:.8rem;
+      color:var(--muted);
+    }
+    input[type="text"]{
+      width:100%;
+      background:#020617;
+      color:var(--text);
+      border:1px solid var(--border);
+      padding:.35rem .5rem;
+      font-size:.85rem;
+    }
+    input[type="text"]:focus{
+      outline:2px solid var(--accent);
+      outline-offset:1px;
+    }
+    .avatar-grid{
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:.35rem;
+      margin-top:.25rem;
+    }
+    .avatar-option{
+      border:2px solid var(--border);
+      background:#020617;
+      padding:.35rem;
+      text-align:center;
+      cursor:pointer;
+    }
+    .avatar-thumb{
+      width:48px;
+      height:48px;
+      image-rendering:pixelated;
+      display:block;
+      margin:0 auto .15rem;
+    }
+    .avatar-option span{
+      display:block;
+      font-size:.7rem;
+      margin-top:.15rem;
+      color:var(--muted);
+    }
+    .avatar-option.selected{
+      box-shadow:0 0 0 2px var(--accent);
+      background:#1f2937;
+    }
+    .start-buttons{
+      display:flex;
+      gap:.5rem;
+      margin-top:.75rem;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+
+    button{
+      border:2px solid var(--border);
+      background:#facc15;
+      padding:.35rem .7rem;
+      font-size:.8rem;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      cursor:pointer;
+      box-shadow:0 3px 0 #92400e;
+      color:#111827;
+    }
+    button.secondary{
+      background:#e5e7eb;
+      box-shadow:0 3px 0 #4b5563;
+      color:#111827;
+    }
+    button.ghost{
+      background:transparent;
+      color:var(--accent-soft);
+      box-shadow:none;
+      border-color:#4b5563;
+    }
+    button.danger{
+      background:#f97316;
+      box-shadow:0 3px 0 #7c2d12;
+      color:#111827;
+    }
+    button:active{
+      transform:translateY(2px);
+      box-shadow:0 1px 0 rgba(0,0,0,.6);
+    }
+    button:disabled{
+      opacity:.5;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+
+    /* Botón de atacar más grande y vistoso */
+    #attack-btn{
+      font-size:1rem;
+      padding:.7rem 1.4rem;
+      background:#eab308;
+      box-shadow:0 4px 0 #b45309;
+      border-width:3px;
+      border-color:#000;
+    }
+    #attack-btn:active{
+      transform:translateY(2px);
+      box-shadow:0 2px 0 #b45309;
+    }
+
+    /* Panel derecha */
+    .panel-right{
+      display:flex;
+      flex-direction:column;
+      gap:.65rem;
+    }
+    .hero-panel, .story-box, .rule-box, .input-box, .log-box, .inventory-box, .collection-box{
+      background:var(--panel-light);
+      border:2px solid var(--border);
+      padding:.5rem .75rem;
+      font-size:.8rem;
+    }
+    .hero-top{
+      display:flex;
+      gap:.5rem;
+      align-items:center;
+      margin-bottom:.35rem;
+    }
+    .hero-avatar{
+      width:48px;
+      height:48px;
+      border:2px solid var(--border);
+      background:#020617;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:2rem;
+    }
+    .hero-avatar-mini{
+      width:42px;
+      height:42px;
+      image-rendering:pixelated;
+      display:block;
+    }
+    .hero-info{flex:1;}
+    .hero-name{font-size:.85rem;font-weight:700;}
+    .hero-meta{font-size:.7rem;color:var(--muted);}
+    .xp-bar-wrap{
+      background:#020617;
+      border:1px solid var(--border);
+      height:.55rem;
+      width:100%;
+      position:relative;
+      overflow:hidden;
+      margin-top:.25rem;
+    }
+    .xp-bar-fill{
+      position:absolute;
+      top:0;left:0;bottom:0;
+      background:linear-gradient(90deg,#38bdf8,#a855f7);
+      transition:width .3s ease-out;
+    }
+    .hero-xp-text{
+      font-size:.7rem;
+      margin-top:.1rem;
+      color:var(--muted);
+    }
+    .ability-wrap{ height:.45rem; margin-top:.25rem; }
+    .ability-bar{ background:linear-gradient(90deg,#f97316,#facc15); }
+    .hero-stats{
+      display:flex;
+      justify-content:space-between;
+      font-size:.7rem;
+      margin-top:.25rem;
+      color:var(--muted);
+    }
+
+    .hero-details{
+      margin-top:.5rem;
+      padding:.5rem;
+      border:1px solid var(--border);
+      background:#020617;
+      font-size:.8rem;
+    }
+    .hero-details-title{ font-weight:700; margin-bottom:.25rem; }
+    .hero-details-stats{
+      display:flex;
+      flex-wrap:wrap;
+      gap:.4rem;
+      margin-bottom:.25rem;
+    }
+    .hero-details-stat{
+      background:#111827;
+      padding:.15rem .4rem;
+      border-radius:999px;
+    }
+    .hero-details-ability{ color:var(--accent-soft); }
+
+    .shop-item-main{ display:flex; align-items:flex-start; gap:.4rem; }
+    .shop-item-icon{ width:32px; height:32px; image-rendering:pixelated; flex-shrink:0; }
+    .shop-item-text{ flex:1; }
+
+    .box-title{
+      font-size:.75rem;
+      color:var(--accent-soft);
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      margin-bottom:.2rem;
+    }
+
+    textarea{
+      width:100%;
+      min-height:3.2rem;
+      resize:vertical;
+      background:#020617;
+      color:var(--text);
+      border:1px solid var(--border);
+      padding:.4rem .5rem;
+      font-family:"Courier New", monospace;
+      font-size:.85rem;
+    }
+    textarea:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+
+    .buttons-row{
+      display:flex;
+      gap:.5rem;
+      margin-top:.5rem;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+
+    .log-title{
+      font-size:.75rem;
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      margin-bottom:.15rem;
+    }
+    .log-text{ font-size:.8rem; line-height:1.35; }
+    .log-text .good{color:var(--success);}
+    .log-text .bad{color:var(--danger);}
+    .log-text .hint{color:var(--muted);}
+
+    /* Columna izquierda */
+    .battle-column{
+      display:flex;
+      flex-direction:column;
+      gap:.5rem;
+    }
+
+    .battle-screen,
+    .camp-screen,
+    .map-screen,
+    .diary-screen,
+    .history-screen,
+    .inventory-screen{
+      border:3px solid var(--border);
+      padding:.75rem;
+      display:flex;
+      flex-direction:column;
+      gap:.6rem;
+    }
+
+    /* Fondo de batalla */
+    .battle-screen{
+      position:relative;
+      overflow:hidden;
+      background:
+        linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.55)),
+        url("img/backgrounds/battle_bg_montanas.png");
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      border:3px solid #000;
+      box-shadow:0 0 0 2px #000, 0 10px 0 #000;
+    }
+
+    .battle-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:1rem;
+      font-size:.8rem;
+    }
+    .entity-box{
+      position:relative;
+      background:linear-gradient(180deg,#020617,#020617 40%,#020617);
+      border:3px solid var(--border);
+      box-shadow:0 0 0 2px #020617;
+      border-radius:6px;
+      padding:.4rem .55rem;
+      min-width:0;
+    }
+    .entity-box::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      border-radius:4px;
+      border-top:3px solid rgba(248,191,36,0.9);
+      opacity:.85;
+      pointer-events:none;
+    }
+    .hero-box::before{ border-top-color:#22c55e; }
+    .monster-box::before{ border-top-color:#f97373; }
+
+    .entity-name{
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:1px;
+      margin-bottom:.1rem;
+    }
+    .entity-tag{
+      font-size:.7rem;
+      color:var(--muted);
+      margin-bottom:.2rem;
+    }
+
+    .hp-bar-wrap{
+      width:220px;
+      height:18px;
+      background:#1e293b;
+      border:3px solid #000;
+      border-radius:4px;
+      overflow:hidden;
+      image-rendering:pixelated;
+      position:relative;
+    }
+    .hp-bar-wrap::after{
+      content:"";
+      position:absolute;
+      inset:1px;
+      border-radius:999px;
+      background:linear-gradient(90deg,rgba(15,23,42,0.8),transparent 40%);
+      mix-blend-mode:screen;
+      opacity:.4;
+      pointer-events:none;
+    }
+    .hp-bar-fill{
+      height:100%;
+      background:linear-gradient(90deg,#22c55e,#a3e635);
+      transition:width 0.35s ease-in-out;
+      box-shadow:0 0 10px rgba(190,242,100,0.6);
+    }
+    #monster-hp-bar{
+      background:linear-gradient(90deg,#f97373,#facc15);
+      box-shadow:0 0 10px rgba(248,113,113,0.7);
+    }
+    .hp-text{
+      font-size:.7rem;
+      margin-top:.2rem;
+      text-align:right;
+      color:var(--muted);
+      font-weight:600;
+      text-shadow:0 0 3px #000;
+    }
+
+    .battle-sprites-row{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:1rem;
+      min-height:170px;
+    }
+    .hero-visual,
+    .monster-visual{
+      flex:1;
+      display:flex;
+      justify-content:center;
+      align-items:flex-end;
+      min-height:150px;
+      animation: idleBob 1.1s ease-in-out infinite;
+    }
+    .sprite-frame{ padding:0; background:transparent; border:none; box-shadow:none; }
+    .sprite-frame img{
+      width:160px;
+      height:auto;
+      image-rendering:pixelated;
+      filter:drop-shadow(0 8px 0 #000000aa);
+    }
+    @keyframes idleBob { 0%{transform:translateY(0);} 50%{transform:translateY(-4px);} 100%{transform:translateY(0);} }
+
+    @keyframes heroAttack { 0%{transform:translateX(0);} 30%{transform:translateX(30px);} 60%{transform:translateX(30px);} 100%{transform:translateX(0);} }
+    .hero-visual.hero-attacking{ animation: heroAttack 0.35s ease-out; }
+
+    @keyframes monsterAttack { 0%{transform:translateX(0);} 30%{transform:translateX(-30px);} 60%{transform:translateX(-30px);} 100%{transform:translateX(0);} }
+    .monster-visual.monster-attacking{ animation: monsterAttack 0.35s ease-out; }
+
+    @keyframes shake{ 0%{transform:translate(0,0);} 20%{transform:translate(-4px,2px);} 40%{transform:translate(4px,-2px);} 60%{transform:translate(-3px,1px);} 80%{transform:translate(3px,-1px);} 100%{transform:translate(0,0);} }
+    .hit-shake{ animation:shake .25s; }
+
+    @keyframes heroDamage{ 0%{transform:translateY(0);opacity:1;} 20%{transform:translateY(-2px);opacity:0.4;} 40%{transform:translateY(0);opacity:1;} 60%{transform:translateY(-1px);opacity:0.6;} 100%{transform:translateY(0);opacity:1;} }
+    .hero-damaged{ animation: heroDamage 0.35s ease-out; }
+
+    .speech{
+      background:var(--panel-light);
+      border:2px solid var(--border);
+      padding:.55rem .7rem;
+      font-size:.8rem;
+      min-height:3.2rem;
+      position:relative;
+      border-radius:.75rem;
+      box-shadow:0 4px 8px rgba(0,0,0,.5);
+    }
+    .speech::after{
+      content:"";
+      position:absolute;
+      top:10px;
+      right:-18px;
+      border-width:10px 0 10px 18px;
+      border-style:solid;
+      border-color:transparent transparent transparent var(--panel-light);
+    }
+    .speech::before{
+      content:"";
+      position:absolute;
+      top:10px;
+      right:-20px;
+      border-width:11px 0 11px 20px;
+      border-style:solid;
+      border-color:transparent transparent transparent var(--border);
+    }
+    .speech-label{
+      font-size:.7rem;
+      color:var(--muted);
+      margin-bottom:.15rem;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+    .speech-text{
+      font-family:"Courier New", monospace;
+      font-size:.9rem;
+    }
+
+    /* Daños flotantes */
+    .damage-float{
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:.9rem;
+      font-weight:700;
+      text-shadow:0 0 4px #000;
+      animation:damageFloat .7s ease-out forwards;
+      pointer-events:none;
+    }
+    .damage-player{ color:#f97373; }
+    .damage-monster{ color:#bef264; }
+    @keyframes damageFloat{
+      0%{opacity:0;transform:translate(-50%,8px) scale(0.9);}
+      20%{opacity:1;transform:translate(-50%,0) scale(1);}
+      100%{opacity:0;transform:translate(-50%,-24px) scale(1.05);}
+    }
+
+    /* Calidad respuesta */
+    .answer-good{ border-color:#22c55e !important; box-shadow:0 0 0 1px #22c55e; }
+    .answer-medium{ border-color:#facc15 !important; box-shadow:0 0 0 1px #facc15; }
+    .answer-bad{ border-color:#f97373 !important; box-shadow:0 0 0 1px #f97373; }
+
+    /* Flash golpe monstruo */
+    .monster-visual.hit-flash{ animation: monsterHitFlash 0.18s linear 0s 2; }
+    @keyframes monsterHitFlash{
+      0%{ filter:brightness(1); }
+      50%{ filter:brightness(2.2) hue-rotate(-25deg) saturate(1.6); }
+      100%{ filter:brightness(1); }
+    }
+
+    .hp-bar-wrap.shake{ animation: hpShake 0.3s ease-out; }
+    @keyframes hpShake{
+      0%{transform:translateX(0);} 20%{transform:translateX(-2px);}
+      40%{transform:translateX(2px);} 60%{transform:translateX(-1px);}
+      80%{transform:translateX(1px);} 100%{transform:translateX(0);}
+    }
+
+    /* Aura héroe (solo sprite) */
+    .hero-visual.hero-aura img{
+      filter:drop-shadow(0 0 10px rgba(190,242,100,0.9)) saturate(1.3) brightness(1.1);
+    }
+
+    /* CAMPAMENTO centrado */
+    .camp-screen{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      width:100%;
+      text-align:center;
+      position:relative;
+      background:radial-gradient(circle at top, #1e293b 0, #020617 45%, #000 100%);
+      overflow:hidden;
+    }
+    .camp-screen::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        radial-gradient(circle at 10% 15%, rgba(248,250,252,0.18) 0, transparent 55%),
+        radial-gradient(circle at 80% 5%, rgba(248,250,252,0.15) 0, transparent 60%),
+        radial-gradient(circle at 30% 60%, rgba(248,250,252,0.10) 0, transparent 55%);
+      opacity:0.4;
+    }
+    .camp-container{
+      width:100%;
+      max-width:700px;
+      position:relative;
+      z-index:1;
+    }
+    .camp-title-main{
+      font-size:.85rem;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      color:var(--accent-soft);
+      margin:.3rem 0 .4rem;
+      font-weight:700;
+    }
+    .camp-sub{
+      font-size:.75rem;
+      color:var(--muted);
+      margin-bottom:.9rem;
+    }
+
+    .camp-rest{
+      background:rgba(15,23,42,0.96);
+      border:3px solid var(--border);
+      padding:.6rem .7rem;
+      font-size:.8rem;
+      display:flex;
+      align-items:center;
+      gap:.75rem;
+      margin-bottom:.75rem;
+      box-shadow:0 0 0 2px #020617, 0 6px 0 #000;
+      text-align:left;
+    }
+    .camp-fire-visual{
+      width:70px;
+      height:70px;
+      border-radius:999px;
+      border:2px solid var(--border);
+      background:radial-gradient(circle at 30% 20%, #f97316 0, #b91c1c 40%, #1f2937 80%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:2rem;
+      box-shadow:0 4px 10px rgba(0,0,0,.8);
+      flex-shrink:0;
+      animation:campFire 1.15s ease-in-out infinite alternate;
+    }
+    @keyframes campFire{
+      0%{ transform:translateY(0) scale(1); box-shadow:0 0 10px rgba(248,113,113,0.4); filter:brightness(1); }
+      50%{ transform:translateY(-2px) scale(1.05); box-shadow:0 0 18px rgba(250,204,21,0.8); filter:brightness(1.1); }
+      100%{ transform:translateY(0) scale(1.02); box-shadow:0 0 12px rgba(248,250,109,0.6); filter:brightness(1.05); }
+    }
+    .camp-rest-info-title{
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      color:var(--accent-soft);
+      margin-bottom:.15rem;
+    }
+    .camp-rest-text{
+      font-size:.75rem;
+      color:var(--muted);
+      margin-bottom:.4rem;
+    }
+    .camp-rest-stats{
+      font-size:.75rem;
+      color:var(--muted);
+      margin-top:.25rem;
+    }
+    @media (max-width:700px){
+      .camp-rest{ flex-direction:column; align-items:flex-start; }
+    }
+
+    .camp-box{
+      background:rgba(15,23,42,0.96);
+      border:3px solid var(--border);
+      padding:.6rem .7rem;
+      font-size:.8rem;
+      box-shadow:0 0 0 2px #020617, 0 6px 0 #000;
+      text-align:left;
+    }
+    .camp-box-title{
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      color:var(--accent-soft);
+      margin-bottom:.25rem;
+    }
+    .camp-text{
+      font-size:.75rem;
+      color:var(--muted);
+      margin-bottom:.45rem;
+    }
+    .camp-message{ font-size:.75rem; margin-top:.45rem; }
+    .camp-message .good{color:var(--success);}
+    .camp-message .bad{color:var(--danger);}
+    .camp-message .hint{color:var(--muted);}
+
+    .shop-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+      gap:.6rem;
+      margin-top:.25rem;
+    }
+    .shop-item{
+      border:3px solid var(--border);
+      background:#020617;
+      padding:.45rem .55rem;
+      box-shadow:0 0 0 2px #020617, 0 4px 0 #000;
+      position:relative;
+      transition:transform .12s ease-out, box-shadow .12s ease-out;
+    }
+    .shop-item:hover{
+      transform:translateY(-2px);
+      box-shadow:0 0 0 2px #020617, 0 7px 0 #000;
+    }
+    .shop-item-name{
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      font-weight:700;
+      margin-bottom:.15rem;
+    }
+    .shop-item-desc{ color:var(--muted); font-size:.75rem; margin-bottom:.25rem; }
+    .shop-item-footer{
+      display:flex; justify-content:space-between; align-items:center; gap:.5rem;
+    }
+    .shop-price{
+      font-size:.75rem;
+      padding:.15rem .45rem;
+      border-radius:999px;
+      border:1px solid #4b5563;
+      background:#020617;
+      color:var(--accent-soft);
+    }
+    .shop-owned{ font-size:.7rem; color:var(--muted); margin-top:.2rem; }
+
+    .camp-footer{
+      margin-top:1.2rem;
+      padding-top:.4rem;
+      font-size:.75rem;
+      color:var(--muted);
+      text-align:center;
+      width:100%;
+    }
+
+    /* MAPA */
+    .map-screen{
+      background:linear-gradient(#020617,#020617 40%,#111827 100%);
+      color:var(--text);
+      align-items:center;
+      justify-content:flex-start;
+      width:100%;
+    }
+    .map-header{
+      font-size:.85rem;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      color:var(--accent-soft);
+      margin-bottom:.25rem;
+      font-weight:700;
+      text-align:center;
+    }
+    .map-sub{
+      font-size:.75rem;
+      color:var(--muted);
+      margin-bottom:.4rem;
+      text-align:center;
+      max-width:760px;
+    }
+    .map-canvas{
+      width:min(760px, 100%);
+      aspect-ratio: 16 / 9;
+      border:2px solid var(--border);
+      overflow:hidden;
+      background:#020617;
+    }
+    .map-bg{ width:100%; display:block; image-rendering:pixelated; }
+
+    .map-stages{
+      margin-top:.5rem;
+      display:flex;
+      justify-content:space-between;
+      gap:.5rem;
+      font-size:.7rem;
+      width:min(760px, 100%);
+    }
+    .map-stage{ flex:1; text-align:center; position:relative; }
+    .map-stage-inner{ display:flex; flex-direction:column; align-items:center; gap:.2rem; }
+    .map-stage-icon{
+      width:40px;height:40px;
+      border-radius:999px;
+      border:2px solid #4b5563;
+      background:#020617;
+      padding:2px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 2px 4px rgba(0,0,0,.5);
+    }
+    .map-stage-icon img{ width:100%; height:100%; image-rendering:pixelated; display:block; }
+    .map-stage-label{ color:var(--muted); }
+    .map-stage.stage-cleared .map-stage-icon{ border-color:#22c55e; background:#064e3b; }
+    .map-stage.stage-cleared .map-stage-label{ color:#bbf7d0; }
+    .map-stage.stage-current .map-stage-icon{
+      border-color:#facc15;
+      background:#451a03;
+      box-shadow:0 0 10px rgba(250,204,21,.9);
+    }
+    .map-stage.stage-current .map-stage-label{ color:#fef9c3; }
+    .map-stage.stage-locked{ opacity:.6; }
+    .map-stage-tooltip{
+      display:none;
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:52px;
+      background:#020617;
+      border:1px solid #4b5563;
+      padding:.35rem .5rem;
+      border-radius:.35rem;
+      width:180px;
+      max-width:70vw;
+      font-size:.7rem;
+      color:#e5e7eb;
+      text-align:left;
+      box-shadow:0 4px 10px rgba(0,0,0,.7);
+      z-index:20;
+      pointer-events:none;
+      white-space:normal;
+    }
+    .map-stage:hover .map-stage-tooltip{ display:block; }
+    .map-legend{
+      font-size:.7rem;
+      color:var(--muted);
+      margin-top:.4rem;
+      width:min(760px, 100%);
+    }
+    .map-legend span{ display:inline-flex; align-items:center; gap:.2rem; margin-right:.6rem; }
+    .map-dot{
+      width:10px;height:10px;
+      border-radius:999px;
+      border:2px solid #4b5563;
+      background:#020617;
+    }
+    .map-dot.cleared{ border-color:#22c55e; background:#064e3b; }
+    .map-dot.current{ border-color:#facc15; background:#451a03; }
+
+    /* DIARIO */
+    .diary-screen{
+      background:linear-gradient(#020617,#111827);
+      color:var(--text);
+      overflow-y:auto;
+      align-items:center;
+      justify-content:flex-start;
+      width:100%;
+    }
+    .screen-inner{ width:100%; max-width:760px; margin:0 auto; }
+    .diary-header{
+      font-size:.9rem;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      color:var(--accent-soft);
+      margin-bottom:.3rem;
+      text-align:center;
+    }
+    .diary-sub{
+      font-size:.75rem;
+      color:var(--muted);
+      margin-bottom:.7rem;
+      text-align:center;
+    }
+    .diary-layout{
+      display:grid;
+      grid-template-columns:minmax(0,1.3fr) minmax(0,2fr);
+      gap:.75rem;
+      align-items:flex-start;
+    }
+    @media (max-width:800px){ .diary-layout{ grid-template-columns:1fr; } }
+    .diary-panel{
+      background:var(--panel-light);
+      border:2px solid var(--border);
+      padding:.6rem .7rem;
+      font-size:.8rem;
+      box-shadow:0 0 0 2px #020617;
+    }
+    .diary-panel-header{
+      display:flex; align-items:center; gap:.4rem;
+      margin-bottom:.4rem;
+    }
+    .diary-icon{
+      width:26px;height:26px;
+      border-radius:999px;
+      border:2px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1rem;
+      background:#020617;
+    }
+    .diary-panel-title{
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      color:var(--accent-soft);
+    }
+    .diary-panel-sub{ font-size:.7rem; color:var(--muted); margin-bottom:.35rem; }
+    .diary-list{ max-height:320px; overflow:auto; font-size:.75rem; }
+    .diary-entry{
+      background:#020617;
+      border-left:4px solid #38bdf8;
+      padding:.5rem .6rem;
+      font-size:.75rem;
+      box-shadow:0 2px 0 rgba(0,0,0,.5);
+      margin-bottom:.5rem;
+    }
+    .diary-entry.correct{ border-left-color:#4ade80; }
+    .diary-entry.wrong{ border-left-color:#f87171; }
+    .diary-entry-header{
+      display:flex;
+      justify-content:space-between;
+      gap:.5rem;
+      margin-bottom:.2rem;
+      font-size:.7rem;
+      color:var(--muted);
+    }
+    .diary-entry-body p{ margin:.1rem 0; }
+    .diary-entry-body code{
+      font-family:"Courier New", monospace;
+      font-size:.75rem;
+      background:#020617;
+      padding:0 .15rem;
+    }
+
+    /* HISTORIA */
+    .history-screen{
+      align-items:center;
+      justify-content:flex-start;
+      width:100%;
+      background:linear-gradient(#020617,#111827);
+    }
+    .history-header{
+      font-size:.9rem;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      color:var(--accent-soft);
+      margin-bottom:.3rem;
+      text-align:center;
+    }
+    .history-sub{
+      font-size:.75rem;
+      color:var(--muted);
+      margin-bottom:.7rem;
+      text-align:center;
+    }
+    .history-gallery{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+      gap:.75rem;
+    }
+    .history-card{
+      background:var(--panel-light);
+      border:2px solid var(--border);
+      box-shadow:0 0 0 2px #020617;
+      padding:.45rem .55rem;
+      font-size:.8rem;
+      display:flex;
+      gap:.5rem;
+      align-items:flex-start;
+      min-height:90px;
+    }
+    .history-card-image{
+      width:56px;height:56px;
+      border-radius:6px;
+      border:2px solid var(--border);
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0;
+      overflow:hidden;
+      background:#020617;
+    }
+    .history-card-locked .history-card-image{ color:#6b7280; }
+    .history-card-question{ font-size:1.6rem; font-weight:700; }
+    .history-card-unlocked .history-card-image{
+      background:radial-gradient(circle at 30% 20%, #facc15 0, #b45309 40%, #020617 95%);
+      color:#fefce8;
+    }
+    .history-card-body{ display:flex; flex-direction:column; gap:.15rem; }
+    .history-card-title{
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      color:var(--accent-soft);
+    }
+    .history-card-stage{ font-size:.7rem; color:var(--muted); }
+    .history-card-text{ font-size:.75rem; color:var(--text); }
+    .history-card-meta{ font-size:.7rem; color:var(--muted); margin-top:.1rem; }
+    .history-empty{
+      font-size:.75rem;
+      color:var(--muted);
+      text-align:center;
+      padding:.75rem 0;
+    }
+    .history-card-img-real{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      image-rendering:pixelated;
+    }
+
+    /* INVENTARIO (vista centrada) */
+    .inventory-screen{
+      align-items:center;
+      justify-content:flex-start;
+      width:100%;
+      background:linear-gradient(#020617,#111827);
+    }
+    .inventory-container{ width:100%; max-width:760px; margin:0 auto; }
+    .inventory-sub{ font-size:.8rem; color:var(--muted); margin-bottom:.4rem; text-align:center; }
+
+    .inventory-layout{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap:.75rem;
+      margin-top:.4rem;
+    }
+    .inventory-column{
+      background:rgba(15,23,42,0.96);
+      border:3px solid var(--border);
+      padding:.6rem .75rem;
+      font-size:.8rem;
+      box-shadow: 0 0 0 2px #020617, 0 4px 0 #000;
+    }
+    .inventory-section{
+      margin-top:.6rem;
+      background:rgba(15,23,42,0.96);
+      border:3px solid var(--border);
+      padding:.6rem .75rem;
+      font-size:.8rem;
+      box-shadow: 0 0 0 2px #020617, 0 4px 0 #000;
+    }
+
+    .inv-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap:.45rem;
+      margin-top:.3rem;
+    }
+    .inv-card{
+      background:#020617;
+      border:2px solid var(--border);
+      box-shadow:0 0 0 2px #020617, 0 3px 0 #000;
+      padding:.4rem .5rem;
+      font-size:.75rem;
+    }
+    .inv-card-main{ display:flex; align-items:flex-start; gap:.4rem; }
+    .inv-card-icon{
+      width:32px;height:32px;
+      image-rendering:pixelated;
+      border-radius:.35rem;
+      border:1px solid #4b5563;
+      background:#020617;
+      padding:2px;
+      flex-shrink:0;
+    }
+    .inv-card-icon-placeholder{
+      width:32px;height:32px;
+      border-radius:.35rem;
+      border:1px dashed #4b5563;
+      display:flex; align-items:center; justify-content:center;
+      font-size:.9rem; color:var(--muted);
+      background:#020617;
+      flex-shrink:0;
+    }
+    .inv-card-text{ flex:1; }
+    .inv-card-name{ font-size:.8rem; font-weight:700; color:#e5e7eb; margin-bottom:.15rem; }
+    .inv-card-qty{
+      font-size:.7rem;
+      margin-left:.25rem;
+      padding:.05rem .35rem;
+      border-radius:999px;
+      border:1px solid #4b5563;
+      color:var(--accent-soft);
+    }
+    .inv-card-desc{ font-size:.7rem; color:var(--muted); }
+
+    .inv-card.common { border-color: #6b7280; }
+    .inv-card.unique { border-color: #3b82f6; }
+    .inv-card.rare { border-color: #a855f7; }
+    .inv-card.legendary {
+      border-color: #facc15;
+      box-shadow: 0 0 10px rgba(250,204,21,.6);
+    }
+
+    .card-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap:.4rem;
+      margin-top:.3rem;
+    }
+    .card-chip{
+      display:flex;
+      align-items:center;
+      gap:.35rem;
+      background:#020617;
+      border:2px solid var(--border);
+      box-shadow:0 0 0 2px #020617, 0 3px 0 #000;
+      padding:.35rem .5rem;
+      font-size:.75rem;
+    }
+    .card-chip-icon{
+      width:24px;height:24px;
+      border-radius:999px;
+      border:1px solid #4b5563;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700;
+      font-size:.75rem;
+      background:#111827;
+      color:var(--accent-soft);
+      flex-shrink:0;
+    }
+    .card-chip-text{ flex:1; color:#e5e7eb; }
+
+    .collection-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:.35rem;
+      margin-top:.35rem;
+    }
+    .collection-monster{
+      width:40px;height:40px;
+      border-radius:999px;
+      border:2px solid #4b5563;
+      display:flex; align-items:center; justify-content:center;
+      background:#020617;
+      overflow:hidden;
+    }
+    .collection-monster img{ width:30px;height:30px; image-rendering:pixelated; }
+	
+	.inv-card-actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:.35rem;
+}
+.inv-use-btn{
+  border:2px solid #000;
+  background:#e5e7eb;
+  color:#111827;
+  font-size:.7rem;
+  font-weight:800;
+  padding:.2rem .5rem;
+  cursor:pointer;
+  box-shadow:0 2px 0 #4b5563;
+  text-transform:uppercase;
+  letter-spacing:.3px;
+}
+.inv-use-btn:active{ transform:translateY(1px); box-shadow:0 1px 0 #4b5563; }
+.inv-use-btn[disabled]{ opacity:.5; cursor:not-allowed; transform:none; box-shadow:none; }
+
+  
+/* ===== Splash ===== */
+#splash-screen{
+  position:fixed; inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background: radial-gradient(circle at top, rgba(17,24,39,.92) 0%, rgba(2,6,23,.96) 55%, rgba(0,0,0,.98) 100%);
+  z-index:10000;
+}
+.splash-inner{
+  width:min(860px, 96vw);
+  border:2px solid rgba(255,255,255,.12);
+  border-radius:20px;
+  background: rgba(0,0,0,.25);
+  box-shadow: 0 20px 70px rgba(0,0,0,.55);
+  padding:22px 22px 18px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+}
+#splash-logo{
+  width:360px;
+  max-width:80vw;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 12px 24px rgba(0,0,0,.45));
+  animation: splashPop 900ms cubic-bezier(.2,.9,.2,1) both;
+}
+@keyframes splashPop{
+  0%{transform: translateY(14px) scale(.92); opacity:0}
+  100%{transform: translateY(0) scale(1); opacity:1}
+}
+.splash-actions{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:6px;
+}
+.splash-actions .btn{
+  min-width:210px;
+  border-radius:14px;
+  padding:12px 14px;
+  font-weight:800;
+  cursor:pointer;
+}
+.splash-hint{
+  font-size:12px;
+  color: rgba(255,255,255,.72);
+  text-align:center;
+  max-width: 70ch;
+}
+
+
+
+/* === FIX: centrar pantalla de inicio respecto al fondo === */
+#start-screen{
+  /* OJO: NO forzamos display aquí; lo pone el JS (flex) al mostrarse */
+  justify-content:center !important;
+  align-items:center !important;
+  width:100% !important;
+  min-height: calc(100vh - 90px) !important; /* deja sitio a la barra superior */
+  padding: 18px 12px !important;
+}
+#start-screen > *{
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+/* === FIX: aumentar altura del marco azul del inicio === */
+#start-screen .start-panel{
+  /* Que el marco sea alto, pero siempre visible en la ventana */
+  min-height: min(720px, calc(100vh - 140px)) !important;
+  max-height: calc(100vh - 140px) !important;
+  overflow: auto !important;
+}
+
+
+/* === Splash: animación del logo === */
+#splash-logo{
+  image-rendering: pixelated;
+  transform-origin: 50% 60%;
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,.45));
+  animation: splashPop 900ms cubic-bezier(.2,.9,.2,1) both,
+             splashFloat 2600ms ease-in-out 900ms infinite;
+}
+@keyframes splashPop{
+  0%   { opacity:0; transform: translateY(14px) scale(.72) rotate(-2deg); filter: blur(1px) drop-shadow(0 0 0 rgba(0,0,0,0)); }
+  60%  { opacity:1; transform: translateY(-6px) scale(1.04) rotate(1.5deg); filter: blur(0) drop-shadow(0 16px 24px rgba(0,0,0,.45)); }
+  100% { opacity:1; transform: translateY(0) scale(1) rotate(0deg); filter: blur(0) drop-shadow(0 10px 18px rgba(0,0,0,.45)); }
+}
+@keyframes splashFloat{
+  0%   { transform: translateY(0) scale(1) rotate(0deg); }
+  50%  { transform: translateY(-8px) scale(1.01) rotate(.6deg); }
+  100% { transform: translateY(0) scale(1) rotate(0deg); }
+}
+/* Respeta accesibilidad: si el usuario desactiva animaciones */
+@media (prefers-reduced-motion: reduce){
+  #splash-logo{ animation: none !important; }
+}
+
+</style>
+</head>
+
+<body>
+
+  <!-- Splash -->
+  <div id="splash-screen">
+    <div class="splash-inner">
+      <img id="splash-logo" src="img/backgrounds/logo.png" alt="Battlegrafía">
+      <div class="splash-actions">
+        <button id="splash-start" class="btn primary">Empezar juego</button>
+        <button id="splash-continue" class="btn secondary">Continuar partida</button>
+      </div>
+      <div id="splash-note" class="splash-hint"></div>
+    </div>
+  </div>
+
+  <div class="game-shell">
+
+    <!-- Pantalla de inicio -->
+    <div id="start-screen" class="start-screen">
+      <div class="start-panel">
+        <div class="start-title">Battlegrafía</div>
+        <div class="start-sub">La ortografía te da poder. Corrige para ganar experiencia, oro, objetos y criaturas.</div>
+
+        <div id="continue-block" style="display:none;">
+          <div class="start-section-title">Partida guardada encontrada</div>
+          <p class="start-sub" style="margin-bottom:.4rem;">Puedes continuar tu aventura o empezar una nueva desde cero.</p>
+          <div class="start-buttons" style="justify-content:flex-start;margin-bottom:.6rem;">
+            <button id="continue-btn">Continuar partida</button>
+            <button id="new-from-saved-btn" class="ghost">Nueva aventura</button>
+          </div>
+          <hr style="border:none;border-top:1px solid #1f2937;margin:.4rem 0;">
+        </div>
+
+        <div class="start-section-title">Crear nuevo héroe</div>
+        <div class="input-row">
+          <label for="player-name">Nombre del héroe (tu nombre o apodo):</label>
+          <input id="player-name" type="text" maxlength="20" placeholder="Ej.: Maga de la Til-de, Don Esdrújulo...">
+        </div>
+
+        <div class="start-section-title">Elige tu estilo de héroe</div>
+        <div class="avatar-grid" id="avatar-grid">
+          <div class="avatar-option" data-id="mago" data-emoji="🧙‍♂️">
+            <img src="img/heros/sprite_hero_mago.png" alt="Mago de la tilde" class="avatar-thumb">
+            <span>Mago de la tilde</span>
+          </div>
+          <div class="avatar-option" data-id="guerrero" data-emoji="🗡️">
+            <img src="img/heros/sprite_hero_guerrero.png" alt="Guerrero de la coma" class="avatar-thumb">
+            <span>Guerrero de la coma</span>
+          </div>
+          <div class="avatar-option" data-id="ninja" data-emoji="🥷">
+            <img src="img/heros/sprite_hero_ninja.png" alt="Ninja del acento" class="avatar-thumb">
+            <span>Ninja del acento</span>
+          </div>
+          <div class="avatar-option" data-id="robot" data-emoji="🤖">
+            <img src="img/heros/sprite_hero_robot.png" alt="Corrector mecánico" class="avatar-thumb">
+            <span>Corrector mecánico</span>
+          </div>
+        </div>
+
+        <div class="hero-details" id="hero-details">
+          <div class="hero-details-title">Detalles del héroe</div>
+          <div class="hero-details-body" id="hero-details-body">
+            Elige un héroe para ver sus características.
+          </div>
+        </div>
+
+        <div class="start-buttons">
+          <button id="start-new-btn">Empezar aventura</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Título -->
+    <div class="game-title">
+      <span>Battlegrafía</span> · Guardianes de la Pluma
+    </div>
+
+    <!-- Navegación -->
+    <div class="top-nav">
+      <button id="nav-battle" class="nav-btn nav-active">Batalla</button>
+      <button id="nav-camp" class="nav-btn secondary">Campamento</button>
+      <button id="nav-map" class="nav-btn secondary">Mapa</button>
+      <button id="nav-diary" class="nav-btn secondary">Diario</button>
+      <button id="nav-history" class="nav-btn secondary">Historia</button>
+      <button id="nav-inventory" class="nav-btn secondary">Inventario</button>
+      <button id="nav-achievements" class="nav-btn secondary">Logros</button>
+    </div>
+
+    <!-- Layout principal -->
+    <div class="layout">
+      <!-- IZQUIERDA -->
+      <div class="battle-column">
+
+        <!-- Batalla -->
+        <div id="battle-screen" class="battle-screen">
+          <div class="battle-top">
+            <div class="entity-box hero-box">
+              <div id="hero-name-label" class="entity-name">Héroe de Battlegrafía</div>
+              <div class="entity-tag">Alumno</div>
+              <div class="hp-bar-wrap">
+                <div id="player-hp-bar" class="hp-bar-fill" style="width:100%"></div>
+              </div>
+              <div id="player-hp-text" class="hp-text">100 / 100</div>
+            </div>
+            <div class="entity-box monster-box">
+              <div id="monster-name" class="entity-name">H-Ghoul</div>
+              <div id="monster-type" class="entity-tag">Errores con H / Haber - A ver</div>
+              <div class="hp-bar-wrap">
+                <div id="monster-hp-bar" class="hp-bar-fill" style="width:100%"></div>
+              </div>
+              <div id="monster-hp-text" class="hp-text">100 / 100</div>
+            </div>
+          </div>
+
+          <div class="battle-sprites-row">
+            <div class="hero-visual">
+              <div class="sprite-frame">
+                <img id="hero-sprite-img" src="img/heros/sprite_hero_mago.png" alt="Héroe">
+              </div>
+            </div>
+            <div class="monster-visual">
+              <div class="sprite-frame">
+                <img id="monster-sprite-img" src="img/monsters/sprite_h_ghoul.png" alt="Monstruo">
+              </div>
+            </div>
+          </div>
+
+          <div class="speech">
+            <div class="speech-label">Monstruo dice (con faltas):</div>
+            <div id="wrong-phrase" class="speech-text">Haber si puedes corregirme...</div>
+          </div>
+        </div>
+
+        <!-- Campamento -->
+        <div id="camp-screen" class="camp-screen" style="display:none;">
+          <div class="camp-container">
+            <div class="camp-title-main">Campamento · Hogueras de Ortographia</div>
+            <div class="camp-sub">
+              Aquí puedes descansar, gastar tu oro en objetos útiles y prepararte para las próximas batallas.
+            </div>
+
+            <div class="camp-rest">
+              <div class="camp-fire-visual">🔥</div>
+              <div class="camp-rest-info">
+                <div class="camp-rest-info-title">Descanso junto a la hoguera</div>
+                <div class="camp-rest-text">
+                  Siéntate junto al fuego, repasa tus errores y recupera toda tu vida. Es caro, pero más caro es caer en combate.
+                </div>
+                <button id="camp-rest-btn">Descansar (25 de oro)</button>
+                <div class="camp-rest-stats">
+                  Vida actual: <span id="camp-hp-info">0 / 0</span><br>
+                  Oro disponible: <span id="camp-gold-info">0</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="camp-box camp-shop">
+              <div class="camp-box-title">Tienda del escriba</div>
+              <div class="camp-text">
+                Compra objetos que te den ventajas reales: más vida, curaciones, pistas o pociones de combate. Todo preparado para las próximas batallas.
+              </div>
+              <div id="shop-list" class="shop-grid"></div>
+            </div>
+
+            <div id="camp-message" class="camp-message">
+              <span class="hint">Consejo: alterna batallas y campamento para que el héroe no caiga agotado.</span>
+            </div>
+
+            <div class="camp-footer">
+              Cada alumno puede jugar en su propio dispositivo: la partida se guarda automáticamente en este navegador.
+            </div>
+          </div>
+        </div>
+
+        <!-- Mapa -->
+        <div id="map-screen" class="map-screen" style="display:none;">
+          <div class="map-header">Mapa de Ortographia · Montañas de la Concordancia</div>
+          <div class="map-sub">
+            Cada monstruo custodia un tramo del camino. Los iconos muestran tu progreso: superado, actual o bloqueado.
+          </div>
+          <div class="map-canvas" id="map-canvas"></div>
+          <div class="map-stages" id="map-stages"></div>
+          <div class="map-legend">
+            <span><span class="map-dot cleared"></span> Superado</span>
+            <span><span class="map-dot current"></span> Actual</span>
+            <span><span class="map-dot"></span> Bloqueado</span>
+          </div>
+        </div>
+
+        <!-- Diario -->
+        <div id="diary-screen" class="diary-screen" style="display:none;">
+          <div class="screen-inner">
+            <div class="diary-header">Diario de aventura</div>
+            <div class="diary-sub">
+              Aquí se registran las frases que has combatido, tus respuestas y cómo ha ido cada batalla. A la izquierda verás tus datos clave, a la derecha el relato detallado.
+            </div>
+
+            <div class="diary-layout">
+              <div class="diary-panel">
+                <div class="diary-panel-header">
+                  <div class="diary-icon">📊</div>
+                  <div>
+                    <div class="diary-panel-title">Resumen de progreso</div>
+                    <div class="diary-panel-sub">Aciertos, errores, porcentaje de éxito y otros datos de tus batallas.</div>
+                  </div>
+                </div>
+                <div id="diary-summary" class="diary-summary"></div>
+              </div>
+
+              <div class="diary-panel">
+                <div class="diary-panel-header">
+                  <div class="diary-icon">📓</div>
+                  <div>
+                    <div class="diary-panel-title">Entradas del diario</div>
+                    <div class="diary-panel-sub">Cada frase combatida, qué escribiste tú y qué ocurrió con el monstruo.</div>
+                  </div>
+                </div>
+                <div id="diary-entries" class="diary-list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Historia -->
+        <div id="history-screen" class="history-screen" style="display:none;">
+          <div class="screen-inner">
+            <div class="history-header">Historia de la aventura</div>
+            <div class="history-sub">
+              Cada monstruo forma parte de una gran historia. Aquí verás una galería de escenas: al principio están bloqueadas y,
+              cuando venzas a los monstruos, se desbloquearán con el momento clave de la batalla.
+            </div>
+            <div id="history-gallery" class="history-gallery"></div>
+          </div>
+        </div>
+
+        <!-- Inventario -->
+        <div id="inventory-screen" class="inventory-screen" style="display:none;">
+          <div class="inventory-container">
+            <div class="box-title">Inventario y colección</div>
+            <div class="inventory-sub">Consulta aquí tus objetos, cartas y criaturas derrotadas.</div>
+
+            <div class="inventory-layout">
+              <div class="inventory-column">
+                <div class="box-title">Objetos</div>
+                <div id="items-list"></div>
+              </div>
+              <div class="inventory-column">
+                <div class="box-title">Cartas</div>
+                <div id="cards-list"></div>
+              </div>
+            </div>
+
+            <div class="inventory-section">
+              <div class="box-title">Criaturas derrotadas</div>
+              <div id="monster-collection" class="collection-row"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- DERECHA -->
+      <div class="panel-right">
+        <div class="hero-panel" id="hero-panel">
+          <div class="box-title">Héroe</div>
+          <div class="hero-top">
+            <div class="hero-avatar" id="hero-avatar">
+              <img src="img/heros/sprite_hero_mago.png" alt="Héroe" class="hero-avatar-mini">
+            </div>
+            <div class="hero-info">
+              <div class="hero-name" id="hero-name-display">Sin nombre</div>
+              <div class="hero-meta" id="hero-meta">Nivel 1 · 0 monstruos derrotados</div>
+              <div class="xp-bar-wrap">
+                <div id="xp-bar-fill" class="xp-bar-fill" style="width:0%;"></div>
+              </div>
+              <div class="hero-xp-text" id="xp-text">EXP 0 / 100</div>
+              <div class="xp-bar-wrap ability-wrap">
+                <div id="ability-bar-fill" class="xp-bar-fill ability-bar" style="width:0%;"></div>
+              </div>
+              <div class="hero-xp-text" id="ability-text">Habilidad 0 / 100</div>
+            </div>
+          </div>
+          <div class="hero-stats">
+            <span id="hero-gold">Oro: 0</span>
+            <span id="hero-cards-count">Cartas: 0</span>
+          </div>
+        </div>
+
+        <div class="input-box" id="input-panel">
+          <div class="box-title">Corrige la frase</div>
+          <textarea id="answer" placeholder="Reescribe aquí la frase completamente corregida..."></textarea>
+          <div class="buttons-row">
+            <button id="attack-btn">Atacar corrigiendo</button>
+
+            <select id="battle-item-select" style="padding:.4rem; background:#020617; color:#f9fafb; border:2px solid #000; font-size:.8rem;">
+              <option value="">Usar objeto…</option>
+            </select>
+            <button id="use-item-btn" class="secondary">Usar</button>
+
+            <button id="ability-btn" class="secondary">Habilidad del héroe</button>
+          </div>
+        </div>
+
+        <div class="log-box" id="log-panel">
+          <div class="log-title">Registro de batalla</div>
+          <div id="log" class="log-text">Corrige la frase del monstruo y pulsa “Atacar”.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const STORAGE_KEY = "battlegrafia_player_pixel_historia_v6";
+
+  const GOLD_DEATH_PENALTY_RATIO = 0.30;
+  const XP_DEATH_PENALTY_RATIO   = 0.25;
+  const HP_AFTER_DEATH_RATIO     = 0.50;
+
+  const AVATARS = {
+    mago:{
+      id:"mago", emoji:"🧙‍♂️", title:"Mago de la tilde",
+      attack:2, defense:2, difficulty:"Media",
+      abilityName:"Tormenta de tildes",
+      abilityDesc:"Congela al monstruo durante varios turnos, evitando que haga daño."
+    },
+    guerrero:{
+      id:"guerrero", emoji:"🗡️", title:"Guerrero de la coma",
+      attack:3, defense:2, difficulty:"Fácil",
+      abilityName:"Golpe de pausa",
+      abilityDesc:"Aumenta bastante el daño de tus próximos ataques."
+    },
+    ninja:{
+      id:"ninja", emoji:"🥷", title:"Ninja del acento",
+      attack:3, defense:1, difficulty:"Difícil",
+      abilityName:"Paso entre líneas",
+      abilityDesc:"Te permite esquivar por completo varios ataques del monstruo."
+    },
+    robot:{
+      id:"robot", emoji:"🤖", title:"Corrector mecánico",
+      attack:1, defense:3, difficulty:"Media",
+      abilityName:"Auto-revisión",
+      abilityDesc:"Suaviza la penalización de errores y te protege de castigos muy gordos."
+    }
+  };
+
+  const HERO_SPRITES = {
+    mago: "img/heros/sprite_hero_mago.png",
+    guerrero: "img/heros/sprite_hero_guerrero.png",
+    ninja: "img/heros/sprite_hero_ninja.png",
+    robot: "img/heros/sprite_hero_robot.png"
+  };
+
+  const STORY_CHAPTERS = [
+    "Un murmullo recorre los pasillos del instituto: en los textos empiezan a aparecer faltas extrañas y los profesores sospechan que algo se esconde más allá de los libros.",
+    "Siguiendo un rastro de 'haber' y 'a ver' mal escritos, llegas a las laderas de la Concordancia. Allí se rumorea que H-Ghoul devora las H olvidadas.",
+    "Con H-Ghoul purificado, el sendero asciende entre rocas afiladas. En una cueva oscura, el Vampiro de la V se alimenta de B y V mal usadas.",
+    "Más arriba, el viento trae gruñidos y rugidos. Gargantúa G/J guarda un paso estrecho, lanzando palabras confusas entre G y J.",
+    "Tras superar a la bestia, entras en la Niebla de las Tildes, donde el Espectro Agudo borra y desplaza acentos a su antojo.",
+    "En la cumbre, el sendero se enrosca como una frase interminable. La Serpiente Comata silba entre comas mal colocadas y frases mal puntuadas.",
+    "Las montañas de la Concordancia vuelven a estar en paz. Los textos recuperan su claridad. Pero en otros rincones del mapa, nuevas criaturas aguardan..."
+  ];
+
+  const PHRASE_BANK = {
+    h_ghoul: [
+      { wrong:"Haber si vienes a casa esta tarde.", correct:"A ver si vienes a casa esta tarde." },
+      { wrong:"Tiene que haber echo los deberes ya.", correct:"Tiene que haber hecho los deberes ya." },
+      { wrong:"No se a donde ahi que ir.", correct:"No sé adónde hay que ir." },
+      { wrong:"No a habido ningún problema en el examen.", correct:"No ha habido ningún problema en el examen." },
+      { wrong:"Haber si te enteras de una vez.", correct:"A ver si te enteras de una vez." },
+      { wrong:"Debería haber hido al médico antes.", correct:"Debería haber ido al médico antes." },
+      { wrong:"Haber si hoy acabo los deberes a tiempo.", correct:"A ver si hoy acabo los deberes a tiempo." },
+      { wrong:"No se si as traído el libro de matemáticas.", correct:"No sé si has traído el libro de matemáticas." },
+      { wrong:"Hoy no a venido nadie a entrenar.", correct:"Hoy no ha venido nadie a entrenar." },
+      { wrong:"Iba a acer los ejercicios, pero me distraje.", correct:"Iba a hacer los ejercicios, pero me distraje." },
+      { wrong:"No se donde ai que dejar las mochilas.", correct:"No sé dónde hay que dejar las mochilas." },
+      { wrong:"Tiene que haber echo caso al entrenador.", correct:"Tiene que haber hecho caso al entrenador." },
+      { wrong:"Deberías haber hido al médico antes.", correct:"Deberías haber ido al médico antes." },
+      { wrong:"Ahi dejaron todas las cajas tiradas.", correct:"Ahí dejaron todas las cajas tiradas." },
+      { wrong:"No se si ah sido buena idea.", correct:"No sé si ha sido buena idea." },
+      { wrong:"Ayer me ise daño en la rodilla jugando.", correct:"Ayer me hice daño en la rodilla jugando." },
+      { wrong:"Debería haver estudiado más para el exámen.", correct:"Debería haber estudiado más para el examen." },
+      { wrong:"No a habido ningún problema en el partido.", correct:"No ha habido ningún problema en el partido." },
+      { wrong:"A ver si te as fijado bien en el horario.", correct:"A ver si te has fijado bien en el horario." },
+      { wrong:"No se a que ora empieza la película.", correct:"No sé a qué hora empieza la película." },
+      { wrong:"Hay te he dejado los deberes corregidos.", correct:"Ahí te he dejado los deberes corregidos." },
+      { wrong:"Ay que entregar el trabajo el lunes.", correct:"Hay que entregar el trabajo el lunes." },
+      { wrong:"Ojalá hubiera echo caso a mi madre.", correct:"Ojalá hubiera hecho caso a mi madre." },
+      { wrong:"Se me a olvidado acer la mochila.", correct:"Se me ha olvidado hacer la mochila." },
+      { wrong:"No se si ahi examen mañana.", correct:"No sé si hay examen mañana." },
+      { wrong:"Tiene que haber hido ya al instituto.", correct:"Tiene que haber ido ya al instituto." }
+    ],
+    vampiro_v: [
+      { wrong:"Mi ermano tubo un esamen muy dificil.", correct:"Mi hermano tuvo un examen muy difícil." },
+      { wrong:"En la amaca avía una tohalla verde.", correct:"En la hamaca había una toalla verde." },
+      { wrong:"Me e tenido que ber la peli dos veces.", correct:"Me he tenido que ver la peli dos veces." },
+      { wrong:"Ayer nos fuimos de bacaciones a Benidorm.", correct:"Ayer nos fuimos de vacaciones a Benidorm." },
+      { wrong:"Mi bolígrafo se a quedado sin tinta azul.", correct:"Mi bolígrafo se ha quedado sin tinta azul." },
+      { wrong:"Deverías llevar abrigo porque hace frio.", correct:"Deberías llevar abrigo porque hace frío." },
+      { wrong:"Mi ermano vino en vici al instituto.", correct:"Mi hermano vino en bici al instituto." },
+      { wrong:"Ayer tubimos un examen muy dificil.", correct:"Ayer tuvimos un examen muy difícil." },
+      { wrong:"El beinto tiró al suelo la basura.", correct:"El viento tiró al suelo la basura." },
+      { wrong:"Voy a bolver a leer este libro.", correct:"Voy a volver a leer este libro." },
+      { wrong:"Nuestras bacaciones en la sierra fueron geniales.", correct:"Nuestras vacaciones en la sierra fueron geniales." },
+      { wrong:"Me e bevido un baso de agua muy frio.", correct:"Me he bebido un vaso de agua muy frío." },
+      { wrong:"Compré una toballa berde para la piscina.", correct:"Compré una toalla verde para la piscina." },
+      { wrong:"El baul del coche estaba bacio.", correct:"El baúl del coche estaba vacío." },
+      { wrong:"Mi prima be vino a beber zumo a casa.", correct:"Mi prima vino a beber zumo a casa." },
+      { wrong:"El beisbol es su deporte faborito.", correct:"El béisbol es su deporte favorito." },
+      { wrong:"No beas tan deprisa el refresco.", correct:"No bebas tan deprisa el refresco." },
+      { wrong:"Se me a caído el bavero al suelo.", correct:"Se me ha caído el babero al suelo." },
+      { wrong:"Pusimos las maletas en la vaca del coche.", correct:"Pusimos las maletas en la baca del coche." },
+      { wrong:"Mi bolígrafo berde se a perdido.", correct:"Mi bolígrafo verde se ha perdido." },
+      { wrong:"El avión voló mui vajo sobre el mar.", correct:"El avión voló muy bajo sobre el mar." },
+      { wrong:"Mis beinos biven en el cuarto be.", correct:"Mis vecinos viven en el cuarto B." },
+      { wrong:"El barco se beía muy pequeño desde la orilla.", correct:"El barco se veía muy pequeño desde la orilla." },
+      { wrong:"La ventana de mi cuarto da a un patio interior muy vello.", correct:"La ventana de mi cuarto da a un patio interior muy bello." },
+      { wrong:"El profesor nos be vio llegar muy tarde.", correct:"El profesor nos vio llegar muy tarde." },
+      { wrong:"A mi me gusta mas ir en vici que en autobús.", correct:"A mí me gusta más ir en bici que en autobús." }
+    ],
+    gargantua_gj: [
+      { wrong:"El profe nos dijo que cojieramos el libro.", correct:"El profe nos dijo que cogiéramos el libro." },
+      { wrong:"Tengo que dirijir el equipo de futból.", correct:"Tengo que dirigir el equipo de fútbol." },
+      { wrong:"Ellos protejieron el castillo toda la noche.", correct:"Ellos protegieron el castillo toda la noche." },
+      { wrong:"Mi hermano dirijió el grupo el año pasado.", correct:"Mi hermano dirigió el grupo el año pasado." },
+      { wrong:"No me dejavan recoger los juguetes.", correct:"No me dejaban recoger los juguetes." },
+      { wrong:"Ojalá pudiera correjir todos tus errores.", correct:"Ojalá pudiera corregir todos tus errores." },
+      { wrong:"El profesor nos pidio que cojieramos los cuadernos.", correct:"El profesor nos pidió que cogiéramos los cuadernos." },
+      { wrong:"Mi padre va a dirijir el equipo este año.", correct:"Mi padre va a dirigir el equipo este año." },
+      { wrong:"Los soldados protejieron la ciudad toda la noche.", correct:"Los soldados protegieron la ciudad toda la noche." },
+      { wrong:"Tienes que correjir los errores del examen.", correct:"Tienes que corregir los errores del examen." },
+      { wrong:"El entrenador exijió más esfuerzo en el partido.", correct:"El entrenador exigió más esfuerzo en el partido." },
+      { wrong:"Voy a recojer mis cosas y me voy.", correct:"Voy a recoger mis cosas y me voy." },
+      { wrong:"Ella quiere elejir bien su asignatura optativa.", correct:"Ella quiere elegir bien su asignatura optativa." },
+      { wrong:"Mi hermano se dirijió a la puerta sin decir nada.", correct:"Mi hermano se dirigió a la puerta sin decir nada." },
+      { wrong:"El médico me sujerió que hiciera más deporte.", correct:"El médico me sugirió que hiciera más deporte." },
+      { wrong:"No me dejavan jugar con los mayores.", correct:"No me dejaban jugar con los mayores." },
+      { wrong:"Ojalá pudieramos protejer mejor el planeta.", correct:"Ojalá pudiéramos proteger mejor el planeta." },
+      { wrong:"¿Por qué no dirijes tú la reunión?", correct:"¿Por qué no diriges tú la reunión?" },
+      { wrong:"El jefe exije puntualidad a todos.", correct:"El jefe exige puntualidad a todos." },
+      { wrong:"Se recojieron todas las sillas después del acto.", correct:"Se recogieron todas las sillas después del acto." },
+      { wrong:"El público aplaudió cuando el actor se dirijió al centro del escenario.", correct:"El público aplaudió cuando el actor se dirigió al centro del escenario." },
+      { wrong:"Tengo que protejer mi contraseña.", correct:"Tengo que proteger mi contraseña." },
+      { wrong:"El árbitro correjió la jugada después de verla en vídeo.", correct:"El árbitro corrigió la jugada después de verla en vídeo." },
+      { wrong:"Es difícil elejir solo una película buena.", correct:"Es difícil elegir solo una película buena." },
+      { wrong:"Nos dirigimos al colegio para recojer las notas.", correct:"Nos dirigimos al colegio para recoger las notas." },
+      { wrong:"Mi primo se protejió del sol con una gorra.", correct:"Mi primo se protegió del sol con una gorra." }
+    ],
+    espectro_agudo: [
+      { wrong:"Tu eres el unico que puede hacerlo.", correct:"Tú eres el único que puede hacerlo." },
+      { wrong:"Mi mama dijo que solo podiamos ver una peli mas.", correct:"Mi mamá dijo que solo podíamos ver una peli más." },
+      { wrong:"El arbol estaba en medio del patio.", correct:"El árbol estaba en medio del patio." },
+      { wrong:"El me dijo que se iva a su casa.", correct:"Él me dijo que se iba a su casa." },
+      { wrong:"No se si vendras mañana.", correct:"No sé si vendrás mañana." },
+      { wrong:"¿Como que no trajiste el cuaderno?", correct:"¿Cómo que no trajiste el cuaderno?" },
+      { wrong:"Tu eres el unico que entiende esto.", correct:"Tú eres el único que entiende esto." },
+      { wrong:"El me dijo que no queria venir.", correct:"Él me dijo que no quería venir." },
+      { wrong:"No se si vendras esta tarde.", correct:"No sé si vendrás esta tarde." },
+      { wrong:"¿Como se llama tu cancion favorita?", correct:"¿Cómo se llama tu canción favorita?" },
+      { wrong:"Mi mama trabaja en un avion.", correct:"Mi mamá trabaja en un avión." },
+      { wrong:"El arbol del patio da mucha sombra.", correct:"El árbol del patio da mucha sombra." },
+      { wrong:"Dime cual es tu equipo de futból.", correct:"Dime cuál es tu equipo de fútbol." },
+      { wrong:"¿Quien ha dejado esto aqui?", correct:"¿Quién ha dejado esto aquí?" },
+      { wrong:"Mi papa tiene un camion muy grande.", correct:"Mi papá tiene un camión muy grande." },
+      { wrong:"Tambien puedes venir con tus amigos.", correct:"También puedes venir con tus amigos." },
+      { wrong:"Aun no he acabado los deberes.", correct:"Aún no he acabado los deberes." },
+      { wrong:"Mi cancion preferida esta en ingles.", correct:"Mi canción preferida está en inglés." },
+      { wrong:"No se por que te enfadas tanto.", correct:"No sé por qué te enfadas tanto." },
+      { wrong:"Solo queria ayudarte.", correct:"Solo quería ayudarte." },
+      { wrong:"¿Donde has puesto mi cuaderno?", correct:"¿Dónde has puesto mi cuaderno?" },
+      { wrong:"Este examen fue mas facil que el anterior.", correct:"Este examen fue más fácil que el anterior." },
+      { wrong:"El boligrafo azul es mio.", correct:"El bolígrafo azul es mío." },
+      { wrong:"Si quieres, te explico la lección otra bez.", correct:"Si quieres, te explico la lección otra vez." },
+      { wrong:"Mi hermana pequeña es muy timida.", correct:"Mi hermana pequeña es muy tímida." },
+      { wrong:"¿Quien puso esa cancion tan rara?", correct:"¿Quién puso esa canción tan rara?" }
+    ],
+    serpiente_comata: [
+      { wrong:"Chicos hoy si os portais bien habrá premio.", correct:"Chicos, hoy, si os portáis bien, habrá premio." },
+      { wrong:"La gente son muy simpáticos en este barrio.", correct:"La gente es muy simpática en este barrio." },
+      { wrong:"Compré manzanas peras plátanos y uvas.", correct:"Compré manzanas, peras, plátanos y uvas." },
+      { wrong:"María mi mejor amiga se ha cambiado de clase.", correct:"María, mi mejor amiga, se ha cambiado de clase." },
+      { wrong:"Cuando termine el partido iremos a casa.", correct:"Cuando termine el partido, iremos a casa." },
+      { wrong:"Los niño juega en el patio todas las tardes.", correct:"Los niños juegan en el patio todas las tardes." },
+      { wrong:"Chicos hoy vamos a hacer un experimento.", correct:"Chicos, hoy vamos a hacer un experimento." },
+      { wrong:"Cuando termine el partido iremos a casa.", correct:"Cuando termine el partido, iremos a casa." },
+      { wrong:"María mi mejor amiga ha cambiado de instituto.", correct:"María, mi mejor amiga, ha cambiado de instituto." },
+      { wrong:"Si estudias un poco cada día aprobarás.", correct:"Si estudias un poco cada día, aprobarás." },
+      { wrong:"Pedro Luis y Ana han llegado tarde.", correct:"Pedro, Luis y Ana han llegado tarde." },
+      { wrong:"En mi mochila llevo cuadernos libros lápices y rotuladores.", correct:"En mi mochila llevo cuadernos, libros, lápices y rotuladores." },
+      { wrong:"La gente de mi barrio son muy simpáticos.", correct:"La gente de mi barrio es muy simpática." },
+      { wrong:"Mi hermano que es muy despistado perdió las llaves.", correct:"Mi hermano, que es muy despistado, perdió las llaves." },
+      { wrong:"Si no haces los deberes no podrás jugar a la consola.", correct:"Si no haces los deberes, no podrás jugar a la consola." },
+      { wrong:"Cuando llegues a casa llama a tu madre.", correct:"Cuando llegues a casa, llama a tu madre." },
+      { wrong:"Nos sentamos en el césped cansados contentos y sudando.", correct:"Nos sentamos en el césped, cansados, contentos y sudando." },
+      { wrong:"En invierno hace frio en cambio en verano hace mucho calor.", correct:"En invierno hace frío; en cambio, en verano hace mucho calor." },
+      { wrong:"Mi primo el pequeño vive en otra ciudad.", correct:"Mi primo, el pequeño, vive en otra ciudad." },
+      { wrong:"Si vienes mañana traete el balón.", correct:"Si vienes mañana, tráete el balón." },
+      { wrong:"Vamos a ver chicos quien ha entendido el ejercicio.", correct:"Vamos a ver, chicos, quién ha entendido el ejercicio." },
+      { wrong:"Cuando salgamos del cine iremos a merendar.", correct:"Cuando salgamos del cine, iremos a merendar." },
+      { wrong:"Carlos aunque estaba cansado siguió corriendo.", correct:"Carlos, aunque estaba cansado, siguió corriendo." },
+      { wrong:"Si quieres te explico otra vez el problema.", correct:"Si quieres, te explico otra vez el problema." },
+      { wrong:"Mi perro que es muy juguetón rompió otra vez su pelota.", correct:"Mi perro, que es muy juguetón, rompió otra vez su pelota." },
+      { wrong:"Al final del día todos estabamos contentos cansados pero satisfechos.", correct:"Al final del día, todos estábamos contentos, cansados pero satisfechos." }
+    ]
+  };
+
+  const monsters = [
+    {
+      id:"h_ghoul", name:"H-Ghoul", type:"H / Haber - A ver",
+      sprite:"img/monsters/sprite_h_ghoul.png",
+      maxHp:80, difficulty:"fácil", damageMultiplier:0.8,
+      special:{ name:"Despiste", description:"Si fallas mucho, añade un pequeño extra de daño.", type:"extraOnBigError", extra:5 },
+      xpReward:60, goldReward:15, cardReward:"Carta H vs ‘haber / a ver’",
+      rule:"Diferenciar entre “haber” (verbo o sustantivo) y “a ver” (locución equivalente a “veamos”). Reescribe la frase correctamente."
+    },
+    {
+      id:"vampiro_v", name:"Vampiro de la V", type:"B / V",
+      sprite:"img/monsters/sprite_vampiro_v.png",
+      maxHp:110, difficulty:"normal", damageMultiplier:1,
+      special:{ name:"Mordisco ortográfico", description:"Si tu frase tiene bastantes errores, su ataque hace más daño de lo normal.", type:"extraOnBigError", extra:8 },
+      xpReward:70, goldReward:20, cardReward:"Carta B/V",
+      rule:"Usa B y V correctamente: verbos como “tuvo”, “estuve” van con V; después de M va B; cuidado con pares como ‘tubo/tuvo’."
+    },
+    {
+      id:"gargantua_gj", name:"Gargantúa G/J", type:"G / J",
+      sprite:"img/monsters/sprite_gargantua_gj.png",
+      maxHp:130, difficulty:"difícil", damageMultiplier:1.3,
+      special:{ name:"Aliento de confusión", description:"En ataques flojos, su daño se incrementa notablemente.", type:"extraOnBigError", extra:10 },
+      xpReward:80, goldReward:25, cardReward:"Carta G/J",
+      rule:"Distingue G y J: verbos terminados en -ger/-gir llevan G (proteger, dirigir); formas de ‘coger’ y ‘trabajar’ se escriben con J en algunas personas."
+    },
+    {
+      id:"espectro_agudo", name:"Espectro Agudo", type:"Tildes",
+      sprite:"img/monsters/sprite_espectro_agudo.png",
+      maxHp:140, difficulty:"difícil", damageMultiplier:1.2,
+      special:{ name:"Eco agudo", description:"Si olvidas demasiadas tildes, su ataque ignora parcialmente tus defensas.", type:"extraOnBigError", extra:9 },
+      xpReward:90, goldReward:30, cardReward:"Carta Tildes",
+      rule:"Coloca las tildes: recuerda agudas, llanas y esdrújulas, además de la tilde diacrítica en ‘tú/tu’, ‘más/mas’, ‘él/el’, ‘mí/mi’..."
+    },
+    {
+      id:"serpiente_comata", name:"Serpiente Comata", type:"Comas y concordancia",
+      sprite:"img/monsters/sprite_serpiente_comata.png",
+      maxHp:150, difficulty:"difícil", damageMultiplier:1.25,
+      special:{ name:"Enredo sintáctico", description:"Si la frase queda muy mal puntuada, su daño aumenta bastante.", type:"extraOnBigError", extra:10 },
+      xpReward:100, goldReward:35, cardReward:"Carta Comas & Concordancia",
+      rule:"Separa con comas vocativos, incisos y elementos de una lista; cuida la concordancia entre sujeto y verbo."
+    }
+  ];
+  monsters.forEach(m => { m.phrases = PHRASE_BANK[m.id] || []; });
+
+  const monsterSprites = {
+    "H-Ghoul": "img/monsters/sprite_h_ghoul.png",
+    "Vampiro de la V": "img/monsters/sprite_vampiro_v.png",
+    "Gargantúa G/J": "img/monsters/sprite_gargantua_gj.png",
+    "Espectro Agudo": "img/monsters/sprite_espectro_agudo.png",
+    "Serpiente Comata": "img/monsters/sprite_serpiente_comata.png"
+  };
+
+  const SHOP_ITEMS = [
+    { id:"pluma_maestra", name:"Pluma maestra", cost:40, description:"Aumenta tu vida máxima en +20 y te cura por completo.", effect:{ type:"maxHpUp", amount:20 }, icon:"img/items/item_pluma_maestra.png" },
+    { id:"cuaderno_descanso", name:"Cuaderno de descanso", cost:20, description:"Restaura toda tu vida al instante.", effect:{ type:"healFull" }, icon:"img/items/item_cuaderno_descanso.png" },
+    { id:"botas_corregidor", name:"Botas del Corregidor", cost:25, description:"No dan bonificación numérica, pero quedan genial en tu inventario.", effect:{ type:"cosmetic" }, icon:"img/items/item_botas_corregidor.png" },
+    { id:"pista_simple", name:"Pergamino de pista", cost:15, description:"Te permite pedir una pista ortográfica durante la batalla.", effect:{ type:"battleConsumable" }, icon:"img/items/item_pista_simple.png" },
+    { id:"pocion_tinta", name:"Poción de tinta", cost:25, description:"Inflige 25 puntos de daño directo al monstruo (no puede rematarlo).", effect:{ type:"battleConsumable" }, icon:"img/items/item_pocion_tinta.png" },
+    { id:"escudo_gramatical", name:"Escudo gramatical", cost:25, description:"Reduce a la mitad el daño del próximo ataque del monstruo.", effect:{ type:"battleConsumable" }, icon:"img/items/item_escudo_gramatical.png" },
+    { id:"pocion_debilitante", name:"Poción debilitante", cost:30, description:"Debilita al monstruo: sus próximos ataques hacen menos daño.", effect:{ type:"battleConsumable" }, icon:"img/items/item_pocion_debilitante.png" },
+    { id:"tinta_corrosiva", name:"Tinta corrosiva", cost:30, description:"Tus ataques infligen daño extra durante varios turnos.", effect:{ type:"battleConsumable" }, icon:"img/items/item_tinta_corrosiva.png" },
+    { id:"expansor_tildes", name:"Expansor de tildes", cost:25, description:"Tu próximo ataque perfecto hará más daño gracias a las tildes.", effect:{ type:"battleConsumable" }, icon:"img/items/item_expansor_tildes.png" }
+  ];
+
+  const ITEM_DEFS = {
+    "Fragmento de Diccionario": { icon:"img/items/item_fragmento_diccionario.png", rarity:"common", desc:"Un trozo de sabiduría olvidada. Al usarlo, obtienes un pequeño extra de experiencia." },
+    "Polvo de Tilde": { icon:"img/items/item_polvo_tilde.png", rarity:"common", desc:"Un leve brillo recorre tus palabras. Aumenta ligeramente tu precisión en el próximo turno." },
+    "Píxel Roto": { icon:"img/items/item_pixel_roto.png", rarity:"common", desc:"Restos de un mundo antiguo. No sirve en combate, pero puede venderse por unas monedas." },
+    "Mancha de Tinta": { icon:"img/items/item_mancha_tinta.png", rarity:"common", desc:"La tinta te cubre como una armadura improvisada. Reduce el daño del próximo ataque enemigo." },
+    "Coma Semilla": { icon:"img/items/item_coma_semilla.png", rarity:"common", desc:"Planta una coma en el texto y observa cómo crece el sentido. Te da una pista sencilla sobre la frase." },
+    "Eco Agudo": { icon:"img/items/item_eco_agudo.png", rarity:"common", desc:"Un sonido punzante resuena en tu mente. Recarga ligeramente la barra de habilidad del héroe." },
+    "Pergamino Roto": { icon:"img/items/item_pergamino_roto.png", rarity:"common", desc:"Solo se lee un fragmento… pero basta. Revela una pista sencilla." },
+
+    "H Perdida": { icon:"img/items/item_h_perdida.png", rarity:"unique", desc:"Corrige automáticamente un error de h en el siguiente combate (pista potente)." },
+    "Colmillo Ortográfico": { icon:"img/items/item_colmillo_bv.png", rarity:"unique", desc:"Te da una pista clara sobre B/V en tu próximo ataque." },
+    "Garra Confusora": { icon:"img/items/item_garra_gj.png", rarity:"unique", desc:"Te da una pista clara sobre G/J." },
+    "Acento Condensado": { icon:"img/items/item_acento_condensado.png", rarity:"unique", desc:"Te ayuda con tildes (pista potente) en el siguiente ataque." },
+    "Colmillo Comático": { icon:"img/items/item_colmillo_comas.png", rarity:"unique", desc:"Te indica dónde deberían ir comas (pista potente)." },
+
+    "Pluma Arcana": { icon:"img/items/item_pluma_arcana.png", rarity:"rare", desc:"Rellena parte de la barra de habilidad." },
+    "Gema de Conjugación": { icon:"img/items/item_gema_conjugacion.png", rarity:"rare", desc:"Permite una ayuda extra en el próximo ataque." },
+    "Cristal Vocálico": { icon:"img/items/item_cristal_vocalico.png", rarity:"rare", desc:"Evita penalizaciones durante un turno." },
+    "Runas de Coherencia": { icon:"img/items/item_runas_coherencia.png", rarity:"rare", desc:"Reduce errores generales en tu próximo ataque." },
+
+    "Orbe de la Ortografía Perfecta": { icon:"img/items/item_orbe_ortografia.png", rarity:"legendary", desc:"Te vuelve muy indulgente el siguiente ataque." },
+    "Corona del Corrector Supremo": { icon:"img/items/item_corona_corrector.png", rarity:"legendary", desc:"Potencia el daño durante un combate." },
+    "Libro Viviente": { icon:"img/items/item_libro_viviente.png", rarity:"legendary", desc:"Te da una pista muy potente." }
+  };
+
+  const COMMON_ITEMS = ["Fragmento de Diccionario","Polvo de Tilde","Píxel Roto","Mancha de Tinta","Coma Semilla","Eco Agudo","Pergamino Roto"];
+  const RARE_ITEMS = ["Pluma Arcana","Gema de Conjugación","Cristal Vocálico","Runas de Coherencia"];
+  const LEGENDARY_ITEMS = ["Orbe de la Ortografía Perfecta","Corona del Corrector Supremo","Libro Viviente"];
+
+  const MONSTER_UNIQUE_ITEMS = {
+    "h_ghoul": "H Perdida",
+    "vampiro_v": "Colmillo Ortográfico",
+    "gargantua_gj": "Garra Confusora",
+    "espectro_agudo": "Acento Condensado",
+    "serpiente_comata": "Colmillo Comático"
+  };
+
+  // ====== Estado ======
+  let player = null;
+  let currentMonsterIndex = 0;
+  let currentMonsterHp = 0;
+  let currentPhrase = null;
+  let currentMode = "battle";
+
+  const usedPhraseIndicesByMonster = {};
+
+  let battleState = {
+    shieldTurns:0,
+    freezeTurns:0,
+    poweredAttackTurns:0,
+    dodgeTurns:0,
+    autoCorrectBoost:false,
+    weakenTurns:0,
+    poisonTurns:0,
+    perfectTildeBonus:false,
+    damageBoostTurns:0
+  };
+
+  function resetBattleState(){
+    battleState = {
+      shieldTurns:0,
+      freezeTurns:0,
+      poweredAttackTurns:0,
+      dodgeTurns:0,
+      autoCorrectBoost:false,
+      weakenTurns:0,
+      poisonTurns:0,
+      perfectTildeBonus:false,
+      damageBoostTurns:0
+    };
+  }
+
+  // ===== DOM =====
+  const startScreen = document.getElementById("start-screen");
+  const splashScreen = document.getElementById("splash-screen");
+  const splashStartBtn = document.getElementById("splash-start");
+  const splashContinueBtn = document.getElementById("splash-continue");
+  const splashNote = document.getElementById("splash-note");
+  const continueBlock = document.getElementById("continue-block");
+  const continueBtn = document.getElementById("continue-btn");
+  const newFromSavedBtn = document.getElementById("new-from-saved-btn");
+  const startNewBtn = document.getElementById("start-new-btn");
+  const playerNameInput = document.getElementById("player-name");
+  const avatarGridEl = document.getElementById("avatar-grid");
+  const heroDetailsBody = document.getElementById("hero-details-body");
+
+  const heroNameLabel = document.getElementById("hero-name-label");
+  const heroNameDisplay = document.getElementById("hero-name-display");
+  const heroAvatarEl = document.getElementById("hero-avatar");
+  const heroMetaEl = document.getElementById("hero-meta");
+  const xpBarFill = document.getElementById("xp-bar-fill");
+  const xpText = document.getElementById("xp-text");
+  const abilityBarFill = document.getElementById("ability-bar-fill");
+  const abilityText = document.getElementById("ability-text");
+  const heroGoldEl = document.getElementById("hero-gold");
+  const heroCardsCountEl = document.getElementById("hero-cards-count");
+
+  const itemsListEl = document.getElementById("items-list");
+  const cardsListEl = document.getElementById("cards-list");
+  const collectionEl = document.getElementById("monster-collection");
+
+  const mapCanvasEl = document.getElementById("map-canvas");
+  const mapStagesEl = document.getElementById("map-stages");
+
+  const monsterNameEl = document.getElementById("monster-name");
+  const monsterTypeEl = document.getElementById("monster-type");
+  const monsterHpBar = document.getElementById("monster-hp-bar");
+  const monsterHpText = document.getElementById("monster-hp-text");
+
+  const playerHpBar = document.getElementById("player-hp-bar");
+  const playerHpText = document.getElementById("player-hp-text");
+
+  const wrongPhraseEl = document.getElementById("wrong-phrase");
+  const answerEl = document.getElementById("answer");
+  const logEl = document.getElementById("log");
+
+  const attackBtn = document.getElementById("attack-btn");
+  const abilityBtn = document.getElementById("ability-btn");
+
+  const navBattleBtn = document.getElementById("nav-battle");
+  const navCampBtn = document.getElementById("nav-camp");
+  const navMapBtn = document.getElementById("nav-map");
+  const navDiaryBtn = document.getElementById("nav-diary");
+  const navHistoryBtn = document.getElementById("nav-history");
+  const navInventoryBtn = document.getElementById("nav-inventory");
+
+  const battleScreenEl = document.getElementById("battle-screen");
+  const campScreenEl = document.getElementById("camp-screen");
+  const mapScreenEl = document.getElementById("map-screen");
+  const diaryScreenEl = document.getElementById("diary-screen");
+  const historyScreenEl = document.getElementById("history-screen");
+  const inventoryScreenEl = document.getElementById("inventory-screen");
+  const layoutEl = document.querySelector(".layout");
+
+  const diaryEntriesEl = document.getElementById("diary-entries");
+  const diarySummaryEl = document.getElementById("diary-summary");
+
+  const campRestBtn = document.getElementById("camp-rest-btn");
+  const campHpInfo = document.getElementById("camp-hp-info");
+  const campGoldInfo = document.getElementById("camp-gold-info");
+  const shopListEl = document.getElementById("shop-list");
+  const campMessageEl = document.getElementById("camp-message");
+
+  const heroSpriteImg = document.getElementById("hero-sprite-img");
+  const monsterSpriteImg = document.getElementById("monster-sprite-img");
+  const heroVisualEl = document.querySelector(".hero-visual");
+  const monsterVisualEl = document.querySelector(".monster-visual");
+
+  const heroHpBarWrap = playerHpBar ? playerHpBar.parentElement : null;
+  const monsterHpBarWrap = monsterHpBar ? monsterHpBar.parentElement : null;
+
+  const battleItemSelect = document.getElementById("battle-item-select");
+  const useItemBtn = document.getElementById("use-item-btn");
+
+  const heroPanelEl = document.getElementById("hero-panel");
+  const inputPanelEl = document.getElementById("input-panel");
+  const logPanelEl   = document.getElementById("log-panel");
+
+  function setLog(html){ logEl.innerHTML = html; }
+
+  function clearAnswerQuality(){
+    if(!answerEl) return;
+    answerEl.classList.remove("answer-good","answer-medium","answer-bad");
+  }
+  if(answerEl){ answerEl.addEventListener("input", clearAnswerQuality); }
+
+  function normalize(str){
+    return str.toLowerCase().trim().replace(/\s+/g," ").replace(/[“”"']/g,'"');
+  }
+
+  function levenshtein(a,b){
+    const matrix = [];
+    const lenA = a.length;
+    const lenB = b.length;
+    if(lenA === 0) return lenB;
+    if(lenB === 0) return lenA;
+    for(let i=0;i<=lenB;i++){ matrix[i] = [i]; }
+    for(let j=0;j<=lenA;j++){ matrix[0][j] = j; }
+    for(let i=1;i<=lenB;i++){
+      for(let j=1;j<=lenA;j++){
+        if(b.charAt(i-1) === a.charAt(j-1)){
+          matrix[i][j] = matrix[i-1][j-1];
+        }else{
+          matrix[i][j] = Math.min(
+            matrix[i-1][j-1] + 1,
+            matrix[i][j-1] + 1,
+            matrix[i-1][j] + 1
+          );
+        }
+      }
+    }
+    return matrix[lenB][lenA];
+  }
+
+  function savePlayer(){
+    // Persistimos también el progreso de batalla actual (p.ej. vida del monstruo en curso)
+    try{
+      if(player){
+        player.currentMonsterIndex = currentMonsterIndex;
+        player.currentMonsterId = (monsters && monsters[currentMonsterIndex]) ? monsters[currentMonsterIndex].id : null;
+        player.currentMonsterHp = currentMonsterHp;
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(player));
+    }
+    catch(e){ console.warn("No se pudo guardar la partida:", e); }
+  }
+
+  function loadSavedPlayer(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return null;
+      const parsed = JSON.parse(raw);
+      if(typeof parsed.maxHp === "undefined") parsed.maxHp = 100;
+      if(typeof parsed.hp === "undefined") parsed.hp = parsed.maxHp;
+      if(!Array.isArray(parsed.items)) parsed.items = [];
+      if(!Array.isArray(parsed.cards)) parsed.cards = [];
+      if(typeof parsed.monstersDefeated === "undefined") parsed.monstersDefeated = 0;
+      if(typeof parsed.level === "undefined") parsed.level = 1;
+      if(typeof parsed.xp === "undefined") parsed.xp = 0;
+      if(typeof parsed.xpToNext === "undefined") parsed.xpToNext = 100;
+      if(typeof parsed.gold === "undefined") parsed.gold = 0;
+      if(!Array.isArray(parsed.defeatedMonsters)) parsed.defeatedMonsters = [];
+      if(typeof parsed.storyIndex === "undefined") parsed.storyIndex = 0;
+      if(typeof parsed.avatarId === "undefined") parsed.avatarId = "mago";
+      if(typeof parsed.avatarEmoji === "undefined") parsed.avatarEmoji = AVATARS[parsed.avatarId]?.emoji || "🧙‍♂️";
+      if(typeof parsed.currentMonsterIndex === "undefined") parsed.currentMonsterIndex = 0;
+      if(!Array.isArray(parsed.diary)) parsed.diary = [];
+      if(typeof parsed.abilityCharge === "undefined") parsed.abilityCharge = 0;
+      return parsed;
+    }catch(e){
+      console.warn("Error al cargar partida:", e);
+      return null;
+    }
+  }
+
+  function showDamage(targetEl, amount, extraClass){
+    if(!targetEl || !amount || amount <= 0) return;
+    const span = document.createElement("div");
+    span.className = "damage-float " + (extraClass || "");
+    span.textContent = `-${amount}`;
+    targetEl.appendChild(span);
+    setTimeout(()=> span.remove(), 700);
+  }
+
+  function updateHpBars(){
+    const monster = monsters[currentMonsterIndex] || monsters[monsters.length-1];
+    const monsterPercent = Math.max(0,(currentMonsterHp/monster.maxHp)*100);
+    monsterHpBar.style.width = monsterPercent + "%";
+    monsterHpText.textContent = `${Math.max(0,currentMonsterHp)} / ${monster.maxHp}`;
+
+    const pPercent = Math.max(0,(player.hp/player.maxHp)*100);
+    playerHpBar.style.width = pPercent + "%";
+    playerHpText.textContent = `${Math.max(0,player.hp)} / ${player.maxHp}`;
+
+    campHpInfo.textContent = `${player.hp} / ${player.maxHp}`;
+    campGoldInfo.textContent = player.gold;
+  }
+
+  function addXp(amount){
+    player.xp += amount;
+    let subidas = 0;
+    while(player.xp >= player.xpToNext){
+      player.xp -= player.xpToNext;
+      player.level++;
+      player.xpToNext = Math.round(player.xpToNext * 1.35);
+      subidas++;
+    }
+    updateHeroUi();
+    savePlayer();
+    return subidas;
+  }
+
+  function addGold(amount){
+    player.gold += amount;
+    updateHeroUi();
+    savePlayer();
+  }
+
+  function addItem(itemName){
+    player.items.push(itemName);
+    updateHeroUi();
+    savePlayer();
+  }
+
+  function removeOneItem(itemName){
+    const idx = player.items.indexOf(itemName);
+    if(idx >= 0) player.items.splice(idx, 1);
+  }
+
+  function addCard(cardName){
+    if(!player.cards.includes(cardName)){
+      player.cards.push(cardName);
+      updateHeroUi();
+      savePlayer();
+    }
+  }
+
+  function registerMonsterDefeated(monsterId){
+    if(!player.defeatedMonsters.includes(monsterId)){
+      player.defeatedMonsters.push(monsterId);
+      updateHeroUi();
+      savePlayer();
+    }
+  }
+
+  function updateAbilityUi(){
+    if(typeof player.abilityCharge === "undefined") player.abilityCharge = 0;
+    const pct = Math.max(0, Math.min(100, player.abilityCharge));
+    abilityBarFill.style.width = pct + "%";
+    abilityText.textContent = `Habilidad ${Math.round(pct)} / 100`;
+    abilityBtn.disabled = pct < 100;
+  }
+
+  // ===== Usabilidad de objetos =====
+  const SHOP_NON_BATTLE_USABLE = new Set(["Pluma maestra", "Cuaderno de descanso"]);
+  const SHOP_NOT_USABLE = new Set(["Botas del Corregidor"]);
+
+  const BATTLE_USABLE = new Set([
+    "Pergamino de pista","Poción de tinta","Escudo gramatical","Poción debilitante","Tinta corrosiva","Expansor de tildes",
+    "Mancha de Tinta","Coma Semilla","Eco Agudo","Pergamino Roto",
+    "H Perdida","Colmillo Ortográfico","Garra Confusora","Acento Condensado","Colmillo Comático",
+    "Pluma Arcana","Cristal Vocálico","Runas de Coherencia","Gema de Conjugación",
+    "Orbe de la Ortografía Perfecta","Libro Viviente","Corona del Corrector Supremo"
+  ]);
+
+  function updateBattleItemSelect(){
+    if(!battleItemSelect || !player) return;
+    battleItemSelect.innerHTML = `<option value="">Usar objeto…</option>`;
+
+    const counts = {};
+    player.items.forEach(name => {
+      if(!BATTLE_USABLE.has(name)) return;
+      counts[name] = (counts[name] || 0) + 1;
+    });
+
+    Object.entries(counts).forEach(([name, count])=>{
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = count > 1 ? `${name} (x${count})` : name;
+      battleItemSelect.appendChild(opt);
+    });
+  }
+
+  function getHintText(){
+    const m = monsters[currentMonsterIndex];
+    return `Pista: ${m.rule}`;
+  }
+
+  function applyBattleItem(itemName){
+    if(!player || !itemName) return;
+    const consume = true;
+
+    if(itemName === "Pergamino de pista" || itemName === "Coma Semilla" || itemName === "Pergamino Roto"){
+      setLog(`<span class="good">${itemName} usado.</span><br><span class="hint">${getHintText()}</span>`);
+      if(consume) removeOneItem(itemName);
+      savePlayer(); updateBattleItemSelect(); updateHeroUi();
+      return;
+    }
+
+    if(itemName === "Poción de tinta"){
+      if(currentMonsterHp <= 1){
+        setLog(`<span class="hint">El monstruo está demasiado débil: la poción no puede rematarlo.</span>`);
+        return;
+      }
+      const dmg = Math.min(25, currentMonsterHp - 1);
+      currentMonsterHp = Math.max(1, currentMonsterHp - dmg);
+      updateHpBars();
+      showDamage(monsterVisualEl, dmg, "damage-player");
+      if(monsterHpBarWrap){
+        monsterHpBarWrap.classList.add("shake");
+        setTimeout(()=>monsterHpBarWrap.classList.remove("shake"), 300);
+      }
+      setLog(`<span class="good">Usas Poción de tinta.</span> El monstruo sufre <strong>${dmg}</strong> de daño directo.`);
+      if(consume) removeOneItem(itemName);
+      savePlayer(); updateBattleItemSelect(); updateHeroUi();
+      return;
+    }
+
+    if(itemName === "Escudo gramatical" || itemName === "Mancha de Tinta"){
+      battleState.shieldTurns = Math.max(battleState.shieldTurns, 1);
+      setLog(`<span class="good">Activado:</span> ${itemName}. <span class="hint">Reduce el daño del próximo ataque enemigo.</span>`);
+      if(consume) removeOneItem(itemName);
+      savePlayer(); updateBattleItemSelect(); updateHeroUi();
+      return;
+    }
+
+    if(itemName === "Poción debilitante"){
+      battleState.weakenTurns = Math.max(battleState.weakenTurns, 2);
+      setLog(`<span class="good">Usas Poción debilitante.</span> <span class="hint">Durante 2 turnos, el monstruo golpea menos.</span>`);
+      if(consume) removeOneItem(itemName);
+      savePlayer(); updateBattleItemSelect(); updateHeroUi();
+      return;
+    }
+
+    if(itemName === "Tinta corrosiva"){
+      battleState.poisonTurns = Math.max(battleState.poisonTurns, 3);
+      setLog(`<span class="good">Usas Tinta corrosiva.</span> <span class="hint">Durante 3 turnos, tus ataques hacen daño extra.</span>`);
+      if(consume) removeOneItem(itemName);
+      savePlayer(); updateBattleItemSelect(); updateHeroUi();
+      return;
+    }
+
+    if(itemName === "Expansor de tildes"){
+      battleState.perfectTildeBonus = true;
+      setLog(`<span class="good">Expansor de tildes activado.</span> <span class="hint">Si el próximo ataque es perfecto, hará daño extra.</span>`);
+      if(consume) removeOneItem(itemName);
+      savePlayer(); updateBattleItemSelect(); updateHeroUi();
+      return;
+    }
+
+    if(itemName === "Eco Agudo" || itemName === "Pluma Arcana"){
+      const add = (itemName === "Pluma Arcana") ? 60 : 35;
+      player.abilityCharge = Math.min(100, (player.abilityCharge || 0) + add);
+      updateAbilityUi();
+      setLog(`<span class="good">${itemName} usado.</span> <span class="hint">+${add} a la barra de habilidad.</span>`);
+      if(consume) removeOneItem(itemName);
+      savePlayer(); updateBattleItemSelect(); updateHeroUi();
+      return;
+    }
+
+    if(itemName === "Orbe de la Ortografía Perfecta" || itemName === "Libro Viviente"){
+      battleState.autoCorrectBoost = true;
+      setLog(`<span class="good">${itemName} activado.</span> <span class="hint">El próximo ataque será mucho más indulgente con errores.</span><br>${getHintText()}`);
+      if(consume) removeOneItem(itemName);
+      savePlayer(); updateBattleItemSelect(); updateHeroUi();
+      return;
+    }
+
+    if(itemName === "Corona del Corrector Supremo"){
+      battleState.damageBoostTurns = Math.max(battleState.damageBoostTurns, 3);
+      setLog(`<span class="good">Corona del Corrector Supremo.</span> <span class="hint">Durante 3 turnos, infliges mucho más daño.</span>`);
+      if(consume) removeOneItem(itemName);
+      savePlayer(); updateBattleItemSelect(); updateHeroUi();
+      return;
+    }
+
+    if(["H Perdida","Colmillo Ortográfico","Garra Confusora","Acento Condensado","Colmillo Comático","Cristal Vocálico","Runas de Coherencia","Gema de Conjugación"].includes(itemName)){
+      battleState.autoCorrectBoost = true;
+      setLog(`<span class="good">${itemName} usado.</span><br><span class="hint">${getHintText()}</span>`);
+      if(consume) removeOneItem(itemName);
+      savePlayer(); updateBattleItemSelect(); updateHeroUi();
+      return;
+    }
+
+    setLog(`<span class="hint">Ese objeto no se puede usar ahora.</span>`);
+  }
+
+  function useItem(itemName){
+    if(!itemName || !player) return;
+
+    if(SHOP_NOT_USABLE.has(itemName)){
+      setLog(`<span class="hint">${itemName} es puramente coleccionable (y te queda increíble).</span>`);
+      return;
+    }
+
+    if(SHOP_NON_BATTLE_USABLE.has(itemName)){
+      if(itemName === "Cuaderno de descanso"){
+        if(player.hp >= player.maxHp){
+          setLog(`<span class="hint">Ya estás a tope de vida. Guarda el Cuaderno de descanso para un mal día.</span>`);
+          return;
+        }
+        player.hp = player.maxHp;
+        removeOneItem(itemName);
+        updateHpBars(); updateHeroUi(); savePlayer();
+        setLog(`<span class="good">Usas ${itemName}.</span> Recuperas toda tu vida.`);
+        return;
+      }
+
+      if(itemName === "Pluma maestra"){
+        player.maxHp += 20;
+        player.hp = player.maxHp;
+        removeOneItem(itemName);
+        updateHpBars(); updateHeroUi(); savePlayer();
+        setLog(`<span class="good">Usas ${itemName}.</span> +20 a vida máxima y curación completa.`);
+        return;
+      }
+    }
+
+    if(BATTLE_USABLE.has(itemName)){
+      if(currentMode !== "battle") switchTo("battle");
+      applyBattleItem(itemName);
+      return;
+    }
+
+    setLog(`<span class="hint">Ese objeto no tiene uso implementado (todavía).</span>`);
+  }
+
+  // Listener inventario (una sola vez)
+  if(itemsListEl && !itemsListEl.dataset.boundUse){
+    itemsListEl.dataset.boundUse = "1";
+    itemsListEl.addEventListener("click",(e)=>{
+      const btn = e.target.closest(".inv-use-btn");
+      if(!btn || btn.disabled) return;
+      const name = btn.dataset.item;
+      useItem(name);
+      updateHeroUi();
+    });
+  }
+
+  function updateHeroUi(){
+    if(!player) return;
+
+    heroNameLabel.textContent = player.name || "Héroe de Battlegrafía";
+    heroNameDisplay.textContent = player.name || "Héroe sin nombre";
+
+    const sprite = HERO_SPRITES[player.avatarId] || HERO_SPRITES.mago;
+    const altText = player.name || "Héroe";
+    heroAvatarEl.innerHTML = `<img src="${sprite}" alt="${altText}" class="hero-avatar-mini">`;
+    heroSpriteImg.src = sprite;
+
+    heroMetaEl.textContent = `Nivel ${player.level} · ${player.monstersDefeated} monstruos derrotados`;
+
+    const xpPercent = Math.max(0, Math.min(100, (player.xp / player.xpToNext) * 100));
+    xpBarFill.style.width = xpPercent + "%";
+    xpText.textContent = `EXP ${player.xp} / ${player.xpToNext}`;
+
+    heroGoldEl.textContent = `Oro: ${player.gold}`;
+    heroCardsCountEl.textContent = `Cartas: ${player.cards.length}`;
+
+    // Objetos
+    if(player.items.length === 0){
+      itemsListEl.innerHTML = `<span class="hint">Sin objetos... de momento.</span>`;
+    }else{
+      const counts = {};
+      player.items.forEach(n => { counts[n] = (counts[n]||0) + 1; });
+
+      const itemsHtml =
+        `<div class="inv-grid">` +
+        Object.entries(counts).map(([name,count]) => {
+          const def = ITEM_DEFS[name];
+          const rarityClass = def?.rarity || "common";
+          const desc = def?.desc || "Sin descripción.";
+          const disabled = SHOP_NOT_USABLE.has(name); // coleccionable puro
+          return `
+            <div class="inv-card ${rarityClass}">
+              <div class="inv-card-main">
+                ${def?.icon ? `<img src="${def.icon}" alt="${name}" class="inv-card-icon">` : `<div class="inv-card-icon-placeholder">?</div>`}
+                <div class="inv-card-text">
+                  <div class="inv-card-name">
+                    ${name}${count > 1 ? ` <span class="inv-card-qty">x${count}</span>` : ""}
+                  </div>
+                  <div class="inv-card-desc">${desc}</div>
+                  <div class="inv-card-actions">
+                    <button class="inv-use-btn" data-item="${name}" ${disabled ? "disabled" : ""}>Usar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join("") +
+        `</div>`;
+
+      itemsListEl.innerHTML = itemsHtml;
+    }
+
+    // Cartas
+    if(player.cards.length === 0){
+      cardsListEl.innerHTML = `<span class="hint">Aún no has conseguido cartas.</span>`;
+    }else{
+      const cardsHtml =
+        `<div class="card-grid">` +
+        player.cards.map(c => {
+          const initial = c.trim().charAt(0).toUpperCase() || "★";
+          return `
+            <div class="card-chip">
+              <div class="card-chip-icon">${initial}</div>
+              <div class="card-chip-text">${c}</div>
+            </div>
+          `;
+        }).join("") +
+        `</div>`;
+      cardsListEl.innerHTML = cardsHtml;
+    }
+
+    renderCollection();
+    updateAbilityUi();
+    updateBattleItemSelect();
+  }
+
+  function renderCollection(){
+    if(!player.defeatedMonsters || player.defeatedMonsters.length === 0){
+      collectionEl.innerHTML = `<span class="hint">Todavía no has derrotado a ninguna criatura.</span>`;
+      return;
+    }
+    const pieces = player.defeatedMonsters
+      .map(id => monsters.find(m => m.id === id))
+      .filter(Boolean)
+      .map(m => `<div class="collection-monster" title="${m.name}"><img src="${m.sprite}" alt="${m.name}"></div>`);
+    collectionEl.innerHTML = pieces.join("");
+  }
+
+  function renderBigMap(){
+    const bgImg = `<img class="map-bg" src="img/backgrounds/map_montanas_battlegrafia.png" alt="Mapa de Ortographia">`;
+    mapCanvasEl.innerHTML = bgImg;
+    renderMapStages();
+  }
+
+  function renderMapStages(){
+    if(!mapStagesEl) return;
+    const html = monsters.map((m, idx)=>{
+      let statusClass = "stage-locked";
+      if(idx < currentMonsterIndex) statusClass = "stage-cleared";
+      else if(idx === currentMonsterIndex) statusClass = "stage-current";
+
+      const shortName = m.name.split(" ")[0];
+
+      return `
+        <div class="map-stage ${statusClass}">
+          <div class="map-stage-inner">
+            <div class="map-stage-icon"><img src="${m.sprite}" alt="${m.name}"></div>
+            <div class="map-stage-label">${idx+1}. ${shortName}</div>
+            <div class="map-stage-tooltip"><strong>${m.name}</strong><br>${m.rule}</div>
+          </div>
+        </div>
+      `;
+    }).join("");
+    mapStagesEl.innerHTML = html;
+  }
+
+  function computeDiarySummary(diary){
+    const d = diary || [];
+    if (d.length === 0){
+      return { total:0, perfect:0, imperfect:0, perfectPct:0, avgPlayerDamage:0, avgMonsterDamage:0, hardestByDamage:null, lastDate:null };
+    }
+    const total = d.length;
+    let perfect = 0;
+    let sumPlayerDamage = 0;
+    let sumMonsterDamage = 0;
+    const byMonster = {};
+    d.forEach(entry => {
+      if (entry.isPerfect) perfect++;
+      sumPlayerDamage += entry.playerDamage || 0;
+      sumMonsterDamage += entry.monsterDamage || 0;
+      const name = entry.monster || "Desconocido";
+      if (!byMonster[name]) byMonster[name] = { count: 0, damageReceived: 0 };
+      byMonster[name].count++;
+      byMonster[name].damageReceived += entry.monsterDamage || 0;
+    });
+    const imperfect = total - perfect;
+    const perfectPct = Math.round((perfect / total) * 100);
+    const avgPlayerDamage = (sumPlayerDamage / total).toFixed(1);
+    const avgMonsterDamage = (sumMonsterDamage / total).toFixed(1);
+
+    let hardestByDamage = null;
+    Object.entries(byMonster).forEach(([name, stats]) => {
+      if (!hardestByDamage || stats.damageReceived > hardestByDamage.damageReceived){
+        hardestByDamage = { monster: name, damageReceived: stats.damageReceived };
+      }
+    });
+
+    const lastDate = d[d.length - 1].timestamp;
+    return { total, perfect, imperfect, perfectPct, avgPlayerDamage, avgMonsterDamage, hardestByDamage, lastDate };
+  }
+
+  function renderDiary(){
+    if(!player.diary || player.diary.length === 0){
+      if(diarySummaryEl) diarySummaryEl.innerHTML = "";
+      diaryEntriesEl.innerHTML = `<span class="hint">Todavía no hay entradas en tu diario. Cada vez que combatas, tus frases aparecerán aquí.</span>`;
+      return;
+    }
+    const summary = computeDiarySummary(player.diary);
+    if(diarySummaryEl && summary){
+      diarySummaryEl.innerHTML = `
+        <div><strong>Total de frases:</strong> ${summary.total}</div>
+        <div><strong>Perfectas:</strong> ${summary.perfect} (${summary.perfectPct}%)</div>
+        <div><strong>Con errores:</strong> ${summary.imperfect}</div>
+        <div><strong>Daño medio al monstruo:</strong> ${summary.avgPlayerDamage}</div>
+        <div><strong>Daño medio recibido:</strong> ${summary.avgMonsterDamage}</div>
+        ${summary.hardestByDamage ? `<div><strong>Monstruo que más te ha dañado:</strong> ${summary.hardestByDamage.monster}</div>` : ""}
+        <div><strong>Última entrada:</strong> ${summary.lastDate}</div>
+      `;
+    }
+
+    const entries = player.diary.slice().reverse();
+    diaryEntriesEl.innerHTML = entries.map(entry => `
+      <div class="diary-entry ${entry.isPerfect ? "correct" : "wrong"}">
+        <div class="diary-entry-header">
+          <span>${entry.timestamp}</span>
+          <span>${entry.monster}</span>
+        </div>
+        <div class="diary-entry-body">
+          <p><strong>Frase del monstruo:</strong> <code>${entry.wrongPhrase}</code></p>
+          <p><strong>Corrección correcta:</strong> <code>${entry.correctPhrase}</code></p>
+          <p><strong>Tu respuesta:</strong> <code>${entry.studentAnswer}</code></p>
+          <p><strong>Daño al monstruo:</strong> ${entry.playerDamage} · <strong>Daño recibido:</strong> ${entry.monsterDamage}</p>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function renderHistory(){
+    const galleryEl = document.getElementById("history-gallery");
+    if(!galleryEl) return;
+
+    const d = (player && Array.isArray(player.diary)) ? player.diary : [];
+    if(d.length === 0){
+      galleryEl.innerHTML = `
+        <div class="history-empty">
+          Todavía no has registrado ninguna batalla en el diario.
+          Derrota a algún monstruo para empezar la crónica.
+        </div>
+      `;
+      return;
+    }
+
+    const monsterNames = Object.keys(monsterSprites);
+
+    const cardsHtml = monsterNames.map((monsterName, idx) => {
+      const entriesForMonster = d.filter(entry => entry.monster === monsterName);
+
+      if(entriesForMonster.length === 0){
+        return `
+          <div class="history-card history-card-locked">
+            <div class="history-card-image"><div class="history-card-question">?</div></div>
+            <div class="history-card-body">
+              <div class="history-card-title">Escena bloqueada</div>
+              <div class="history-card-stage">${monsterName}</div>
+              <div class="history-card-text">Derrota a ${monsterName} para desbloquear este fragmento de la historia.</div>
+            </div>
+          </div>
+        `;
+      }
+
+      const keyEntry = entriesForMonster[0];
+      const keyText = keyEntry.studentAnswer || keyEntry.correctPhrase || keyEntry.wrongPhrase || "Momento clave de la batalla.";
+      const dateLabel = keyEntry.timestamp ? `<div class="history-card-meta">${keyEntry.timestamp}</div>` : "";
+      const imgSrc = monsterSprites[monsterName] || "";
+
+      return `
+        <div class="history-card history-card-unlocked">
+          <div class="history-card-image">
+            ${imgSrc ? `<img src="${imgSrc}" class="history-card-img-real" alt="${monsterName}">` : `<div>★</div>`}
+          </div>
+          <div class="history-card-body">
+            <div class="history-card-title">${monsterName}</div>
+            <div class="history-card-stage">Capítulo ${idx + 1}</div>
+            <div class="history-card-text">“${keyText}”</div>
+            ${dateLabel}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    galleryEl.innerHTML = cardsHtml;
+  }
+
+  // ===== Tienda =====
+  function renderShop(){
+    if(!shopListEl || !player) return;
+
+    shopListEl.innerHTML = SHOP_ITEMS.map(item => {
+      const ownedCount = player.items.filter(i => i === item.name).length;
+      const ownedText = ownedCount > 0 ? `<div class="shop-owned">Ya tienes ${ownedCount} en tu inventario.</div>` : "";
+      const icon = item.icon || "";
+
+      return `
+        <div class="shop-item" data-id="${item.id}">
+          <div class="shop-item-main">
+            ${icon ? `<img src="${icon}" class="shop-item-icon" alt="">` : ""}
+            <div class="shop-item-text">
+              <div class="shop-item-name">${item.name}</div>
+              <div class="shop-item-desc">${item.description}</div>
+            </div>
+          </div>
+          <div class="shop-item-footer">
+            <div class="shop-price">${item.cost} oro</div>
+            <button class="shop-buy-btn">Comprar</button>
+          </div>
+          ${ownedText}
+        </div>
+      `;
+    }).join("");
+  }
+
+  function buyShopItem(id){
+    const item = SHOP_ITEMS.find(x => x.id === id);
+    if(!item) return;
+
+    if(player.gold < item.cost){
+      campMessageEl.innerHTML = `<span class="bad">No tienes suficiente oro para comprar ${item.name}.</span>`;
+      return;
+    }
+
+    player.gold -= item.cost;
+
+    if(item.effect.type === "maxHpUp"){
+      player.maxHp += item.effect.amount;
+      player.hp = player.maxHp;
+      campMessageEl.innerHTML = `<span class="good">Has comprado ${item.name}.</span> Tu vida máxima aumenta y te curas por completo.`;
+      addItem(item.name);
+    }else if(item.effect.type === "healFull"){
+      player.hp = player.maxHp;
+      campMessageEl.innerHTML = `<span class="good">Has comprado ${item.name}.</span> Tu vida se restaura por completo.`;
+      addItem(item.name);
+    }else if(item.effect.type === "cosmetic"){
+      campMessageEl.innerHTML = `<span class="good">Has comprado ${item.name}.</span> Puro estilo lingüístico.`;
+      addItem(item.name);
+    }else if(item.effect.type === "battleConsumable"){
+      campMessageEl.innerHTML = `<span class="good">Has comprado ${item.name}.</span> Podrás usarlo durante las batallas.`;
+      addItem(item.name);
+    }
+
+    updateHpBars();
+    updateHeroUi();
+    savePlayer();
+    renderShop();
+  }
+
+  if(shopListEl){
+    shopListEl.addEventListener("click",(e)=>{
+      const btn = e.target.closest(".shop-buy-btn");
+      if(!btn) return;
+      const root = btn.closest(".shop-item");
+      if(!root) return;
+      buyShopItem(root.dataset.id);
+    });
+  }
+
+  campRestBtn.addEventListener("click", ()=>{
+    const restCost = 25;
+    if(player.hp === player.maxHp){
+      campMessageEl.innerHTML = `<span class="hint">Ya estás al máximo de vida. No necesitas descansar ahora.</span>`;
+      return;
+    }
+    if(player.gold < restCost){
+      campMessageEl.innerHTML = `<span class="bad">No tienes suficiente oro para descansar (necesitas ${restCost}).</span>`;
+      return;
+    }
+    player.gold -= restCost;
+    player.hp = player.maxHp;
+    campMessageEl.innerHTML = `<span class="good">Descansas junto a la hoguera.</span> Recuperas toda tu vida y estás listo para seguir corrigiendo monstruos.`;
+    updateHeroUi();
+    updateHpBars();
+    savePlayer();
+    renderShop();
+  });
+
+  function updateSidebarVisibility(mode){
+    if(mode === "battle"){
+      if(heroPanelEl) heroPanelEl.style.display = "";
+      if(inputPanelEl) inputPanelEl.style.display = "";
+      if(logPanelEl) logPanelEl.style.display = "";
+      const right = document.querySelector(".panel-right");
+      if(right) right.style.display = "flex";
+    }else{
+      if(heroPanelEl) heroPanelEl.style.display = "none";
+      if(inputPanelEl) inputPanelEl.style.display = "none";
+      if(logPanelEl) logPanelEl.style.display = "none";
+      const right = document.querySelector(".panel-right");
+      if(right) right.style.display = "none";
+    }
+  }
+
+  function switchTo(mode){
+    currentMode = mode;
+    battleScreenEl.style.display = "none";
+    campScreenEl.style.display = "none";
+    mapScreenEl.style.display = "none";
+    diaryScreenEl.style.display = "none";
+    historyScreenEl.style.display = "none";
+    inventoryScreenEl.style.display = "none";
+
+    // Logros (inyectados)
+    const achievementsScreenEl = document.getElementById("achievements-screen");
+    if(achievementsScreenEl) achievementsScreenEl.style.display = "none";
+    const navAchievementsBtn = document.getElementById("nav-achievements");
+
+    [navBattleBtn,navCampBtn,navMapBtn,navDiaryBtn,navHistoryBtn,navInventoryBtn].forEach(btn=>{
+      btn.classList.remove("nav-active");
+      btn.classList.add("secondary");
+    });
+
+    if(navAchievementsBtn){
+      navAchievementsBtn.classList.remove("nav-active");
+      navAchievementsBtn.classList.add("secondary");
+    }
+
+
+    if(mode === "battle"){
+      battleScreenEl.style.display = "flex";
+      navBattleBtn.classList.add("nav-active");
+      navBattleBtn.classList.remove("secondary");
+    }else if(mode === "camp"){
+      campScreenEl.style.display = "flex";
+      navCampBtn.classList.add("nav-active");
+      navCampBtn.classList.remove("secondary");
+      campHpInfo.textContent = `${player.hp} / ${player.maxHp}`;
+      campGoldInfo.textContent = player.gold;
+      renderShop();
+    }else if(mode === "map"){
+      mapScreenEl.style.display = "flex";
+      navMapBtn.classList.add("nav-active");
+      navMapBtn.classList.remove("secondary");
+      renderBigMap();
+    }else if(mode === "diary"){
+      diaryScreenEl.style.display = "flex";
+      navDiaryBtn.classList.add("nav-active");
+      navDiaryBtn.classList.remove("secondary");
+      renderDiary();
+    }else if(mode === "history"){
+      historyScreenEl.style.display = "flex";
+      navHistoryBtn.classList.add("nav-active");
+      navHistoryBtn.classList.remove("secondary");
+      renderHistory();
+    }else if(mode === "achievements"){
+      if(achievementsScreenEl) achievementsScreenEl.style.display = "flex";
+      if(navAchievementsBtn){
+        navAchievementsBtn.classList.add("nav-active");
+        navAchievementsBtn.classList.remove("secondary");
+      }
+      if(typeof renderAchievements === "function") renderAchievements();
+    }else if(mode === "inventory"){
+      inventoryScreenEl.style.display = "flex";
+      navInventoryBtn.classList.add("nav-active");
+      navInventoryBtn.classList.remove("secondary");
+      updateHeroUi();
+    }
+
+    updateSidebarVisibility(mode);
+
+    if(layoutEl){
+      if(mode === "battle") layoutEl.classList.remove("single-column");
+      else layoutEl.classList.add("single-column");
+    }
+  }
+
+  navBattleBtn.addEventListener("click", ()=>switchTo("battle"));
+  navCampBtn.addEventListener("click", ()=>switchTo("camp"));
+  navMapBtn.addEventListener("click", ()=>switchTo("map"));
+  navDiaryBtn.addEventListener("click", ()=>switchTo("diary"));
+  navHistoryBtn.addEventListener("click", ()=>switchTo("history"));
+  navInventoryBtn.addEventListener("click", ()=>switchTo("inventory"));
+
+  // ===== Frases =====
+  function pickNewPhrase(){
+    const monster = monsters[currentMonsterIndex];
+    const bank = monster.phrases;
+    if(!bank || bank.length === 0){
+      wrongPhraseEl.textContent = "El monstruo se ha quedado sin frases...";
+      return;
+    }
+    if(!usedPhraseIndicesByMonster[monster.id]){
+      usedPhraseIndicesByMonster[monster.id] = new Set();
+    }
+    const used = usedPhraseIndicesByMonster[monster.id];
+    let available = [];
+    for(let i=0;i<bank.length;i++){
+      if(!used.has(i)) available.push(i);
+    }
+    if(available.length === 0){
+      used.clear();
+      available = bank.map((_,i)=>i);
+    }
+    const idx = available[Math.floor(Math.random()*available.length)];
+    used.add(idx);
+    currentPhrase = bank[idx];
+    wrongPhraseEl.textContent = currentPhrase.wrong;
+    answerEl.value = "";
+    answerEl.focus();
+  }
+
+  function endRunWinAll(){
+    setLog(`<span class="good">¡Has purificado a todos los monstruos actuales!</span> La historia de las Montañas de la Concordancia llega a su fin... por ahora.`);
+  }
+
+  function loadMonster(){
+    if(currentMonsterIndex >= monsters.length){
+      endRunWinAll();
+      return;
+    }
+
+    let monster = monsters[currentMonsterIndex];
+
+    if(player.defeatedMonsters.includes(monster.id)){
+      currentMonsterIndex++;
+      player.currentMonsterIndex = currentMonsterIndex;
+      currentMonsterHp = 0;
+      savePlayer();
+      loadMonster();
+      return;
+    }
+
+    monster = monsters[currentMonsterIndex];
+
+    // Si vienes de "Continuar partida", mantenemos la vida restante del monstruo actual
+    const savedHp = Number(player && player.currentMonsterHp);
+    const savedId = player && player.currentMonsterId;
+
+    if(savedId === monster.id && Number.isFinite(savedHp) && savedHp > 0 && savedHp <= monster.maxHp){
+      currentMonsterHp = savedHp;
+    }else{
+      currentMonsterHp = monster.maxHp;
+    }
+
+    resetBattleState();
+
+    monsterNameEl.textContent = monster.name;
+    monsterTypeEl.textContent = `${monster.type} · Dificultad: ${monster.difficulty}`;
+
+    monsterSpriteImg.src = monster.sprite;
+    monsterSpriteImg.alt = monster.name;
+
+    updateHpBars();
+    renderBigMap();
+    pickNewPhrase();
+
+    setLog(`Nuevo enemigo: <strong>${monster.name}</strong>. <span class="hint">Tipo de errores: ${monster.type} · Dificultad: ${monster.difficulty}</span>. Corrige sus frases para purificarlo.`);
+  }
+
+  function handleDefeat(){
+    const monster = monsters[currentMonsterIndex];
+
+    const oldGold = player.gold;
+    const newGold = Math.floor(player.gold * (1 - GOLD_DEATH_PENALTY_RATIO));
+    const goldLost = oldGold - newGold;
+    player.gold = newGold;
+
+    const xpLoss = Math.round(player.xpToNext * XP_DEATH_PENALTY_RATIO);
+    const realXpLoss = Math.min(player.xp, xpLoss);
+    player.xp -= realXpLoss;
+
+    player.hp = Math.max(1, Math.round(player.maxHp * HP_AFTER_DEATH_RATIO));
+
+    currentMonsterHp = monster.maxHp;
+    resetBattleState();
+
+    updateHeroUi();
+    updateHpBars();
+    savePlayer();
+
+    setLog(`
+      <span class="bad">Has sido derrotado por ${monster.name}...</span><br><br>
+      Pierdes <strong>${goldLost} de oro</strong> y parte del progreso hacia el siguiente nivel
+      (<strong>-${realXpLoss} EXP</strong>), pero mantienes tu nivel, tus cartas y los monstruos ya purificados.<br><br>
+      <span class="hint">Te despiertas en el campamento, medio magullado pero con ganas de seguir aprendiendo.</span>
+    `);
+
+    campMessageEl.innerHTML = `<span class="hint">Has sido derrotado por ${monster.name}. Has perdido algo de oro y experiencia, pero puedes descansar y volver a intentarlo.</span>`;
+    switchTo("camp");
+  }
+
+  function resolveTurn(){
+    if(player.hp <= 0) return;
+
+    const answerRaw = answerEl.value;
+    if(!answerRaw.trim()){
+      setLog(`<span class="bad">No has escrito nada.</span> El monstruo se ríe. Intenta reescribir la frase completamente corregida.`);
+      return;
+    }
+
+    const monster = monsters[currentMonsterIndex];
+    const correctNorm = normalize(currentPhrase.correct);
+    const givenNorm = normalize(answerRaw);
+    const dist = levenshtein(correctNorm, givenNorm);
+    const length = Math.max(correctNorm.length,1);
+    let ratio = dist / length;
+
+    if(battleState.autoCorrectBoost){
+      ratio *= 0.5;
+      battleState.autoCorrectBoost = false;
+    }
+
+    let playerDamage = 0;
+    let monsterDamage = 0;
+    let xpGain = 0;
+    let feedback = "";
+
+    if(dist === 0){
+      playerDamage = 40;
+      monsterDamage = 0;
+      xpGain = 30;
+      feedback = `<span class="good">¡Crítico ortográfico!</span> Has clavado la frase. Súper ataque y mucha experiencia.`;
+    }else if(ratio <= 0.15){
+      playerDamage = 25;
+      monsterDamage = 10;
+      xpGain = 18;
+      feedback = `<span class="good">Bastante bien.</span> Hay detalles mejorables, pero tu ataque es sólido. Recibes un ligero contraataque.`;
+    }else{
+      playerDamage = 7;
+      monsterDamage = 25;
+      xpGain = 8;
+      feedback = `<span class="bad">El monstruo aprovecha tus errores.</span> Tu ataque apenas le roza y su frase mal escrita te hiere la vista.`;
+    }
+
+    // Color respuesta
+    answerEl.classList.remove("answer-good","answer-medium","answer-bad");
+    if(dist === 0) answerEl.classList.add("answer-good");
+    else if(ratio <= 0.15) answerEl.classList.add("answer-medium");
+    else answerEl.classList.add("answer-bad");
+
+    // Aura
+    heroVisualEl.classList.remove("hero-aura");
+    if(dist === 0 || ratio <= 0.15){
+      heroVisualEl.classList.add("hero-aura");
+      setTimeout(()=> heroVisualEl.classList.remove("hero-aura"), 450);
+    }
+
+    if(battleState.poweredAttackTurns > 0 && playerDamage > 0){
+      playerDamage = Math.round(playerDamage * 1.5);
+      feedback += `<br><span class="good">Tu ira ortográfica potencia el ataque.</span>`;
+      battleState.poweredAttackTurns--;
+    }
+
+    if(battleState.poisonTurns > 0 && playerDamage > 0){
+      const extraPoison = 8;
+      playerDamage += extraPoison;
+      feedback += `<br><span class="good">La tinta corrosiva sigue actuando (+${extraPoison} de daño).</span>`;
+      battleState.poisonTurns--;
+    }
+
+    if(battleState.perfectTildeBonus && dist === 0){
+      const bonus = Math.round(playerDamage * 0.5);
+      playerDamage += bonus;
+      feedback += `<br><span class="good">El Expansor de tildes potencia tu ataque perfecto (+${bonus} de daño).</span>`;
+      battleState.perfectTildeBonus = false;
+    }
+
+    if(battleState.damageBoostTurns > 0){
+      playerDamage = Math.round(playerDamage * 1.6);
+      battleState.damageBoostTurns--;
+      feedback += `<br><span class="good">La Corona potencia tu daño.</span>`;
+    }
+
+    monsterDamage = Math.round(monsterDamage * (monster.damageMultiplier || 1));
+    if(monster.special && ratio > 0.3 && monster.special.type === "extraOnBigError"){
+      monsterDamage += monster.special.extra;
+      feedback += `<br><span class="bad">Su poder especial <strong>${monster.special.name}</strong> aumenta el daño.</span>`;
+    }
+
+    if(battleState.weakenTurns > 0 && monsterDamage > 0){
+      monsterDamage = Math.round(monsterDamage * 0.6);
+      feedback += `<br><span class="good">La Poción debilitante hace efecto.</span>`;
+      battleState.weakenTurns--;
+    }
+
+    if(battleState.freezeTurns > 0 && monsterDamage > 0){
+      monsterDamage = 0;
+      feedback += `<br><span class="good">El monstruo está congelado: no consigue dañarte.</span>`;
+      battleState.freezeTurns--;
+    }else{
+      if(battleState.dodgeTurns > 0 && monsterDamage > 0){
+        monsterDamage = 0;
+        feedback += `<br><span class="good">Esquivas por completo el ataque.</span>`;
+        battleState.dodgeTurns--;
+      }
+      if(battleState.shieldTurns > 0 && monsterDamage > 0){
+        monsterDamage = Math.round(monsterDamage * 0.5);
+        feedback += `<br><span class="good">Tu escudo reduce el daño recibido.</span>`;
+        battleState.shieldTurns--;
+      }
+    }
+
+    // Animaciones ataque
+    heroVisualEl.classList.remove("hero-attacking");
+    void heroVisualEl.offsetWidth;
+    heroVisualEl.classList.add("hero-attacking");
+    setTimeout(()=> heroVisualEl.classList.remove("hero-attacking"), 400);
+
+    if(monsterDamage > 0){
+      setTimeout(()=>{
+        monsterVisualEl.classList.remove("monster-attacking");
+        void monsterVisualEl.offsetWidth;
+        monsterVisualEl.classList.add("monster-attacking");
+        setTimeout(()=> monsterVisualEl.classList.remove("monster-attacking"), 400);
+      }, 150);
+    }
+
+    // Flotantes + shakes
+    if(playerDamage > 0){
+      showDamage(monsterVisualEl, playerDamage, "damage-player");
+      monsterVisualEl.classList.add("hit-flash");
+      setTimeout(()=> monsterVisualEl.classList.remove("hit-flash"), 250);
+      if(monsterHpBarWrap){ monsterHpBarWrap.classList.add("shake"); setTimeout(()=>monsterHpBarWrap.classList.remove("shake"), 300); }
+    }
+    if(monsterDamage > 0){
+      setTimeout(()=>{
+        showDamage(heroVisualEl, monsterDamage, "damage-monster");
+        if(heroHpBarWrap){ heroHpBarWrap.classList.add("shake"); setTimeout(()=>heroHpBarWrap.classList.remove("shake"), 300); }
+      }, 180);
+    }
+
+    // Aplicar daño
+    currentMonsterHp = Math.max(0, currentMonsterHp - playerDamage);
+    player.hp = Math.max(0, player.hp - monsterDamage);
+
+    if(playerDamage >= 20){
+      monsterSpriteImg.classList.add("hit-shake");
+      setTimeout(()=>monsterSpriteImg.classList.remove("hit-shake"), 250);
+    }
+    if(monsterDamage > 0){
+      heroSpriteImg.classList.add("hero-damaged");
+      setTimeout(()=>heroSpriteImg.classList.remove("hero-damaged"), 300);
+    }
+
+    // Carga habilidad
+    let abilityGain = 0;
+    if(dist === 0) abilityGain = 40;
+    else if(ratio <= 0.15) abilityGain = 25;
+    else abilityGain = 15;
+    player.abilityCharge = Math.min(100, (player.abilityCharge || 0) + abilityGain);
+
+    updateHpBars();
+    updateAbilityUi();
+    const subidas = addXp(xpGain);
+
+    let html = `${feedback}<br><br>`;
+    html += `<span class="hint">Versión correcta:</span> <code>${currentPhrase.correct}</code><br>`;
+    html += `<span class="hint">Tu versión:</span> <code>${answerRaw}</code><br><br>`;
+    html += `<span class="hint">Daño al monstruo:</span> ${playerDamage} · <span class="hint">Daño al héroe:</span> ${monsterDamage}<br>`;
+    html += `<span class="hint">EXP ganada:</span> +${xpGain}`;
+    if(subidas > 0) html += `<br><span class="good">¡Has subido ${subidas} nivel(es)!</span>`;
+
+    if(!Array.isArray(player.diary)) player.diary = [];
+    player.diary.push({
+      timestamp: new Date().toLocaleString("es-ES"),
+      monster: monster.name,
+      wrongPhrase: currentPhrase.wrong,
+      correctPhrase: currentPhrase.correct,
+      studentAnswer: answerRaw,
+      isPerfect: dist === 0,
+      playerDamage,
+      monsterDamage
+    });
+
+    setLog(html);
+    savePlayer();
+
+    if(player.hp <= 0){
+      handleDefeat();
+      return;
+    }
+
+    // ¿Monstruo derrotado?
+    if(currentMonsterHp <= 0){
+      const m = monsters[currentMonsterIndex];
+      player.monstersDefeated++;
+      addGold(m.goldReward);
+      addCard(m.cardReward);
+      registerMonsterDefeated(m.id);
+
+      let rewardText = `<br><br><span class="good">¡Has derrotado a ${m.name}!</span><br>`;
+      rewardText += `<span class="hint">Recompensas base:</span> +${m.xpReward} EXP adicionales, +${m.goldReward} oro y <em>${m.cardReward}</em>`;
+
+      const uniqueItemName = MONSTER_UNIQUE_ITEMS[m.id];
+      if(uniqueItemName){
+        addItem(uniqueItemName);
+        rewardText += `<br><span class="good">Objeto único:</span> obtienes <strong>${uniqueItemName}</strong>.`;
+      }
+
+      const roll = Math.random()*100;
+      let extraItemName = null;
+      if(roll < 70) extraItemName = COMMON_ITEMS[Math.floor(Math.random()*COMMON_ITEMS.length)];
+      else if(roll < 90) extraItemName = RARE_ITEMS[Math.floor(Math.random()*RARE_ITEMS.length)];
+      else if(roll < 95) extraItemName = LEGENDARY_ITEMS[Math.floor(Math.random()*LEGENDARY_ITEMS.length)];
+
+      if(extraItemName){
+        addItem(extraItemName);
+        rewardText += `<br><span class="good">Botín adicional:</span> encuentras <strong>${extraItemName}</strong>.`;
+      }
+
+      addXp(m.xpReward);
+      setLog(html + rewardText);
+
+      currentMonsterIndex++;
+      player.currentMonsterIndex = currentMonsterIndex;
+      currentMonsterHp = 0;
+      savePlayer();
+      renderBigMap();
+
+      if(currentMonsterIndex >= monsters.length){
+        endRunWinAll();
+      }else{
+        setTimeout(()=> loadMonster(), 900);
+      }
+    }else{
+      setTimeout(()=>{
+        pickNewPhrase();
+        setLog(`Nueva frase del mismo monstruo. Corrige con precisión para seguir dañándolo.`);
+      }, 1200);
+    }
+  }
+
+  attackBtn.addEventListener("click", resolveTurn);
+
+  answerEl.addEventListener("keydown",(e)=>{
+    if(e.key === "Enter" && !e.ctrlKey && !e.shiftKey){
+      e.preventDefault();
+      resolveTurn();
+    }
+  });
+
+  // Usar objeto (desplegable)
+  useItemBtn.addEventListener("click", ()=>{
+    const name = battleItemSelect.value;
+    if(!name){
+      setLog(`<span class="hint">Elige un objeto en “Usar objeto…” y pulsa “Usar”.</span>`);
+      return;
+    }
+    useItem(name);
+    battleItemSelect.value = "";
+  });
+
+  // Habilidad especial
+  function useAbility(){
+    if(player.abilityCharge < 100){
+      setLog(`<span class="hint">Tu barra de habilidad aún no está llena (Habilidad ${Math.round(player.abilityCharge)} / 100).</span> Corrige más frases para cargarla.`);
+      return;
+    }
+
+    const avatarId = player.avatarId || "mago";
+    let msg = "";
+
+    if(avatarId === "mago"){
+      battleState.freezeTurns = 2;
+      msg = "Invocas una tormenta de tildes heladas: durante los próximos dos turnos el monstruo no podrá hacerte daño.";
+    }else if(avatarId === "guerrero"){
+      battleState.poweredAttackTurns = 2;
+      msg = "Te envuelve la Ira ortográfica: tus dos próximos ataques harán bastante más daño.";
+    }else if(avatarId === "ninja"){
+      battleState.dodgeTurns = 2;
+      msg = "Te vuelves casi intangible: esquivarás el daño de los dos próximos ataques del monstruo.";
+    }else if(avatarId === "robot"){
+      battleState.autoCorrectBoost = true;
+      msg = "Activas el autocorrector avanzado: en tu próximo ataque el sistema será más indulgente con tus errores.";
+    }
+
+    player.abilityCharge = 0;
+    updateAbilityUi();
+    savePlayer();
+    setLog(`<span class="good">¡Habilidad especial activada!</span> ${msg}`);
+  }
+
+  abilityBtn.addEventListener("click", useAbility);
+
+  // ===== Start screen =====
+  let selectedAvatarId = "mago";
+
+  function updateHeroDetails(){
+    const data = AVATARS[selectedAvatarId] || AVATARS.mago;
+    const attackStars = "★".repeat(data.attack);
+    const defenseStars = "★".repeat(data.defense);
+
+    heroDetailsBody.innerHTML = `
+      <div><strong>${data.title}</strong></div>
+      <div class="hero-details-stats">
+        <span class="hero-details-stat">Ataque: ${attackStars}</span>
+        <span class="hero-details-stat">Defensa: ${defenseStars}</span>
+        <span class="hero-details-stat">Dificultad: ${data.difficulty}</span>
+      </div>
+      <div class="hero-details-ability">
+        <strong>Habilidad especial:</strong> ${data.abilityName}<br>
+        <span>${data.abilityDesc}</span>
+      </div>
+    `;
+  }
+
+  function updateAvatarSelection(){
+    const options = avatarGridEl.querySelectorAll(".avatar-option");
+    options.forEach(opt=>{
+      opt.classList.toggle("selected", opt.dataset.id === selectedAvatarId);
+    });
+  }
+
+  avatarGridEl.addEventListener("click",(e)=>{
+    const option = e.target.closest(".avatar-option");
+    if(!option) return;
+    selectedAvatarId = option.dataset.id;
+    updateAvatarSelection();
+    updateHeroDetails();
+  });
+
+  updateAvatarSelection();
+  updateHeroDetails();
+
+  function initStartScreen(){
+    // Mostrar splash SIEMPRE al arrancar
+    const saved = loadSavedPlayer();
+
+    // Ocultar pantallas del juego hasta que elija
+    if(startScreen) startScreen.style.display = "none";
+    if(splashScreen) splashScreen.style.display = "flex";
+
+    // Helpers de selección de héroe
+    const HERO_PRESETS = {
+      mago: { label:"Mago de la tilde",  meta:"Especialista en acentos. Habilidad: EXPANSOR DE TILDES.", perks:["+precisión con tildes","pistas más claras"] },
+      guerrero:{ label:"Guerrero de la coma", meta:"Tanque disciplinado. Habilidad: ESCUDO GRAMATICAL.", perks:["+defensa temporal","aguanta más"] },
+      ninja:{ label:"Ninja del acento", meta:"Golpe rápido. Habilidad: PLUMA MAESTRA.", perks:["+daño puntual","racha fácil"] },
+      robot:{ label:"Corrector mecánico", meta:"Control y utilidades. Habilidad: AUTOCORRECTOR.", perks:["+ayuda al corregir","mejor contra errores repetidos"] }
+    };
+
+    function renderHeroDetails(id){
+      const h = HERO_PRESETS[id];
+      if(!heroDetailsBody) return;
+      if(!h){
+        heroDetailsBody.textContent = "Elige un héroe para ver sus características.";
+        return;
+      }
+      heroDetailsBody.innerHTML = `
+        <div style="font-weight:900; margin-bottom:6px;">${h.label}</div>
+        <div style="opacity:.9; margin-bottom:8px;">${h.meta}</div>
+        <ul style="margin:0; padding-left:18px; opacity:.85;">
+          ${h.perks.map(p=>`<li>${p}</li>`).join("")}
+        </ul>
+      `;
+    }
+
+    function bindAvatarGrid(){
+      if(!avatarGridEl) return;
+      const options = Array.from(avatarGridEl.querySelectorAll(".avatar-option"));
+      if(!options.length) return;
+
+      // Selección por defecto
+      if(!player || !player.avatarId){
+        const first = options[0];
+        const id = first?.dataset?.id || "mago";
+        player = player || {};
+        player.avatarId = id;
+      }
+      options.forEach(opt=>{
+        opt.onclick = ()=>{
+          options.forEach(o=>o.classList.remove("selected"));
+          opt.classList.add("selected");
+          const id = opt.dataset.id;
+          // guardamos provisionalmente en player.avatarId mientras estamos en start-screen
+          if(!player) player = {};
+          player.avatarId = id;
+          renderHeroDetails(id);
+        };
+      });
+
+      // Marcar visualmente el seleccionado inicial
+      const initial = player?.avatarId || "mago";
+      const sel = options.find(o=>o.dataset.id===initial) || options[0];
+      if(sel){
+        options.forEach(o=>o.classList.remove("selected"));
+        sel.classList.add("selected");
+        renderHeroDetails(sel.dataset.id);
+      }
+    }
+
+    function startNewGame(){
+      const name = (playerNameInput?.value || "").trim();
+      const avatarId = (player && player.avatarId) ? player.avatarId : "mago";
+
+      if(!name){
+        try{ if(typeof showToast==="function") showToast("Ponle un nombre a tu héroe 🙂"); }catch(e){}
+        playerNameInput?.focus?.();
+        return;
+      }
+
+      // Crear partida nueva
+      player = {
+        name,
+        avatarId,
+        level:1,
+        xp:0,
+        hp:100,
+        maxHp:100,
+        gold:0,
+        abilityCharge:0,
+        items:[],
+        cards:[],
+        diary:[],
+        defeatedMonsters:[],
+        // progreso de monstruo actual: vacío para que empiece al 100%
+        currentMonsterIndex:0,
+        currentMonsterId:null,
+        currentMonsterHp:null,
+        achievements: player.achievements || undefined
+      };
+
+      // limpiar persistencia y guardar nueva
+      try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+      currentMonsterIndex = 0;
+      currentMonsterHp = 0;
+      resetBattleState();
+
+      savePlayer();
+
+      if(startScreen) startScreen.style.display = "none";
+      if(splashScreen) splashScreen.style.display = "none";
+
+      updateHeroUi();
+      renderBigMap();
+      loadMonster();
+      renderShop();
+      updateHpBars();
+      switchTo("battle");
+    }
+
+    // Configurar botones del splash
+    if(splashStartBtn){
+      splashStartBtn.onclick = ()=>{
+        // Empezar juego: ir a nombre + héroe
+        if(splashScreen) splashScreen.style.display = "none";
+        if(startScreen) startScreen.style.display = "flex";
+        if(continueBlock) continueBlock.style.display = "none";
+        bindAvatarGrid();
+        try{ playerNameInput?.focus?.(); }catch(e){}
+      };
+    }
+
+    if(splashContinueBtn){
+      if(saved){
+        splashContinueBtn.disabled = false;
+        splashContinueBtn.classList.remove("secondary");
+        splashContinueBtn.classList.add("primary");
+        if(splashNote) splashNote.textContent = "Partida guardada encontrada. ¡Listo para continuar!";
+        splashContinueBtn.onclick = ()=>{
+          // Continuar: cargar guardado y saltar a batalla
+          player = saved;
+          if(splashScreen) splashScreen.style.display = "none";
+          if(startScreen) startScreen.style.display = "none";
+          currentMonsterIndex = player.currentMonsterIndex || 0;
+          if(player.hp <= 0) player.hp = player.maxHp;
+
+          updateHeroUi();
+          renderBigMap();
+          loadMonster();
+          renderShop();
+          updateHpBars();
+          switchTo("battle");
+        };
+      } else {
+        splashContinueBtn.disabled = true;
+        splashContinueBtn.classList.add("secondary");
+        if(splashNote) splashNote.textContent = "No hay partida guardada todavía.";
+      }
+    }
+
+    // Botones originales de start-screen (por si los usas)
+    if(saved){
+      continueBlock.style.display = "block";
+      continueBtn.onclick = ()=>{
+        if(splashScreen) splashScreen.style.display = "none";
+        player = saved;
+        startScreen.style.display = "none";
+        currentMonsterIndex = player.currentMonsterIndex || 0;
+        if(player.hp <= 0) player.hp = player.maxHp;
+
+        updateHeroUi();
+        renderBigMap();
+        loadMonster();
+        renderShop();
+        updateHpBars();
+        switchTo("battle");
+      };
+      // "Empezar nueva" desde bloque de guardado
+      if(newFromSavedBtn){
+        newFromSavedBtn.onclick = ()=>{
+          try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+          if(startScreen) startScreen.style.display = "flex";
+          if(continueBlock) continueBlock.style.display = "none";
+          if(playerNameInput) playerNameInput.value = "";
+          // preparar selección
+          player = { avatarId:"mago" };
+          bindAvatarGrid();
+          try{ playerNameInput?.focus?.(); }catch(e){}
+        };
+      }
+    }
+
+    // Empezar aventura (botón de la pantalla de inicio)
+    if(startNewBtn){
+      startNewBtn.onclick = startNewGame;
+    }
+
+    // Si el usuario llega aquí sin splash (por cualquier razón), bind igual
+    bindAvatarGrid();
+  }
+
+  initStartScreen();
+  
+  /* ===========================
+   LOGROS (AUTO-INJECT) v1
+   - Crea pestaña + pantalla + estilos
+   - Render: desbloqueados / bloqueados / ocultos + barras de progreso
+   - Hook automático a funciones del juego
+   =========================== */
+
+(function(){
+  // ---------- Estilos (inyectados) ----------
+  function injectAchievementsCSS(){
+    if(document.getElementById("ach-css")) return;
+    const css = `
+/* ===== LOGROS ===== */
+#achievements-screen{
+  display:none;
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.55);
+  backdrop-filter: blur(4px);
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+}
+#achievements-card{
+  width:min(980px, 96vw);
+  max-height:92vh;
+  background:linear-gradient(180deg, rgba(17,24,39,.98), rgba(2,6,23,.98));
+  border:2px solid rgba(255,255,255,.12);
+  border-radius:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,.55);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+#achievements-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 16px;
+  border-bottom:1px solid rgba(255,255,255,.10);
+}
+#achievements-head h2{ margin:0; font-size:18px; letter-spacing:.2px; }
+#achievements-close{
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  border-radius:12px;
+  padding:8px 10px;
+  cursor:pointer;
+}
+#achievements-body{ padding:14px 16px 16px; overflow:auto; }
+#ach-summary{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+  color:rgba(255,255,255,.9);
+}
+.ach-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:12px;
+}
+@media (max-width: 900px){ .ach-grid{grid-template-columns: repeat(2, minmax(0, 1fr));} }
+@media (max-width: 620px){ .ach-grid{grid-template-columns: 1fr;} }
+
+.ach-card{
+  position:relative;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.04);
+  padding:12px;
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  min-height:88px;
+}
+.ach-card.unlocked{
+  border-color: rgba(34,197,94,.35);
+  background: rgba(34,197,94,.08);
+}
+.ach-card.locked{ opacity:.82; }
+.ach-card.hidden{ opacity:.55; filter:saturate(.6); }
+.ach-icon{
+  width:44px; height:44px;
+  border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  font-size:22px;
+  flex:0 0 auto;
+}
+.ach-title{ font-weight:800; margin:0; font-size:14px; }
+.ach-desc{ margin:2px 0 0; font-size:12px; color: rgba(255,255,255,.82); line-height:1.25; }
+.ach-meta{ margin-top:6px; font-size:11px; color: rgba(255,255,255,.65); }
+.ach-progress{
+  margin-top:8px;
+  height:8px;
+  border-radius:999px;
+  background: rgba(255,255,255,.10);
+  overflow:hidden;
+}
+.ach-progress > div{ height:100%; width:0%; background: rgba(251,191,36,.95); }
+.ach-cats{ display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 12px; }
+.ach-chip{
+  border:1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.05);
+  padding:6px 10px;
+  border-radius:999px;
+  cursor:pointer;
+  font-size:12px;
+  color: rgba(255,255,255,.85);
+}
+.ach-chip.active{ border-color: rgba(251,191,36,.55); background: rgba(251,191,36,.10); color:#fff; }
+`;
+    const style=document.createElement("style");
+    style.id="ach-css";
+    style.textContent=css;
+    document.head.appendChild(style);
+  }
+
+  // ---------- UI ----------
+  function ensureAchievementsUI(){
+    injectAchievementsCSS();
+    if(document.getElementById("achievements-screen")) return;
+
+    const screen=document.createElement("div");
+    screen.id="achievements-screen";
+    screen.innerHTML = `
+      <div id="achievements-card">
+        <div id="achievements-head">
+          <h2>🏆 Logros</h2>
+          <button id="achievements-close">Cerrar</button>
+        </div>
+        <div id="achievements-body">
+          <div id="ach-summary"></div>
+          <div class="ach-cats" id="ach-cats"></div>
+          <div class="ach-grid" id="ach-grid"></div>
+        </div>
+      </div>
+    `;
+    (document.querySelector(".layout") || document.body).appendChild(screen);
+
+    screen.addEventListener("click",(e)=>{ if(e.target === screen) hideAchievements(); });
+    screen.querySelector("#achievements-close").addEventListener("click", hideAchievements);
+  }
+
+  function showAchievements(){ ensureAchievementsUI(); const s=document.getElementById("achievements-screen"); if(!s) return; s.style.display="flex"; renderAchievements(); }
+  function hideAchievements(){
+    const s=document.getElementById("achievements-screen");
+    if(s) s.style.display="none";
+    const nav=document.getElementById("nav-achievements");
+    if(nav){ nav.classList.remove("nav-active"); nav.classList.add("secondary"); }
+    // Volver a la última pestaña "real" (por defecto, batalla)
+    try{
+      if(typeof switchTo === "function") switchTo(lastNonAchMode || "battle");
+    }catch(e){}
+  }
+
+
+  // ---------- Datos ----------
+  const ACHIEVEMENTS = [
+  { id:"a001", title:"Primer trazo", desc:"Completa tu primer turno de combate.", icon:"🩸", type:"event", hidden:false, event:"turn_done" },
+  { id:"a002", title:"Sin miedo a la tinta", desc:"Derrota a tu primer monstruo.", icon:"🏆", type:"count", hidden:false, key:"wins", target:1 },
+  { id:"a003", title:"Aprendiz aplicado", desc:"Consigue 5 correcciones correctas.", icon:"📝", type:"count", hidden:false, key:"correctTurns", target:5 },
+  { id:"a004", title:"Guerrero ortográfico", desc:"Gana 10 combates.", icon:"⚔️", type:"count", hidden:false, key:"wins", target:10 },
+  { id:"a005", title:"Nivel arriba", desc:"Sube al nivel 2.", icon:"📈", type:"meta", hidden:false, check:"playerLevel>=2" },
+  { id:"a006", title:"Constante", desc:"Juega en 3 días distintos.", icon:"📅", type:"count", hidden:false, key:"daysPlayed", target:3 },
+  { id:"a007", title:"No era tan difícil", desc:"Logra 5 aciertos seguidos.", icon:"🔥", type:"count", hidden:false, key:"correctStreak", target:5 },
+  { id:"a008", title:"Manos a la obra", desc:"Usa tu primer objeto.", icon:"🧪", type:"count", hidden:false, key:"itemsUsed", target:1 },
+  { id:"a009", title:"Explorador", desc:"Visita todas las pestañas del juego.", icon:"🧭", type:"meta", hidden:false, check:"tabsAll" },
+  { id:"a010", title:"Aprendiz serio", desc:"Completa 20 turnos.", icon:"🎯", type:"count", hidden:false, key:"turns", target:20 },
+  { id:"a011", title:"Crítico ortográfico", desc:"Haz tu primera frase perfecta (sin distancia).", icon:"✨", type:"count", hidden:false, key:"perfectTurns", target:1 },
+  { id:"a012", title:"Racha de 3", desc:"Consigue 3 perfectas seguidas.", icon:"🔥", type:"count", hidden:false, key:"perfectStreak", target:3 },
+  { id:"a013", title:"Racha de 5", desc:"Consigue 5 perfectas seguidas.", icon:"🌟", type:"count", hidden:false, key:"perfectStreak", target:5 },
+  { id:"a014", title:"Racha legendaria", desc:"Consigue 10 perfectas seguidas.", icon:"🌋", type:"count", hidden:true, key:"perfectStreak", target:10 },
+  { id:"a015", title:"Ojo clínico", desc:"Supera 95% de similitud en una frase no perfecta.", icon:"👁️", type:"event", hidden:false, event:"high_similarity" },
+  { id:"a016", title:"Casi perfecto", desc:"Supera 98% de similitud en una frase no perfecta.", icon:"🪄", type:"event", hidden:true, event:"very_high_similarity" },
+  { id:"a017", title:"Cero comas fuera", desc:"Frase perfecta con al menos una coma.", icon:"🧷", type:"event", hidden:false, event:"perfect_with_comma" },
+  { id:"a018", title:"Tildedefensor", desc:"Acumula 10 perfectas.", icon:"🔤", type:"count", hidden:false, key:"perfectTurns", target:10 },
+  { id:"a019", title:"Ortografía pura", desc:"Acumula 25 perfectas.", icon:"🏅", type:"count", hidden:false, key:"perfectTurns", target:25 },
+  { id:"a020", title:"RAE en la sombra", desc:"Acumula 50 perfectas.", icon:"📚", type:"count", hidden:true, key:"perfectTurns", target:50 },
+  { id:"a021", title:"Al límite", desc:"Gana un combate con 1–5 de vida.", icon:"🩹", type:"event", hidden:false, event:"win_low_hp" },
+  { id:"a022", title:"Remontada épica", desc:"Gana tras estar por debajo del 25% de vida.", icon:"🎭", type:"event", hidden:false, event:"win_comeback" },
+  { id:"a023", title:"Sin ayudas", desc:"Derrota un monstruo sin usar objetos en ese combate.", icon:"🗡️", type:"event", hidden:false, event:"win_no_items" },
+  { id:"a024", title:"Sin pistas", desc:"Derrota un monstruo sin pedir pistas en ese combate.", icon:"🕶️", type:"event", hidden:false, event:"win_no_hints" },
+  { id:"a025", title:"Esto no me mata", desc:"Sobrevive a 3 turnos seguidos con <30% vida.", icon:"🧱", type:"event", hidden:false, event:"survive_low_hp_3" },
+  { id:"a026", title:"Veterano", desc:"Gana 25 combates.", icon:"🛡️", type:"count", hidden:false, key:"wins", target:25 },
+  { id:"a027", title:"Centinela", desc:"Gana 50 combates.", icon:"🏰", type:"count", hidden:true, key:"wins", target:50 },
+  { id:"a028", title:"No me rindo", desc:"Pierde 3 veces en total.", icon:"💀", type:"count", hidden:true, key:"deaths", target:3 },
+  { id:"a029", title:"A lo bruto", desc:"Gana un turno aunque tu corrección no sea perfecta.", icon:"😤", type:"event", hidden:false, event:"nonperfect_success" },
+  { id:"a030", title:"Speedrunner", desc:"Completa 3 victorias en una sola sesión.", icon:"⚡", type:"event", hidden:false, event:"three_wins_session" },
+  { id:"a031", title:"Cliente habitual", desc:"Compra 1 objeto en la tienda.", icon:"🛒", type:"count", hidden:false, key:"shopBuys", target:1 },
+  { id:"a032", title:"Comprador compulsivo", desc:"Compra 5 objetos.", icon:"🧾", type:"count", hidden:false, key:"shopBuys", target:5 },
+  { id:"a033", title:"Adicto a la tienda", desc:"Compra 10 objetos.", icon:"🧻", type:"count", hidden:true, key:"shopBuys", target:10 },
+  { id:"a034", title:"Bolsillos con tinta", desc:"Acumula 50 de oro.", icon:"💰", type:"count", hidden:false, key:"maxGoldEver", target:50 },
+  { id:"a035", title:"Magnate ortográfico", desc:"Acumula 150 de oro.", icon:"🏦", type:"count", hidden:true, key:"maxGoldEver", target:150 },
+  { id:"a036", title:"Coleccionista", desc:"Consigue tu primera carta.", icon:"🃏", type:"count", hidden:false, key:"cardsNow", target:1 },
+  { id:"a037", title:"Archivista", desc:"Consigue 5 cartas.", icon:"📚", type:"count", hidden:true, key:"cardsNow", target:5 },
+  { id:"a038", title:"Museo personal", desc:"Consigue 10 cartas.", icon:"🗃️", type:"count", hidden:true, key:"cardsNow", target:10 },
+  { id:"a039", title:"Bolsa de pociones", desc:"Ten 5 objetos en inventario a la vez.", icon:"🎒", type:"count", hidden:false, key:"maxItemsEver", target:5 },
+  { id:"a040", title:"Arsenal escolar", desc:"Ten 10 objetos en inventario a la vez.", icon:"🧰", type:"count", hidden:true, key:"maxItemsEver", target:10 },
+  { id:"a041", title:"Memoria escrita", desc:"Genera tu primera entrada en el diario.", icon:"📓", type:"count", hidden:false, key:"diaryEntries", target:1 },
+  { id:"a042", title:"Buen hábito", desc:"10 entradas en el diario.", icon:"🗒️", type:"count", hidden:false, key:"diaryEntries", target:10 },
+  { id:"a043", title:"Crónica de guerra", desc:"25 entradas en el diario.", icon:"📜", type:"count", hidden:true, key:"diaryEntries", target:25 },
+  { id:"a044", title:"Archivo viviente", desc:"50 entradas en el diario.", icon:"🧠", type:"count", hidden:true, key:"diaryEntries", target:50 },
+  { id:"a045", title:"Historiador", desc:"Abre la pestaña Historia 5 veces.", icon:"🕰️", type:"count", hidden:false, key:"historyVisits", target:5 },
+  { id:"a046", title:"Metódico", desc:"Abre Reglas 10 veces.", icon:"📘", type:"count", hidden:false, key:"rulesVisits", target:10 },
+  { id:"a047", title:"Aprendo de mis errores", desc:"Corrige dos veces seguidas el mismo tipo de monstruo.", icon:"🔁", type:"event", hidden:false, event:"same_monster_twice" },
+  { id:"a048", title:"Estudioso", desc:"Juega 15 minutos en una sesión.", icon:"⏳", type:"event", hidden:false, event:"play_15m" },
+  { id:"a049", title:"Aplicado", desc:"Juega 30 minutos en una sesión.", icon:"⌛", type:"event", hidden:false, event:"play_30m" },
+  { id:"a050", title:"Maratón", desc:"Juega 60 minutos en una sesión.", icon:"🏃", type:"event", hidden:true, event:"play_60m" },
+  { id:"a051", title:"Cartógrafo", desc:"Entra en Mapa 5 veces.", icon:"🗺️", type:"count", hidden:false, key:"mapVisits", target:5 },
+  { id:"a052", title:"Campista", desc:"Entra en Campamento 5 veces.", icon:"🏕️", type:"count", hidden:false, key:"campVisits", target:5 },
+  { id:"a053", title:"Diario al día", desc:"Entra en Diario 10 veces.", icon:"📔", type:"count", hidden:false, key:"diaryVisits", target:10 },
+  { id:"a054", title:"Coleccionista de pantallas", desc:"Visita 50 pantallas en total.", icon:"🧩", type:"count", hidden:false, key:"screenVisits", target:50 },
+  { id:"a055", title:"Rutina", desc:"Juega 5 días distintos.", icon:"📆", type:"count", hidden:true, key:"daysPlayed", target:5 },
+  { id:"a056", title:"¡Habilidad desatada!", desc:"Usa tu habilidad por primera vez.", icon:"⚡", type:"count", hidden:false, key:"abilitiesUsed", target:1 },
+  { id:"a057", title:"Control de energía", desc:"Usa 10 habilidades.", icon:"🔋", type:"count", hidden:true, key:"abilitiesUsed", target:10 },
+  { id:"a058", title:"Química ortográfica", desc:"Usa 10 objetos.", icon:"🧫", type:"count", hidden:false, key:"itemsUsed", target:10 },
+  { id:"a059", title:"Farmacia de aula", desc:"Usa 25 objetos.", icon:"🧴", type:"count", hidden:true, key:"itemsUsed", target:25 },
+  { id:"a060", title:"Pide pista, pero con estilo", desc:"Pide 10 pistas.", icon:"🔎", type:"count", hidden:false, key:"hintsUsed", target:10 },
+  { id:"a061", title:"Turno 50", desc:"Completa 50 turnos.", icon:"🎲", type:"count", hidden:false, key:"turns", target:50 },
+  { id:"a062", title:"Turno 100", desc:"Completa 100 turnos.", icon:"🎮", type:"count", hidden:true, key:"turns", target:100 },
+  { id:"a063", title:"Precisión sostenida", desc:"20 turnos correctos seguidos.", icon:"🧊", type:"count", hidden:true, key:"correctStreak", target:20 },
+  { id:"a064", title:"Señor de la Concordancia", desc:"Derrota 5 monstruos distintos.", icon:"⛰️", type:"count", hidden:false, key:"uniqueMonstersDefeated", target:5 },
+  { id:"a065", title:"Exterminador", desc:"Derrota 10 monstruos distintos.", icon:"👾", type:"count", hidden:true, key:"uniqueMonstersDefeated", target:10 },
+  { id:"a066", title:"Sobrevive al lunes", desc:"Juega un lunes.", icon:"🫠", type:"meta", hidden:false, check:"playedOnMonday", reward:{title:"Superviviente del Lunes"} },
+  { id:"a067", title:"Esto cuenta como estudiar", desc:"Entra en Diario y Reglas en la misma sesión.", icon:"🤓", type:"event", hidden:false, event:"study_combo", reward:{title:"Estudiante Teórico-Práctico"} },
+  { id:"a068", title:"Modo fantasma", desc:"Juega 5 minutos sin pedir pistas ni usar objetos.", icon:"👻", type:"event", hidden:true, event:"ghost_mode", reward:{title:"Silencio Absoluto"} },
+  { id:"a069", title:"La RAE te observa", desc:"Haz 3 perfectas seguidas después de fallar.", icon:"🧐", type:"event", hidden:true, event:"comeback_perfect" },
+  { id:"a070", title:"Yo venía a sufrir", desc:"Pierde una vez y vuelve a atacar en menos de 10 segundos.", icon:"🥲", type:"event", hidden:false, event:"quick_retry" },
+  { id:"a071", title:"Esto debería dar nota", desc:"Abre Logros 10 veces.", icon:"🧾", type:"count", hidden:false, key:"achVisits", target:10, reward:{title:"Cazalogros"} },
+  { id:"a072", title:"Sin internet", desc:"Juega sin recargar la página durante 20 minutos.", icon:"🧭", type:"event", hidden:true, event:"no_reload_20m" },
+  { id:"a073", title:"Mejor que TikTok", desc:"Sesión de 15 min sin cambiar de pestaña.", icon:"📵", type:"event", hidden:true, event:"focus_15m", reward:{title:"Modo Enfoque"} },
+  { id:"a074", title:"La ortografía importa", desc:"Haz 1 perfecta justo tras pedir pista.", icon:"📌", type:"event", hidden:false, event:"perfect_after_hint" },
+  { id:"a075", title:"Gracias, juego raro", desc:"Alcanza 100 turnos.", icon:"🫶", type:"count", hidden:true, key:"turns", target:100, reward:{title:"Guardián de la Pluma (honorífico)"} },
+  { id:"a076", title:"Caja fuerte", desc:"Acumula 300 de oro.", icon:"🪙", type:"count", hidden:true, key:"maxGoldEver", target:300 },
+  { id:"a077", title:"Bibliotecario jefe", desc:"Consigue 20 cartas.", icon:"📚", type:"count", hidden:true, key:"cardsNow", target:20 },
+  { id:"a078", title:"Diario infinito", desc:"100 entradas en el diario.", icon:"📓", type:"count", hidden:true, key:"diaryEntries", target:100 },
+  { id:"a079", title:"Pista adictiva", desc:"Pide 25 pistas.", icon:"🕵️", type:"count", hidden:true, key:"hintsUsed", target:25 },
+  { id:"a080", title:"Sin pista, sin miedo", desc:"Gana 5 combates seguidos sin pedir pista en ninguno.", icon:"🦾", type:"event", hidden:true, event:"streak5_no_hints" },
+  { id:"a081", title:"Estratega", desc:"Gana 5 combates seguidos.", icon:"🎖️", type:"count", hidden:false, key:"winStreak", target:5 },
+  { id:"a082", title:"General", desc:"Gana 10 combates seguidos.", icon:"🏅", type:"count", hidden:true, key:"winStreak", target:10 },
+  { id:"a083", title:"El demonio está en los detalles", desc:"Falla por distancia 1 (una sola letra).", icon:"🔬", type:"event", hidden:false, event:"distance_1" },
+  { id:"a084", title:"Cirujano lingüístico", desc:"Corrige una frase muy larga (>=120 caracteres).", icon:"🧵", type:"event", hidden:false, event:"long_phrase" },
+  { id:"a085", title:"Coma semilla", desc:"Consigue 5 perfectas con coma.", icon:"🌱", type:"count", hidden:true, key:"perfectWithComma", target:5 },
+  { id:"a086", title:"No hago trampas", desc:"No uses objetos durante 10 turnos seguidos.", icon:"🧘", type:"event", hidden:false, event:"ten_turns_no_items" },
+  { id:"a087", title:"Aguante de hierro", desc:"Sobrevive 10 turnos sin curarte.", icon:"🪨", type:"event", hidden:true, event:"ten_turns_no_heal" },
+  { id:"a088", title:"Aula silenciosa", desc:"Easter egg técnico: el botón de logros ya no se queda pegado.", icon:"🟨", type:"event", hidden:false, event:"ach_nav_fixed" },
+  { id:"a089", title:"Profesor orgulloso", desc:"Logro secreto: 10 perfectas seguidas.", icon:"👑", type:"count", hidden:true, key:"perfectStreak", target:10, reward:{title:"Favor del Profe"} },
+  { id:"a090", title:"Aprobado moral", desc:"Gana 1 combate sin errores y sin pistas.", icon:"✅", type:"event", hidden:false, event:"flawless_win" },
+  { id:"a091", title:"Turno 200", desc:"Completa 200 turnos.", icon:"🕹️", type:"count", hidden:true, key:"turns", target:200 },
+  { id:"a092", title:"Turno 400", desc:"Completa 400 turnos.", icon:"🧠", type:"count", hidden:true, key:"turns", target:400 },
+  { id:"a093", title:"Perfeccionista", desc:"Acumula 100 perfectas.", icon:"💎", type:"count", hidden:true, key:"perfectTurns", target:100 },
+  { id:"a094", title:"Máquina de corregir", desc:"Consigue 200 turnos correctos.", icon:"🏗️", type:"count", hidden:true, key:"correctTurns", target:200 },
+  { id:"a095", title:"Incombustible", desc:"Juega 10 días distintos.", icon:"🌞", type:"count", hidden:true, key:"daysPlayed", target:10 },
+  { id:"a096", title:"Sello de tinta", desc:"Compra 25 objetos.", icon:"📦", type:"count", hidden:true, key:"shopBuys", target:25 },
+  { id:"a097", title:"Botiquín infinito", desc:"Usa 50 objetos.", icon:"🧪", type:"count", hidden:true, key:"itemsUsed", target:50 },
+  { id:"a098", title:"Batería nuclear", desc:"Usa 25 habilidades.", icon:"⚡", type:"count", hidden:true, key:"abilitiesUsed", target:25 },
+  { id:"a099", title:"Noche cerrada", desc:"Juega entre las 22:00 y 05:00.", icon:"🌙", type:"meta", hidden:true, check:"playedAtNight", reward:{title:"Noctámbulo Ortográfico"} },
+  { id:"a100", title:"Guardián de la Pluma", desc:"Desbloquea 99 logros.", icon:"✒️", type:"meta", hidden:true, check:"unlocked99", reward:{title:"Guardián de la Pluma"} },
+];
+
+  const CAT_LABELS = {
+    progreso:"Progreso", precision:"Precisión", combate:"Combate", diario:"Diario",
+    economia:"Economía", exploracion:"Exploración", habilidad:"Habilidad", absurdo:"Absurdos"
+  };
+
+  function ensureAchievements(){
+    if(typeof player === "undefined" || !player) return;
+    if(!player.achievements) player.achievements = { unlocked:[], progress:{}, titles:[] };
+    if(!Array.isArray(player.achievements.unlocked)) player.achievements.unlocked = [];
+    if(!player.achievements.progress || typeof player.achievements.progress !== "object") player.achievements.progress = {};
+    if(!Array.isArray(player.achievements.titles)) player.achievements.titles = [];
+  }
+
+  function prog(key, fallback=0){ ensureAchievements(); const v=player.achievements.progress[key]; return (typeof v==="number" ? v : fallback); }
+  function setProg(key, val){ ensureAchievements(); player.achievements.progress[key]=val; }
+  function inc(key, delta=1){ setProg(key, prog(key,0)+delta); }
+
+  function isUnlocked(id){ ensureAchievements(); return player.achievements.unlocked.includes(id); }
+
+  function addTitle(t){ ensureAchievements(); if(!t) return; if(!player.achievements.titles.includes(t)) player.achievements.titles.push(t); }
+
+  function toast(msg){ try{ if(typeof showToast === "function") showToast(msg); else console.log("[LOGRO]", msg); }catch(e){ console.log("[LOGRO]", msg); } }
+
+  function applyReward(a){
+    const r=a.reward||{};
+    if(r.exp && typeof addXP === "function") addXP(r.exp);
+    if(r.gold && typeof addGold === "function") addGold(r.gold);
+    if(r.title) addTitle(r.title);
+  }
+
+  function unlock(id){
+    ensureAchievements();
+    if(isUnlocked(id)) return false;
+    player.achievements.unlocked.push(id);
+    try{ savePlayer?.(); }catch(e){}
+    const a = ACHIEVEMENTS.find(x=>x.id===id);
+    if(a){ applyReward(a); toast(`🏆 Logro desbloqueado: ${a.title}`); }
+    const s=document.getElementById("achievements-screen");
+    if(s && s.style.display==="flex") renderAchievements();
+    return true;
+  }
+
+  function achievementCategory(a){
+    const id=a.id;
+    if(id <= "a010") return "progreso";
+    if(id >= "a011" && id <= "a020") return "precision";
+    if(id >= "a021" && id <= "a030") return "combate";
+    if(id >= "a031" && id <= "a040") return "economia";
+    if(id >= "a041" && id <= "a050") return "diario";
+    if(id >= "a051" && id <= "a055") return "exploracion";
+    if(id >= "a056" && id <= "a060") return "habilidad";
+    return "absurdo";
+  }
+
+  let currentCat = "progreso";
+
+  
+  let lastNonAchMode = "battle";
+function renderAchievements(){
+    ensureAchievementsUI(); ensureAchievements();
+    const grid = document.getElementById("ach-grid");
+    const summaryEl = document.getElementById("ach-summary");
+    const catsEl = document.getElementById("ach-cats");
+    if(!grid || !summaryEl || !catsEl) return;
+
+    const total = ACHIEVEMENTS.length;
+    const unlockedCount = player.achievements.unlocked.length;
+    const pct = Math.round((unlockedCount / Math.max(1,total)) * 100);
+    const titles = (player.achievements.titles||[]).length;
+    summaryEl.innerHTML = `<div><strong>${unlockedCount}/${total}</strong> logros · <strong>${pct}%</strong></div><div>Títulos: <strong>${titles}</strong></div>`;
+
+    const cats = ["progreso","precision","combate","economia","diario","exploracion","habilidad","absurdo"];
+    catsEl.innerHTML = cats.map(c => `<button class="ach-chip ${c===currentCat ? "active":""}" data-cat="${c}">${CAT_LABELS[c]}</button>`).join("");
+    catsEl.querySelectorAll(".ach-chip").forEach(btn=>{ btn.addEventListener("click", ()=>{ currentCat = btn.dataset.cat; renderAchievements(); }); });
+
+    const list = ACHIEVEMENTS.filter(a=>achievementCategory(a)===currentCat);
+    grid.innerHTML = list.map(a=>cardHtml(a)).join("");
+  }
+
+  function cardHtml(a){
+    const done = isUnlocked(a.id);
+    const cat = achievementCategory(a);
+    let stateClass = done ? "unlocked" : "locked";
+    let title = a.title;
+    let desc = a.desc;
+
+    if(!done && a.hidden){ stateClass="hidden"; title="???"; desc="Logro oculto. Se revelará cuando lo consigas."; }
+
+    let progressHtml = "";
+    if(!done && a.type==="count" && a.key && a.target){
+      const v = prog(a.key, 0);
+      const pct = Math.max(0, Math.min(100, Math.round((v / a.target) * 100)));
+      progressHtml = `<div class="ach-progress"><div style="width:${pct}%"></div></div><div class="ach-meta">${v} / ${a.target}</div>`;
+    } else if(done) {
+      progressHtml = `<div class="ach-meta">Desbloqueado ✓</div>`;
+    } else {
+      progressHtml = `<div class="ach-meta">${CAT_LABELS[cat]}</div>`;
+    }
+
+    return `<div class="ach-card ${stateClass}"><div class="ach-icon">${a.icon || "🏆"}</div><div style="min-width:0; flex:1;"><p class="ach-title">${title}</p><p class="ach-desc">${desc}</p>${progressHtml}</div></div>`;
+  }
+
+  function evalMetaCheck(checkName){
+    try{
+      if(checkName==="playerLevel>=2") return (player.level||1) >= 2;
+      if(checkName==="tabsAll") return prog("tabsVisitedCount",0) >= 6;
+      if(checkName==="playedOnMonday") return prog("playedMonday",0) >= 1;
+      if(checkName==="playedAtNight") return prog("playedNight",0) >= 1;
+      if(checkName==="unlocked99") return (player.achievements.unlocked.length >= 99);
+      return false;
+    }catch(e){ return false; }
+  }
+
+  function evaluateAll(){
+    ensureAchievements();
+    try{
+      const g = player.gold||0;
+      if(g > prog("maxGoldEver",0)) setProg("maxGoldEver", g);
+      const items = player.items ? player.items.length : 0;
+      if(items > prog("maxItemsEver",0)) setProg("maxItemsEver", items);
+      const cards = player.cards ? player.cards.length : 0;
+      setProg("cardsNow", cards);
+    }catch(e){}
+
+    for(const a of ACHIEVEMENTS){
+      if(isUnlocked(a.id)) continue;
+      if(a.type==="count" && a.key && a.target){ if(prog(a.key,0) >= a.target) unlock(a.id); }
+      else if(a.type==="meta" && a.check){ if(evalMetaCheck(a.check)) unlock(a.id); }
+    }
+  }
+
+  function checkAchievements(eventName, payload={}){
+    ensureAchievements();
+    for(const a of ACHIEVEMENTS){
+      if(isUnlocked(a.id)) continue;
+      if(a.type==="event" && a.event===eventName) unlock(a.id);
+    }
+    evaluateAll();
+  }
+
+  function wrapGlobalFn(fnName, after){
+    const fn = window[fnName];
+    if(typeof fn !== "function") return;
+    if(fn.__ach_wrapped) return;
+    const wrapped = function(...args){ const res = fn.apply(this, args); try{ after?.(args, res); }catch(e){} return res; };
+    wrapped.__ach_wrapped = true;
+    window[fnName] = wrapped;
+  }
+
+  function hookSwitchTo(){
+    const navBtn = document.getElementById("nav-achievements");
+    if(navBtn && !navBtn.dataset.bound){
+      navBtn.dataset.bound="1";
+      navBtn.addEventListener("click", ()=>{ if(typeof switchTo === "function") switchTo("achievements"); else showAchievements(); });
+    }
+
+    wrapGlobalFn("switchTo", (args)=>{
+      const mode = args[0];
+      const s = document.getElementById("achievements-screen");
+      if(mode !== "achievements"){ lastNonAchMode = mode || lastNonAchMode || "battle"; if(s) s.style.display="none"; }
+
+      const nav=document.getElementById("nav-achievements");
+      if(nav){
+        if(mode === "achievements"){ nav.classList.add("nav-active"); nav.classList.remove("secondary"); showAchievements(); checkAchievements("ach_nav_fixed"); }
+        else { nav.classList.remove("nav-active"); nav.classList.add("secondary"); }
+      }
+
+      inc("screenVisits", 1);
+      const tabSet = player.achievements.progress.__tabs || {};
+      tabSet[mode] = true;
+      player.achievements.progress.__tabs = tabSet;
+      setProg("tabsVisitedCount", Object.keys(tabSet).filter(k=>tabSet[k]).length);
+
+      if(mode==="map") inc("mapVisits",1);
+      if(mode==="camp") inc("campVisits",1);
+      if(mode==="diary") inc("diaryVisits",1);
+      if(mode==="history") inc("historyVisits",1);
+      if(mode==="rules") inc("rulesVisits",1);
+      if(mode==="achievements") inc("achVisits",1);
+
+      evaluateAll();
+    });
+  }
+
+  function hookGameEvents(){
+    wrapGlobalFn("resolveTurn", ()=>{
+      inc("turns",1);
+      checkAchievements("turn_done");
+
+      const d = (player.diary||[]);
+      if(d.length){
+        const last = d[d.length-1];
+        const stamp = last.timestamp || "";
+        const prev = player.achievements.progress.__lastDiaryStamp || "";
+        if(stamp && stamp !== prev){
+          player.achievements.progress.__lastDiaryStamp = stamp;
+          inc("diaryEntries",1);
+
+          // "Success" heuristic: playerDamage > 0
+          if(last.playerDamage > 0){
+            inc("correctTurns",1);
+            inc("correctStreak",1);
+            // non-perfect success
+            if(!last.isPerfect) checkAchievements("nonperfect_success");
+            if(last.isPerfect){
+              inc("perfectTurns",1);
+              inc("perfectStreak",1);
+              if((last.correctPhrase||"").includes(",")) inc("perfectWithComma",1);
+              if((last.correctPhrase||"").includes(",")) checkAchievements("perfect_with_comma");
+              // comeback perfect (3 after fail) – rough: if correctStreak == 3 and perfectStreak == 3 but previous turn wasn't correct
+              if(prog("afterFailPerfectStreak",0) >= 2) checkAchievements("comeback_perfect");
+              inc("afterFailPerfectStreak",1);
+              // perfect after hint
+              if(prog("hintJustUsed",0)===1){ setProg("fightPerfectAfterHint",1); checkAchievements("perfect_after_hint"); }
+            } else {
+              setProg("perfectStreak",0);
+              setProg("afterFailPerfectStreak",0);
+            }
+          } else {
+            setProg("correctStreak",0);
+            setProg("perfectStreak",0);
+            setProg("afterFailPerfectStreak",0);
+          }
+
+          // long phrase
+          if((last.correctPhrase||"").length >= 120) checkAchievements("long_phrase");
+
+          // similarity events
+          try{
+            if(window.levenshtein && typeof last.studentAnswer==="string" && typeof last.correctPhrase==="string"){
+              const dist = window.levenshtein(last.studentAnswer, last.correctPhrase);
+              if(dist === 1) checkAchievements("distance_1");
+              const maxLen = Math.max(last.studentAnswer.length, last.correctPhrase.length, 1);
+              const sim = 1 - (dist / maxLen);
+              if(!last.isPerfect && sim >= 0.95) checkAchievements("high_similarity");
+              if(!last.isPerfect && sim >= 0.98) checkAchievements("very_high_similarity");
+            }
+          }catch(e){}
+
+          // low hp survival counter for a025
+          try{
+            const hp = player.hp||0, maxHp = player.maxHp||100;
+            if(hp <= Math.ceil(maxHp*0.30)){ inc("fightLowHpTurns",1); if(prog("fightLowHpTurns",0) >= 3) checkAchievements("survive_low_hp_3"); }
+            else setProg("fightLowHpTurns",0);
+          }catch(e){}
+
+          // ghost mode (5 min, no items/hints) – handled by timer below
+
+          setProg("hintJustUsed",0);
+          evaluateAll();
+        }
+      }
+      evaluateAll();
+    });
+
+    wrapGlobalFn("registerMonsterDefeated", (args)=>{
+      inc("wins",1);
+      setProg("winStreak", prog("winStreak",0)+1);
+
+      const id=args[0];
+      const set = player.achievements.progress.__uniq || {};
+      if(id) set[id]=true;
+      player.achievements.progress.__uniq=set;
+      setProg("uniqueMonstersDefeated", Object.keys(set).length);
+
+      const hp = player.hp||0, maxHp = player.maxHp||100;
+      if(hp <= 5) checkAchievements("win_low_hp");
+      if(hp <= Math.ceil(maxHp*0.25)) checkAchievements("win_comeback");
+      if(prog("fightItemsUsed",0)===0) checkAchievements("win_no_items");
+      if(prog("fightHintsUsed",0)===0) checkAchievements("win_no_hints");
+      if(prog("fightItemsUsed",0)===0 && prog("fightHintsUsed",0)===0) checkAchievements("flawless_win");
+
+      // session wins
+      const sw = prog("sessionWins",0)+1;
+      setProg("sessionWins", sw);
+      if(sw>=3) checkAchievements("three_wins_session");
+
+      // reset fight counters
+      setProg("fightItemsUsed",0);
+      setProg("fightHintsUsed",0);
+      setProg("fightLowHpTurns",0);
+      setProg("fightPerfectAfterHint",0);
+
+      checkAchievements("monster_defeated");
+      evaluateAll();
+    });
+
+    wrapGlobalFn("useItem", ()=>{ inc("itemsUsed",1); inc("fightItemsUsed",1); evaluateAll(); });
+    wrapGlobalFn("useAbility", ()=>{ inc("abilitiesUsed",1); evaluateAll(); });
+    wrapGlobalFn("getHint", ()=>{ inc("hintsUsed",1); inc("fightHintsUsed",1); setProg("hintJustUsed",1); evaluateAll(); });
+    wrapGlobalFn("buyShopItem", ()=>{ inc("shopBuys",1); evaluateAll(); });
+
+    wrapGlobalFn("handleDefeat", ()=>{ inc("deaths",1); setProg("winStreak",0); setProg("__lastDefeatTime", Date.now()); evaluateAll(); });
+
+    wrapGlobalFn("loadMonster", ()=>{
+      const lastName = player.achievements.progress.__lastMonsterName || "";
+      try{
+        const name = (window.monster && window.monster.name) ? window.monster.name : "";
+        if(name && lastName === name) checkAchievements("same_monster_twice");
+        if(name) player.achievements.progress.__lastMonsterName = name;
+      }catch(e){}
+      setProg("fightItemsUsed",0);
+      setProg("fightHintsUsed",0);
+      setProg("fightLowHpTurns",0);
+      setProg("fightPerfectAfterHint",0);
+      evaluateAll();
+    });
+  }
+
+  function hookSession(){
+    ensureAchievements();
+    const now = new Date();
+    const key = now.toISOString().slice(0,10);
+    const days = player.achievements.progress.__days || {};
+    if(!days[key]){ days[key]=true; player.achievements.progress.__days=days; setProg("daysPlayed", Object.keys(days).length); }
+
+    if(now.getDay()===1) setProg("playedMonday", 1);
+    const hour = now.getHours();
+    if(hour >= 22 || hour <= 5) setProg("playedNight", 1);
+
+    setProg("__sessionStart", Date.now());
+    setProg("sessionWins", 0);
+    setProg("__lastTabSwitch", Date.now());
+
+    setInterval(()=>{
+      const start = prog("__sessionStart", Date.now());
+      const mins = (Date.now()-start)/60000;
+      if(mins>=15) checkAchievements("play_15m");
+      if(mins>=30) checkAchievements("play_30m");
+      if(mins>=60) checkAchievements("play_60m");
+      if(mins>=20) checkAchievements("no_reload_20m");
+
+      // ghost mode: 5 min with no items and no hints
+      if(mins>=5 && prog("fightItemsUsed",0)===0 && prog("fightHintsUsed",0)===0) checkAchievements("ghost_mode");
+
+      evaluateAll();
+    }, 5000);
+
+    setInterval(()=>{
+      const tabs = player.achievements.progress.__tabs || {};
+      if(tabs["diary"] && tabs["rules"]) checkAchievements("study_combo");
+    }, 2000);
+  }
+
+  function initAchievementsModule(){
+    ensureAchievementsUI();
+    hookSwitchTo();
+    hookGameEvents();
+    hookSession();
+    evaluateAll();
+    window.renderAchievements = renderAchievements;
+    window.showAchievements = showAchievements;
+    window.hideAchievements = hideAchievements;
+  }
+
+  initAchievementsModule();
+  setTimeout(initAchievementsModule, 250);
+  setTimeout(initAchievementsModule, 1200);
+})();
+;
+
+  
+</script>
+
+</body>
+</html>
