@@ -643,7 +643,11 @@
     .answer-bad{ border-color:#f97373 !important; box-shadow:0 0 0 1px #f97373; }
 
     /* Flash golpe monstruo */
-    .monster-visual.hit-flash{ animation: monsterHitFlash 0.18s linear 0s 2; }
+    .monster-visual
+.death-canvas{ image-rendering: pixelated; }
+.death-flash{ filter: brightness(1.6) contrast(1.1); }
+.monster-dying{ filter: saturate(0.9); }
+.hit-flash{ animation: monsterHitFlash 0.18s linear 0s 2; }
     @keyframes monsterHitFlash{
       0%{ filter:brightness(1); }
       50%{ filter:brightness(2.2) hue-rotate(-25deg) saturate(1.6); }
@@ -1372,6 +1376,170 @@
   #splash-logo{ animation: none !important; }
 }
 
+
+/* ===== Pantalla final (victoria) ===== */
+.final-screen{
+  position:fixed; inset:0; z-index:9999;
+  display:none;
+  background: radial-gradient(1200px 600px at 50% 10%, rgba(255,255,255,0.10), transparent 60%),
+              linear-gradient(180deg, rgba(0,0,0,0.90), rgba(0,0,0,0.92));
+  backdrop-filter: blur(6px);
+  padding: 22px;
+}
+.final-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+  height: 100%;
+  display:flex;
+  flex-direction:column;
+  gap: 14px;
+}
+.final-top{
+  display:flex;
+  gap: 14px;
+  align-items: stretch;
+  flex-wrap:wrap;
+}
+.final-banner{
+  flex: 1 1 560px;
+  border: 3px solid #000;
+  border-radius: 16px;
+  overflow:hidden;
+  background:#0b1220;
+  position:relative;
+  min-height: 210px;
+}
+.final-banner img.final-bg{
+  position:absolute; inset:0;
+  width:100%; height:100%; object-fit:cover;
+  filter: saturate(1.15) contrast(1.05) brightness(.85);
+}
+.final-banner::after{
+  content:"";
+  position:absolute; inset:0;
+  background: linear-gradient(90deg, rgba(0,0,0,0.72), rgba(0,0,0,0.15));
+}
+.final-title{
+  position:relative;
+  padding: 16px 16px 14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+}
+.final-title h1{
+  margin:0;
+  font-size: 1.45rem;
+  letter-spacing: .3px;
+  text-shadow: 0 2px 0 #000;
+}
+.final-title .final-sub{
+  opacity:.92;
+  line-height:1.25;
+  font-size:.95rem;
+}
+.final-portraits{
+  position:relative;
+  display:flex;
+  gap: 10px;
+  align-items:flex-end;
+  padding: 0 16px 16px 16px;
+}
+.final-portrait{
+  width: 86px; height: 86px;
+  border: 3px solid #000;
+  border-radius: 14px;
+  background: rgba(10,16,28,.85);
+  overflow:hidden;
+  box-shadow: 0 10px 20px rgba(0,0,0,.35);
+}
+.final-portrait img{ width:100%; height:100%; object-fit:contain; image-rendering: pixelated; }
+.final-vs{
+  align-self:center;
+  font-weight:900;
+  letter-spacing: .6px;
+  background: rgba(0,0,0,.55);
+  border: 2px solid #000;
+  border-radius: 999px;
+  padding: 4px 10px;
+}
+.final-side{
+  flex: 0 1 380px;
+  border: 3px solid #000;
+  border-radius: 16px;
+  background:#0b1220;
+  padding: 14px;
+}
+.final-side .box-title{ margin:0 0 6px 0; }
+.final-kpis{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+.final-kpi{
+  border: 2px solid #000;
+  border-radius: 12px;
+  padding: 10px 10px 8px;
+  background: rgba(255,255,255,0.04);
+}
+.final-kpi .k{ opacity:.8; font-size:.78rem; }
+.final-kpi .v{ font-size: 1.15rem; font-weight: 900; margin-top: 2px; }
+.final-mid{
+  display:grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap: 14px;
+  flex: 1;
+  min-height: 0;
+}
+.final-card{
+  border: 3px solid #000;
+  border-radius: 16px;
+  background:#0b1220;
+  padding: 14px;
+  min-height: 0;
+}
+.final-bars{ display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+.final-bar{
+  display:flex; gap:10px; align-items:center;
+}
+.final-bar .lbl{
+  width: 120px;
+  opacity:.9;
+  font-size:.85rem;
+}
+.final-bar .track{
+  flex: 1;
+  height: 12px;
+  border: 2px solid #000;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  overflow:hidden;
+}
+.final-bar .fill{ height:100%; width:0%; background: rgba(120,220,255,0.85); }
+.final-bar .pct{
+  width: 70px;
+  text-align:right;
+  font-variant-numeric: tabular-nums;
+  opacity:.92;
+  font-size:.85rem;
+}
+.final-list{
+  margin: 10px 0 0 0;
+  padding-left: 18px;
+  opacity:.92;
+  line-height:1.25;
+  font-size:.92rem;
+}
+.final-actions{
+  display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
+  padding-top: 4px;
+}
+.final-actions .btn{ border-radius: 12px; }
+@media (max-width: 860px){
+  .final-mid{ grid-template-columns: 1fr; }
+  .final-bar .lbl{ width: 105px; }
+}
+
 </style>
 </head>
 
@@ -1640,7 +1808,83 @@
 
       </div>
 
-      <!-- DERECHA -->
+      
+        <!-- Pantalla final -->
+        <div id="final-screen" class="final-screen" aria-hidden="true">
+          <div class="final-inner">
+            <div class="final-top">
+              <div class="final-banner">
+                <img id="final-bg" class="final-bg" src="img/backgrounds/battle_bg_acantilados.png" alt="Victoria" onerror="this.onerror=null; this.src='img/backgrounds/battle_bg_montanas.png';">
+                <div class="final-title">
+                  <h1 id="final-title">🏁 Victoria final</h1>
+                  <div id="final-sub" class="final-sub">Has devuelto la luz a Ortographia. La tinta tiembla... y la RAE toma nota.</div>
+                </div>
+                <div class="final-portraits">
+                  <div class="final-portrait"><img id="final-hero-img" src="img/heros/hero_mage.png" alt="Héroe" onerror="this.onerror=null; this.src='img/logo.png';"></div>
+                  <div class="final-vs">VS</div>
+                  <div class="final-portrait"><img id="final-boss-img" src="img/monsters/monster_gargantua_gj.png" alt="Jefe" onerror="this.onerror=null; this.src='img/logo.png';"></div>
+                </div>
+              </div>
+
+              <div class="final-side">
+                <div class="box-title">Resumen rápido</div>
+                <div class="final-sub" style="opacity:.9;">Tu partida, en números. (Sí, esto también cuenta como estudiar).</div>
+                <div class="final-kpis">
+                  <div class="final-kpi"><div class="k">Derrotas (vida a 0)</div><div class="v" id="final-kpi-deaths">0</div></div>
+                  <div class="final-kpi"><div class="k">EXP neta</div><div class="v" id="final-kpi-xpnet">0</div></div>
+                  <div class="final-kpi"><div class="k">Objetos usados</div><div class="v" id="final-kpi-items">0</div></div>
+                  <div class="final-kpi"><div class="k">Turnos</div><div class="v" id="final-kpi-turns">0</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="final-mid">
+              <div class="final-card">
+                <div class="box-title">Precisión lingüística</div>
+                <div class="final-sub" style="opacity:.9;">Porcentaje sobre el total de turnos.</div>
+                <div class="final-bars">
+                  <div class="final-bar">
+                    <div class="lbl">✨ Perfectas</div>
+                    <div class="track"><div class="fill" id="final-bar-perfect"></div></div>
+                    <div class="pct" id="final-pct-perfect">0%</div>
+                  </div>
+                  <div class="final-bar">
+                    <div class="lbl">✅ Correctas</div>
+                    <div class="track"><div class="fill" id="final-bar-correct"></div></div>
+                    <div class="pct" id="final-pct-correct">0%</div>
+                  </div>
+                  <div class="final-bar">
+                    <div class="lbl">❌ Incorrectas</div>
+                    <div class="track"><div class="fill" id="final-bar-wrong"></div></div>
+                    <div class="pct" id="final-pct-wrong">0%</div>
+                  </div>
+                </div>
+
+                <ul class="final-list" id="final-extra">
+                  <li><strong>Nivel:</strong> <span id="final-level">1</span> · <strong>Oro:</strong> <span id="final-gold">0</span> · <strong>Cartas:</strong> <span id="final-cards">0</span></li>
+                  <li><strong>Pistas usadas:</strong> <span id="final-hints">0</span> · <strong>Habilidades usadas:</strong> <span id="final-abilities">0</span></li>
+                  <li><strong>Victorias:</strong> <span id="final-wins">0</span> · <strong>Monstruos purificados:</strong> <span id="final-uniq">0</span></li>
+                </ul>
+              </div>
+
+              <div class="final-card">
+                <div class="box-title">Sello final</div>
+                <div id="final-stamp" class="final-sub" style="opacity:.95; line-height:1.35;">
+                  “La letra bien puesta es más fuerte que la bestia más bruta.”
+                </div>
+
+                <div class="final-actions" style="margin-top:12px;">
+                  <button class="btn secondary" id="final-open-ach">Ver logros</button>
+                  <button class="btn secondary" id="final-go-map">Ir al mapa</button>
+                  <button class="btn primary" id="final-close">Cerrar</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+<!-- DERECHA -->
       <div class="panel-right">
         <div class="hero-panel" id="hero-panel">
           <div class="box-title">Héroe</div>
@@ -3134,6 +3378,106 @@
     setTimeout(()=> span.remove(), 700);
   }
 
+
+// ===== Animación de muerte del monstruo (desintegración en polvo) =====
+function disintegrateMonster(imgEl, containerEl, done, opts){
+  try{
+    if(!imgEl || !containerEl){ done && done(); return; }
+    const o = Object.assign({ duration: 1100, step: 3, spread: 85 }, (opts||{}));
+    const rect = imgEl.getBoundingClientRect();
+    if(rect.width < 4 || rect.height < 4){ done && done(); return; }
+
+    // Canvas superpuesto
+    const canvas = document.createElement("canvas");
+    canvas.className = "death-canvas";
+    canvas.style.position = "absolute";
+    canvas.style.left = "0";
+    canvas.style.top = "0";
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.pointerEvents = "none";
+    canvas.style.zIndex = "6";
+    if(!containerEl.style.position) containerEl.style.position = "relative";
+    containerEl.appendChild(canvas);
+
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    const w = Math.max(2, Math.floor(containerEl.clientWidth * dpr));
+    const h = Math.max(2, Math.floor(containerEl.clientHeight * dpr));
+    canvas.width = w; canvas.height = h;
+
+    // Dibuja la imagen al canvas para muestrear píxeles
+    ctx.clearRect(0,0,w,h);
+    ctx.drawImage(imgEl, 0, 0, w, h);
+    const imgData = ctx.getImageData(0, 0, w, h).data;
+
+    // Partículas: muestreo por cuadrícula
+    const particles = [];
+    const step = Math.max(2, o.step|0);
+    for(let y=0; y<h; y+=step){
+      for(let x=0; x<w; x+=step){
+        const i = (y*w + x) * 4;
+        const a = imgData[i+3];
+        if(a < 30) continue;
+        const r = imgData[i], g = imgData[i+1], b = imgData[i+2];
+        particles.push({
+          x, y,
+          vx: (Math.random()*2-1) * o.spread * dpr,
+          vy: ((Math.random()*0.6)-0.2) * o.spread * dpr,
+          r, g, b,
+          a: a/255,
+          size: step
+        });
+      }
+    }
+
+    // Oculta la imagen y anima
+    imgEl.style.visibility = "hidden";
+    containerEl.classList.add("monster-dying");
+
+    const t0 = performance.now();
+    function tick(t){
+      const p = Math.min(1, (t - t0) / o.duration);
+      ctx.clearRect(0,0,w,h);
+
+      const fade = 1 - p;
+      for(const q of particles){
+        const k = p;
+        const xx = q.x + q.vx * k;
+        const yy = q.y + q.vy * k + (k*k*22*dpr); // ligera caída
+        const aa = q.a * Math.max(0, fade);
+        if(aa <= 0.01) continue;
+        ctx.fillStyle = `rgba(${q.r},${q.g},${q.b},${aa})`;
+        ctx.fillRect(xx, yy, q.size, q.size);
+      }
+
+      if(p < 1){
+        requestAnimationFrame(tick);
+      }else{
+        canvas.remove();
+        containerEl.classList.remove("monster-dying");
+        imgEl.style.visibility = "";
+        done && done();
+      }
+    }
+    requestAnimationFrame(tick);
+  }catch(e){
+    try{ imgEl && (imgEl.style.visibility = ""); }catch(_){}
+    done && done();
+  }
+}
+
+function playMonsterDeathAnimation(done){
+  if(!monsterSpriteImg || !monsterVisualEl || !monsterSpriteImg.complete){
+    done && done(); return;
+  }
+  monsterSpriteImg.classList.add("death-flash");
+  setTimeout(()=> monsterSpriteImg.classList.remove("death-flash"), 220);
+  setTimeout(()=>{
+    disintegrateMonster(monsterSpriteImg, monsterVisualEl, done, { duration: 1100, step: 3, spread: 85 });
+  }, 160);
+}
+
   function updateHpBars(){
     const monster = monsters[currentMonsterIndex] || monsters[monsters.length-1];
     const monsterPercent = Math.max(0,(currentMonsterHp/monster.maxHp)*100);
@@ -3150,6 +3494,7 @@
 
   function addXp(amount){
     player.xp += amount;
+    try{ if(typeof ensureAchievements==='function') { ensureAchievements(); inc('xpGained', amount); } }catch(e){}
     let subidas = 0;
     while(player.xp >= player.xpToNext){
       player.xp -= player.xpToNext;
@@ -4202,6 +4547,147 @@ clearTimeout(applyBattleWorldBackground._t);
     setLog(`<span class="good">¡Has purificado a todos los monstruos actuales!</span> Has completado toda la aventura (por ahora). Si añades más mundos, aquí seguirá tu leyenda.`);
   }
 
+
+  // ===== Pantalla final (tras derrotar al jefe final) =====
+  function pct(n, d){
+    if(!d || d<=0) return 0;
+    return Math.max(0, Math.min(100, Math.round((n/d)*100)));
+  }
+
+  function computeFinalStats(){
+    try{ if(typeof ensureAchievements==='function') ensureAchievements(); }catch(e){}
+    const turns = (typeof prog==='function') ? prog("turns", (player?.diary?.length||0)) : (player?.diary?.length||0);
+    const correct = (typeof prog==='function') ? prog("correctTurns", 0) : 0;
+    const perfect = (typeof prog==='function') ? prog("perfectTurns", 0) : 0;
+    const wrong = Math.max(0, (turns||0) - (correct||0));
+
+    const deaths = (typeof prog==='function') ? prog("deaths", 0) : 0;
+    const itemsUsed = (typeof prog==='function') ? prog("itemsUsed", 0) : 0;
+    const hintsUsed = (typeof prog==='function') ? prog("hintsUsed", 0) : 0;
+    const abilitiesUsed = (typeof prog==='function') ? prog("abilitiesUsed", 0) : 0;
+
+    const xpGained = (typeof prog==='function') ? prog("xpGained", 0) : 0;
+    const xpLost   = (typeof prog==='function') ? prog("xpLost", 0) : 0;
+
+    const wins = (typeof prog==='function') ? prog("wins", (player?.defeatedMonsters?.length||0)) : (player?.defeatedMonsters?.length||0);
+    const uniq = (typeof prog==='function') ? prog("uniqueMonstersDefeated", (player?.defeatedMonsters?.length||0)) : (player?.defeatedMonsters?.length||0);
+
+    return {
+      turns, correct, perfect, wrong,
+      deaths, itemsUsed, hintsUsed, abilitiesUsed,
+      xpGained, xpLost, xpNet: (xpGained - xpLost),
+      wins, uniq
+    };
+  }
+
+  function renderFinalSummary(finalBoss){
+    const s = computeFinalStats();
+
+    const el = (id)=>document.getElementById(id);
+
+    // KPIs
+    if(el("final-kpi-deaths")) el("final-kpi-deaths").textContent = s.deaths;
+    if(el("final-kpi-items")) el("final-kpi-items").textContent = s.itemsUsed;
+    if(el("final-kpi-turns")) el("final-kpi-turns").textContent = s.turns;
+    if(el("final-kpi-xpnet")) el("final-kpi-xpnet").textContent = s.xpNet;
+
+    // Barras
+    const pPerfect = pct(s.perfect, s.turns);
+    const pCorrect = pct(Math.max(0, s.correct - s.perfect), s.turns);
+    const pWrong   = pct(s.wrong, s.turns);
+
+    const setBar = (barId, pctVal)=>{
+      const b = el(barId);
+      if(b) b.style.width = pctVal + "%";
+    };
+    setBar("final-bar-perfect", pPerfect);
+    setBar("final-bar-correct", pCorrect);
+    setBar("final-bar-wrong", pWrong);
+
+    if(el("final-pct-perfect")) el("final-pct-perfect").textContent = pPerfect + "%";
+    if(el("final-pct-correct")) el("final-pct-correct").textContent = pCorrect + "%";
+    if(el("final-pct-wrong"))   el("final-pct-wrong").textContent   = pWrong + "%";
+
+    // Extras
+    if(el("final-level")) el("final-level").textContent = (player?.level||1);
+    if(el("final-gold"))  el("final-gold").textContent  = (player?.gold||0);
+    if(el("final-cards")) el("final-cards").textContent = (player?.cards?.length||0);
+    if(el("final-hints")) el("final-hints").textContent = s.hintsUsed;
+    if(el("final-abilities")) el("final-abilities").textContent = s.abilitiesUsed;
+    if(el("final-wins")) el("final-wins").textContent = s.wins;
+    if(el("final-uniq")) el("final-uniq").textContent = s.uniq;
+
+    // Título y lore
+    const bossName = finalBoss?.name || "el jefe final";
+    if(el("final-title")) el("final-title").textContent = "🏁 Victoria final";
+    if(el("final-sub")) el("final-sub").innerHTML =
+      `Has derrotado a <strong>${bossName}</strong>. Tu aventura queda registrada en tinta indeleble.`;
+
+    // Sprites (mejor intento: los que ya están en batalla)
+    try{
+      const hi = el("final-hero-img");
+      if(hi && window.heroSpriteImg && heroSpriteImg.src) hi.src = heroSpriteImg.src;
+    }catch(e){}
+    try{
+      const bi = el("final-boss-img");
+      if(bi && window.monsterSpriteImg && monsterSpriteImg.src) bi.src = monsterSpriteImg.src;
+    }catch(e){}
+
+    // Fondo: intenta usar el mundo del jefe
+    try{
+      const worldId = finalBoss?.world || (window.getMonsterWorldId ? getMonsterWorldId(monsters.length-1) : null);
+      const bg = el("final-bg");
+      if(bg && worldId) bg.src = `img/backgrounds/battle_bg_${worldId}.png`;
+    }catch(e){}
+  }
+
+  function showFinalSummary(finalBoss){
+    const screen = document.getElementById("final-screen");
+    if(!screen) return;
+
+    renderFinalSummary(finalBoss);
+
+    screen.style.display = "block";
+    screen.setAttribute("aria-hidden","false");
+
+    // botones
+    const closeBtn = document.getElementById("final-close");
+    const goMapBtn = document.getElementById("final-go-map");
+    const openAchBtn = document.getElementById("final-open-ach");
+
+    if(closeBtn && !closeBtn.dataset.bound){
+      closeBtn.dataset.bound="1";
+      closeBtn.onclick = ()=> hideFinalSummary();
+    }
+    if(goMapBtn && !goMapBtn.dataset.bound){
+      goMapBtn.dataset.bound="1";
+      goMapBtn.onclick = ()=>{ hideFinalSummary(); try{ switchTo("map"); }catch(e){} };
+    }
+    if(openAchBtn && !openAchBtn.dataset.bound){
+      openAchBtn.dataset.bound="1";
+      openAchBtn.onclick = ()=>{ hideFinalSummary(); try{ switchTo("achievements"); }catch(e){ try{ showAchievements(); }catch(_){} } };
+    }
+
+    // cerrar con ESC
+    if(!screen.dataset.esc){
+      screen.dataset.esc="1";
+      window.addEventListener("keydown", (e)=>{
+        if(e.key === "Escape"){
+          const fs = document.getElementById("final-screen");
+          if(fs && fs.style.display === "block") hideFinalSummary();
+        }
+      });
+    }
+  }
+
+  function hideFinalSummary(){
+    const screen = document.getElementById("final-screen");
+    if(!screen) return;
+    screen.style.display = "none";
+    screen.setAttribute("aria-hidden","true");
+  }
+
+
   function loadMonster(){
     if(currentMonsterIndex >= monsters.length){
       endRunWinAll();
@@ -4267,6 +4753,8 @@ clearTimeout(applyBattleWorldBackground._t);
     const xpLoss = Math.round(player.xpToNext * XP_DEATH_PENALTY_RATIO);
     const realXpLoss = Math.min(player.xp, xpLoss);
     player.xp -= realXpLoss;
+
+    try{ if(typeof ensureAchievements==='function') { ensureAchievements(); inc('xpLost', realXpLoss); } }catch(e){}
 
     player.hp = Math.max(1, Math.round(player.maxHp * HP_AFTER_DEATH_RATIO));
 
@@ -4480,54 +4968,90 @@ clearTimeout(applyBattleWorldBackground._t);
     }
 
     // ¿Monstruo derrotado?
-    if(currentMonsterHp <= 0){
-      const m = monsters[currentMonsterIndex];
-      player.monstersDefeated++;
-      addGold(m.goldReward);
-      addCard(m.cardReward);
-      registerMonsterDefeated(m.id);
+if(currentMonsterHp <= 0){
 
-      let rewardText = `<br><br><span class="good">¡Has derrotado a ${m.name}!</span><br>`;
-      rewardText += `<span class="hint">Recompensas base:</span> +${m.xpReward} EXP adicionales, +${m.goldReward} oro y <em>${m.cardReward}</em>`;
+  // Evita dobles ejecuciones si llega otro click/Enter mientras anima
+  if(player._isAnimatingDeath) return;
+  player._isAnimatingDeath = true;
 
-      const uniqueItemName = MONSTER_UNIQUE_ITEMS[m.id];
-      if(uniqueItemName){
-        addItem(uniqueItemName);
-        rewardText += `<br><span class="good">Objeto único:</span> obtienes <strong>${uniqueItemName}</strong>.`;
-      }
+  // Bloqueo rápido de botones mientras muere el monstruo
+  attackBtn.disabled = true;
+  if(useItemBtn) useItemBtn.disabled = true;
+  if(abilityBtn) abilityBtn.disabled = true;
 
-      const roll = Math.random()*100;
-      let extraItemName = null;
-      if(roll < 70) extraItemName = COMMON_ITEMS[Math.floor(Math.random()*COMMON_ITEMS.length)];
-      else if(roll < 90) extraItemName = RARE_ITEMS[Math.floor(Math.random()*RARE_ITEMS.length)];
-      else if(roll < 95) extraItemName = LEGENDARY_ITEMS[Math.floor(Math.random()*LEGENDARY_ITEMS.length)];
+  const afterDeath = () => {
+    player._isAnimatingDeath = false;
+    attackBtn.disabled = false;
+    if(useItemBtn) useItemBtn.disabled = false;
+    updateAbilityUi(); // re-habilita habilidad si toca
 
-      if(extraItemName){
-        addItem(extraItemName);
-        rewardText += `<br><span class="good">Botín adicional:</span> encuentras <strong>${extraItemName}</strong>.`;
-      }
+    const m = monsters[currentMonsterIndex];
+          player.monstersDefeated++;
+          addGold(m.goldReward);
+          addCard(m.cardReward);
+          registerMonsterDefeated(m.id);
 
-      addXp(m.xpReward);
-      setLog(html + rewardText);
+          let rewardText = `<br><br><span class="good">¡Has derrotado a ${m.name}!</span><br>`;
+          rewardText += `<span class="hint">Recompensas base:</span> +${m.xpReward} EXP adicionales, +${m.goldReward} oro y <em>${m.cardReward}</em>`;
 
-      currentMonsterIndex++;
-      player.currentMonsterIndex = currentMonsterIndex;
-      currentMonsterHp = 0;
-      savePlayer();
-      renderBigMap();
+          const uniqueItemName = MONSTER_UNIQUE_ITEMS[m.id];
+          if(uniqueItemName){
+            addItem(uniqueItemName);
+            rewardText += `<br><span class="good">Objeto único:</span> obtienes <strong>${uniqueItemName}</strong>.`;
+          }
 
-      if(currentMonsterIndex >= monsters.length){
-        endRunWinAll();
-      }else{
-        setTimeout(()=> loadMonster(), 900);
-      }
-    }else{
-      setTimeout(()=>{
-        pickNewPhrase();
-        setLog(`Nueva frase del mismo monstruo. Corrige con precisión para seguir dañándolo.`);
-      }, 1200);
-    }
+          const roll = Math.random()*100;
+          let extraItemName = null;
+          if(roll < 70) extraItemName = COMMON_ITEMS[Math.floor(Math.random()*COMMON_ITEMS.length)];
+          else if(roll < 90) extraItemName = RARE_ITEMS[Math.floor(Math.random()*RARE_ITEMS.length)];
+          else if(roll < 95) extraItemName = LEGENDARY_ITEMS[Math.floor(Math.random()*LEGENDARY_ITEMS.length)];
+
+          if(extraItemName){
+            addItem(extraItemName);
+            rewardText += `<br><span class="good">Botín adicional:</span> encuentras <strong>${extraItemName}</strong>.`;
+          }
+
+          addXp(m.xpReward);
+          setLog(html + rewardText);
+
+          // ¿Jefe final derrotado? -> pantalla de resumen
+          const _isFinalBoss = (currentMonsterIndex === (monsters.length - 1));
+          if(_isFinalBoss){
+            currentMonsterIndex = monsters.length;
+            player.currentMonsterIndex = currentMonsterIndex;
+            currentMonsterHp = 0;
+            savePlayer();
+            try{ renderBigMap(); }catch(e){}
+            try{ showFinalSummary(m); }catch(e){}
+            return;
+          }
+
+          currentMonsterIndex++;
+          player.currentMonsterIndex = currentMonsterIndex;
+          currentMonsterHp = 0;
+          savePlayer();
+          renderBigMap();
+
+          if(currentMonsterIndex >= monsters.length){
+            endRunWinAll();
+          }else{
+            setTimeout(()=> loadMonster(), 900);
+          }
+  };
+
+  // 1) Animación de muerte, 2) recompensas/flujo normal
+  if(typeof playMonsterDeathAnimation === "function") {
+    playMonsterDeathAnimation(afterDeath);
+  } else {
+    afterDeath();
   }
+
+}else{
+  setTimeout(()=>{
+    pickNewPhrase();
+    setLog(`Nueva frase del mismo monstruo. Corrige con precisión para seguir dañándolo.`);
+  }, 1200);
+}}
 
   attackBtn.addEventListener("click", resolveTurn);
 

@@ -1536,6 +1536,10 @@
   .final-bar .lbl{ width: 105px; }
 }
 
+.death-flash{ animation: deathFlash .25s steps(2) 2; }
+@keyframes deathFlash { 50% { filter: brightness(2) contrast(1.2); } }
+
+
 </style>
 </head>
 
@@ -1816,9 +1820,9 @@
                   <div id="final-sub" class="final-sub">Has devuelto la luz a Ortographia. La tinta tiembla... y la RAE toma nota.</div>
                 </div>
                 <div class="final-portraits">
-                  <div class="final-portrait"><img id="final-hero-img" src="img/heros/hero_mage.png" alt="Héroe" onerror="this.onerror=null; this.src='img/logo.png';"></div>
+                  <div class="final-portrait"><img id="final-hero-img" src="img/heros/sprite_hero_mago.png" alt="Héroe" onerror="this.onerror=null; this.src='img/logo.png';"></div>
                   <div class="final-vs">VS</div>
-                  <div class="final-portrait"><img id="final-boss-img" src="img/monsters/monster_gargantua_gj.png" alt="Jefe" onerror="this.onerror=null; this.src='img/logo.png';"></div>
+                  <div class="final-portrait"><img id="final-boss-img" src="img/monsters/sprite_gargantua_gj.png" alt="Jefe" onerror="this.onerror=null; this.src='img/logo.png';"></div>
                 </div>
               </div>
 
@@ -4863,66 +4867,91 @@ clearTimeout(applyBattleWorldBackground._t);
       return;
     }
 
-    // ¿Monstruo derrotado?
-    if(currentMonsterHp <= 0){
-      const m = monsters[currentMonsterIndex];
-      player.monstersDefeated++;
-      addGold(m.goldReward);
-      addCard(m.cardReward);
-      registerMonsterDefeated(m.id);
+   // ¿Monstruo derrotado?
+if(currentMonsterHp <= 0){
 
-      let rewardText = `<br><br><span class="good">¡Has derrotado a ${m.name}!</span><br>`;
-      rewardText += `<span class="hint">Recompensas base:</span> +${m.xpReward} EXP adicionales, +${m.goldReward} oro y <em>${m.cardReward}</em>`;
+  // Evita dobles ejecuciones si llega otro click/turno mientras anima
+  if (player._isAnimatingDeath) return;
+  player._isAnimatingDeath = true;
 
-      const uniqueItemName = MONSTER_UNIQUE_ITEMS[m.id];
-      if(uniqueItemName){
-        addItem(uniqueItemName);
-        rewardText += `<br><span class="good">Objeto único:</span> obtienes <strong>${uniqueItemName}</strong>.`;
-      }
+  const afterDeath = () => {
+    player._isAnimatingDeath = false;
 
-      const roll = Math.random()*100;
-      let extraItemName = null;
-      if(roll < 70) extraItemName = COMMON_ITEMS[Math.floor(Math.random()*COMMON_ITEMS.length)];
-      else if(roll < 90) extraItemName = RARE_ITEMS[Math.floor(Math.random()*RARE_ITEMS.length)];
-      else if(roll < 95) extraItemName = LEGENDARY_ITEMS[Math.floor(Math.random()*LEGENDARY_ITEMS.length)];
+    const m = monsters[currentMonsterIndex];
+    player.monstersDefeated++;
+    addGold(m.goldReward);
+    addCard(m.cardReward);
+    registerMonsterDefeated(m.id);
 
-      if(extraItemName){
-        addItem(extraItemName);
-        rewardText += `<br><span class="good">Botín adicional:</span> encuentras <strong>${extraItemName}</strong>.`;
-      }
+    let rewardText = `<br><br><span class="good">¡Has derrotado a ${m.name}!</span><br>`;
+    rewardText += `<span class="hint">Recompensas base:</span> +${m.xpReward} EXP adicionales, +${m.goldReward} oro y <em>${m.cardReward}</em>`;
 
-      addXp(m.xpReward);
-      setLog(html + rewardText);
+    const uniqueItemName = MONSTER_UNIQUE_ITEMS[m.id];
+    if(uniqueItemName){
+      addItem(uniqueItemName);
+      rewardText += `<br><span class="good">Objeto único:</span> obtienes <strong>${uniqueItemName}</strong>.`;
+    }
 
-      // ¿Jefe final derrotado? -> pantalla de resumen
-      const _isFinalBoss = (currentMonsterIndex === (monsters.length - 1));
-      if(_isFinalBoss){
-        currentMonsterIndex = monsters.length;
-        player.currentMonsterIndex = currentMonsterIndex;
-        currentMonsterHp = 0;
-        savePlayer();
-        try{ renderBigMap(); }catch(e){}
-        try{ showFinalSummary(m); }catch(e){}
-        return;
-      }
+    const roll = Math.random()*100;
+    let extraItemName = null;
+    if(roll < 70) extraItemName = COMMON_ITEMS[Math.floor(Math.random()*COMMON_ITEMS.length)];
+    else if(roll < 90) extraItemName = RARE_ITEMS[Math.floor(Math.random()*RARE_ITEMS.length)];
+    else if(roll < 95) extraItemName = LEGENDARY_ITEMS[Math.floor(Math.random()*LEGENDARY_ITEMS.length)];
 
-      currentMonsterIndex++;
+    if(extraItemName){
+      addItem(extraItemName);
+      rewardText += `<br><span class="good">Botín adicional:</span> encuentras <strong>${extraItemName}</strong>.`;
+    }
+
+monsterSpriteEl.classList.add("death-flash");
+setTimeout(()=> {
+  disintegrateImg(monsterSpriteEl, afterDeath, { duration: 1100, step: 3, spread: 85 });
+}, 250);
+
+
+    addXp(m.xpReward);
+    setLog(html + rewardText);
+
+    // ¿Jefe final derrotado? -> pantalla de resumen
+    const _isFinalBoss = (currentMonsterIndex === (monsters.length - 1));
+    if(_isFinalBoss){
+      currentMonsterIndex = monsters.length;
       player.currentMonsterIndex = currentMonsterIndex;
       currentMonsterHp = 0;
       savePlayer();
-      renderBigMap();
-
-      if(currentMonsterIndex >= monsters.length){
-        endRunWinAll();
-      }else{
-        setTimeout(()=> loadMonster(), 900);
-      }
-    }else{
-      setTimeout(()=>{
-        pickNewPhrase();
-        setLog(`Nueva frase del mismo monstruo. Corrige con precisión para seguir dañándolo.`);
-      }, 1200);
+      try{ renderBigMap(); }catch(e){}
+      try{ showFinalSummary(m); }catch(e){}
+      return;
     }
+
+    currentMonsterIndex++;
+    player.currentMonsterIndex = currentMonsterIndex;
+    currentMonsterHp = 0;
+    savePlayer();
+    renderBigMap();
+
+    if(currentMonsterIndex >= monsters.length){
+      endRunWinAll();
+    }else{
+      setTimeout(()=> loadMonster(), 900);
+    }
+  };
+
+  // 1) Animación de muerte, 2) luego recompensas/flujo normal
+  if (typeof disintegrateImg === "function" && monsterSpriteEl) {
+    disintegrateImg(monsterSpriteEl, afterDeath, { duration: 1100, step: 3, spread: 85 });
+  } else {
+    // fallback: si no hay canvas o no encuentra el sprite
+    afterDeath();
+  }
+
+}else{
+  setTimeout(()=>{
+    pickNewPhrase();
+    setLog(`Nueva frase del mismo monstruo. Corrige con precisión para seguir dañándolo.`);
+  }, 1200);
+}
+
   }
 
   attackBtn.addEventListener("click", resolveTurn);
