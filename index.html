@@ -405,8 +405,8 @@
       position:relative;
       overflow:hidden;
       /* Fondo dinámico según mundo (se controla por JS) */
-      --battle-bg-image: url("img/backgrounds/battle_bg_montanas.png");
-      --battle-bg-prev-image: url("img/backgrounds/battle_bg_montanas.png");
+      --battle-bg-image: url("img/backgrounds/battle_bg_montanas.webp");
+      --battle-bg-prev-image: url("img/backgrounds/battle_bg_montanas.webp");
       background:none;
       border:3px solid #000;
       box-shadow:0 0 0 2px #000, 0 10px 0 #000;
@@ -1383,7 +1383,7 @@
   <!-- Splash -->
   <div id="splash-screen">
     <div class="splash-inner">
-      <img id="splash-logo" src="img/backgrounds/logo.png" alt="Battlegrafía">
+      <img id="splash-logo" src="img/backgrounds/logo.webp" alt="Battlegrafía">
       <div class="splash-actions">
         <button id="splash-start" class="btn primary">Empezar juego</button>
         <button id="splash-continue" class="btn secondary">Continuar partida</button>
@@ -1419,19 +1419,19 @@
         <div class="start-section-title">Elige tu estilo de héroe</div>
         <div class="avatar-grid" id="avatar-grid">
           <div class="avatar-option" data-id="mago" data-emoji="🧙‍♂️">
-            <img src="img/heros/sprite_hero_mago.png" alt="Mago de la tilde" class="avatar-thumb">
+            <img src="img/heros/sprite_hero_mago.webp" alt="Mago de la tilde" class="avatar-thumb">
             <span>Mago de la tilde</span>
           </div>
           <div class="avatar-option" data-id="guerrero" data-emoji="🗡️">
-            <img src="img/heros/sprite_hero_guerrero.png" alt="Guerrero de la coma" class="avatar-thumb">
+            <img src="img/heros/sprite_hero_guerrero.webp" alt="Guerrero de la coma" class="avatar-thumb">
             <span>Guerrero de la coma</span>
           </div>
           <div class="avatar-option" data-id="ninja" data-emoji="🥷">
-            <img src="img/heros/sprite_hero_ninja.png" alt="Ninja del acento" class="avatar-thumb">
+            <img src="img/heros/sprite_hero_ninja.webp" alt="Ninja del acento" class="avatar-thumb">
             <span>Ninja del acento</span>
           </div>
           <div class="avatar-option" data-id="robot" data-emoji="🤖">
-            <img src="img/heros/sprite_hero_robot.png" alt="Corrector mecánico" class="avatar-thumb">
+            <img src="img/heros/sprite_hero_robot.webp" alt="Corrector mecánico" class="avatar-thumb">
             <span>Corrector mecánico</span>
           </div>
         </div>
@@ -1495,12 +1495,12 @@
           <div class="battle-sprites-row">
             <div class="hero-visual">
               <div class="sprite-frame">
-                <img id="hero-sprite-img" src="img/heros/sprite_hero_mago.png" alt="Héroe">
+                <img id="hero-sprite-img" src="img/heros/sprite_hero_mago.webp" alt="Héroe">
               </div>
             </div>
             <div class="monster-visual">
               <div class="sprite-frame">
-                <img id="monster-sprite-img" src="img/monsters/sprite_h_ghoul.png" alt="Monstruo">
+                <img id="monster-sprite-img" src="img/monsters/sprite_h_ghoul.webp" alt="Monstruo">
               </div>
             </div>
           </div>
@@ -1649,7 +1649,7 @@
           <div class="box-title">Héroe</div>
           <div class="hero-top">
             <div class="hero-avatar" id="hero-avatar">
-              <img src="img/heros/sprite_hero_mago.png" alt="Héroe" class="hero-avatar-mini">
+              <img src="img/heros/sprite_hero_mago.webp" alt="Héroe" class="hero-avatar-mini">
             </div>
             <div class="hero-info">
               <div class="hero-name" id="hero-name-display">Sin nombre</div>
@@ -1773,10 +1773,10 @@
   };
 
   const HERO_SPRITES = {
-    mago: "img/heros/sprite_hero_mago.png",
-    guerrero: "img/heros/sprite_hero_guerrero.png",
-    ninja: "img/heros/sprite_hero_ninja.png",
-    robot: "img/heros/sprite_hero_robot.png"
+    mago: "img/heros/sprite_hero_mago.webp",
+    guerrero: "img/heros/sprite_hero_guerrero.webp",
+    ninja: "img/heros/sprite_hero_ninja.webp",
+    robot: "img/heros/sprite_hero_robot.webp"
   };
 
   const STORY_CHAPTERS = [
@@ -2578,42 +2578,42 @@
   const monsters = [
     // ===== Montañas =====
     { id:"h_ghoul", name:"H-Ghoul", type:"H / Haber - A ver", world:"montanas",
-      sprite:"img/monsters/sprite_h_ghoul.png",
+      sprite:"img/monsters/sprite_h_ghoul.webp",
       maxHp:80, difficulty:"fácil", damageMultiplier:0.8,
       special:{ name:"Despiste", description:"Si fallas mucho, añade un pequeño extra de daño.", type:"extraOnBigError", extra:5 },
       xpReward:60, goldReward:15, cardReward:"Carta H vs ‘haber / a ver’",
       rule:"Diferenciar entre “haber” (verbo o sustantivo) y “a ver” (locución equivalente a “veamos”). Reescribe la frase correctamente."
     },
     { id:"vampiro_v", name:"Vampiro de la V", type:"B / V", world:"montanas",
-      sprite:"img/monsters/sprite_vampiro_v.png",
+      sprite:"img/monsters/sprite_vampiro_v.webp",
       maxHp:110, difficulty:"normal", damageMultiplier:1,
       special:{ name:"Mordisco ortográfico", description:"Si tu frase tiene bastantes errores, su ataque hace más daño de lo normal.", type:"extraOnBigError", extra:8 },
       xpReward:70, goldReward:20, cardReward:"Carta B/V",
       rule:"Usa B y V correctamente: verbos como “tuvo”, “estuve” van con V; después de M va B; cuidado con pares como ‘tubo/tuvo’."
     },
     { id:"gargantua_gj", name:"Gargantúa G/J", type:"G / J", world:"montanas",
-      sprite:"img/monsters/sprite_gargantua_gj.png",
+      sprite:"img/monsters/sprite_gargantua_gj.webp",
       maxHp:130, difficulty:"difícil", damageMultiplier:1.3,
       special:{ name:"Aliento de confusión", description:"En ataques flojos, su daño se incrementa notablemente.", type:"extraOnBigError", extra:10 },
       xpReward:80, goldReward:25, cardReward:"Carta G/J",
       rule:"Distingue G y J: verbos terminados en -ger/-gir llevan G (proteger, dirigir); formas de ‘coger’ y ‘trabajar’ se escriben con J en algunas personas."
     },
     { id:"espectro_agudo", name:"Espectro Agudo", type:"Tildes", world:"montanas",
-      sprite:"img/monsters/sprite_espectro_agudo.png",
+      sprite:"img/monsters/sprite_espectro_agudo.webp",
       maxHp:140, difficulty:"difícil", damageMultiplier:1.2,
       special:{ name:"Eco agudo", description:"Si olvidas demasiadas tildes, su ataque ignora parcialmente tus defensas.", type:"extraOnBigError", extra:9 },
       xpReward:90, goldReward:30, cardReward:"Carta Tildes",
       rule:"Coloca las tildes: recuerda agudas, llanas y esdrújulas, además de la tilde diacrítica en ‘tú/tu’, ‘más/mas’, ‘él/el’, ‘mí/mi’..."
     },
     { id:"serpiente_comata", name:"Serpiente Comata", type:"Comas y concordancia", world:"montanas",
-      sprite:"img/monsters/sprite_serpiente_comata.png",
+      sprite:"img/monsters/sprite_serpiente_comata.webp",
       maxHp:150, difficulty:"difícil", damageMultiplier:1.25,
       special:{ name:"Enredo sintáctico", description:"Si la frase queda muy mal puntuada, su daño aumenta bastante.", type:"extraOnBigError", extra:10 },
       xpReward:100, goldReward:35, cardReward:"Carta Comas & Concordancia",
       rule:"Separa con comas vocativos, incisos y elementos de una lista; cuida la concordancia entre sujeto y verbo."
     },
     { id:"lexikon", name:"Lexikon", type:"Jefe · Vocabulario y revisión", world:"montanas", isBoss:true,
-      sprite:"img/monsters/lexikon.png",
+      sprite:"img/monsters/lexikon.webp",
       maxHp:240, difficulty:"jefe", damageMultiplier:1.55,
       special:{ name:"Definición implacable", description:"Si tu frase tiene varios fallos, el Lexikon castiga duro.", type:"extraOnBigError", extra:14 },
       xpReward:170, goldReward:70, cardReward:"Carta Lexikon (Jefe)",
@@ -2622,42 +2622,42 @@
 
     // ===== Castillo =====
     { id:"diacritik", name:"Diacritik", type:"Tilde diacrítica", world:"castillo",
-      sprite: "img/monsters/diacritik.png",
+      sprite: "img/monsters/diacritik.webp",
       maxHp:160, difficulty:"difícil", damageMultiplier:1.25,
       special:{ name:"Doble sentido", description:"Si fallas tildes diacríticas, su daño sube.", type:"extraOnBigError", extra:10 },
       xpReward:110, goldReward:40, cardReward:"Carta Diacríticos",
       rule:"Distingue ‘tú/tu’, ‘más/mas’, ‘él/el’, ‘sí/si’, ‘qué/que’, ‘cómo/como’, ‘dónde/donde’..."
     },
     { id:"oxiton", name:"Oxiton", type:"Palabras agudas", world:"castillo",
-      sprite: "img/monsters/oxiton.png",
+      sprite: "img/monsters/oxiton.webp",
       maxHp:170, difficulty:"difícil", damageMultiplier:1.3,
       special:{ name:"Golpe final", description:"Si olvidas tildes en agudas, pega más.", type:"extraOnBigError", extra:10 },
       xpReward:115, goldReward:45, cardReward:"Carta Agudas",
       rule:"Las palabras agudas llevan tilde si terminan en vocal, ‘n’ o ‘s’ (balón, compás, café...)."
     },
     { id:"llanor", name:"Llanor", type:"Palabras llanas", world:"castillo",
-      sprite: "img/monsters/llanor.png",
+      sprite: "img/monsters/llanor.webp",
       maxHp:175, difficulty:"difícil", damageMultiplier:1.25,
       special:{ name:"Peso llano", description:"Castiga tildes olvidadas en llanas comunes.", type:"extraOnBigError", extra:9 },
       xpReward:120, goldReward:45, cardReward:"Carta Llanas",
       rule:"Las palabras llanas llevan tilde si NO terminan en vocal, ‘n’ o ‘s’ (árbol, lápiz, fácil...)."
     },
     { id:"puntor", name:"Puntor", type:"Puntuación", world:"castillo",
-      sprite: "img/monsters/puntor.png",
+      sprite: "img/monsters/puntor.webp",
       maxHp:180, difficulty:"difícil", damageMultiplier:1.3,
       special:{ name:"Corte seco", description:"Si no puntúas bien, su ataque hace más daño.", type:"extraOnBigError", extra:10 },
       xpReward:125, goldReward:50, cardReward:"Carta Puntos",
       rule:"Usa puntos, dos puntos, comas, interrogación y exclamación para que el texto respire."
     },
     { id:"kalkor", name:"Kalkor", type:"C / Qu / K", world:"castillo",
-      sprite: "img/monsters/kalkor.png",
+      sprite: "img/monsters/kalkor.webp",
       maxHp:185, difficulty:"difícil", damageMultiplier:1.3,
       special:{ name:"K-Choque", description:"Si escribes con k de más, te castiga.", type:"extraOnBigError", extra:10 },
       xpReward:130, goldReward:55, cardReward:"Carta C-QU-K",
       rule:"Evita grafías incorrectas tipo ‘kasa’, ‘kiero’. Aprende cuándo va ‘c’, ‘qu’ o ‘k’."
     },
     { id:"paper", name:"Paper", type:"Jefe · Redacción", world:"castillo", isBoss:true,
-      sprite: "img/monsters/paper.png",
+      sprite: "img/monsters/paper.webp",
       maxHp:260, difficulty:"jefe", damageMultiplier:1.6,
       special:{ name:"Tachón definitivo", description:"Si el texto está desordenado, te aplasta.", type:"extraOnBigError", extra:14 },
       xpReward:190, goldReward:80, cardReward:"Carta Paper (Jefe)",
@@ -2666,42 +2666,42 @@
 
     // ===== Ciénaga =====
     { id:"esdrulia", name:"Esdrulia", type:"Esdrújulas", world:"cienaga",
-      sprite: "img/monsters/esdrulia.png",
+      sprite: "img/monsters/esdrulia.webp",
       maxHp:180, difficulty:"difícil", damageMultiplier:1.25,
       special:{ name:"Acento eterno", description:"Las esdrújulas siempre llevan tilde: si fallas, duele.", type:"extraOnBigError", extra:10 },
       xpReward:125, goldReward:55, cardReward:"Carta Esdrújulas",
       rule:"Las esdrújulas y sobresdrújulas SIEMPRE llevan tilde (pájaro, brújula, murciélago...)."
     },
     { id:"muxlor", name:"Muxlor", type:"Mayúsculas", world:"cienaga",
-      sprite: "img/monsters/muxlor.png",
+      sprite: "img/monsters/muxlor.webp",
       maxHp:190, difficulty:"difícil", damageMultiplier:1.25,
       special:{ name:"Nombre propio", description:"Si fallas mayúsculas, su daño sube.", type:"extraOnBigError", extra:10 },
       xpReward:130, goldReward:60, cardReward:"Carta Mayúsculas",
       rule:"Mayúsculas en nombres propios y después de punto. Días/meses suelen ir en minúscula."
     },
     { id:"prosodion", name:"Prosodion", type:"Hiatos y diptongos", world:"cienaga",
-      sprite: "img/monsters/prosodion.png",
+      sprite: "img/monsters/prosodion.webp",
       maxHp:195, difficulty:"difícil", damageMultiplier:1.3,
       special:{ name:"Ritmo traicionero", description:"Si fallas en hiatos, castiga más.", type:"extraOnBigError", extra:10 },
       xpReward:135, goldReward:60, cardReward:"Carta Hiatos",
       rule:"Marca hiatos cuando una vocal cerrada tónica rompe el diptongo (caída, país, reír, oído...)."
     },
     { id:"zarruk", name:"Zarruk", type:"C / S / Z", world:"cienaga",
-      sprite: "img/monsters/zarruk.png",
+      sprite: "img/monsters/zarruk.webp",
       maxHp:200, difficulty:"difícil", damageMultiplier:1.3,
       special:{ name:"Zarpazo de zeta", description:"Si confundes c/s/z, te muerde.", type:"extraOnBigError", extra:10 },
       xpReward:140, goldReward:65, cardReward:"Carta C/S/Z",
       rule:"Distingue ‘c’, ‘s’ y ‘z’ (cacería, cereza, empezó...)."
     },
     { id:"minotauro", name:"Minotauro", type:"M / N", world:"cienaga",
-      sprite: "img/monsters/sprite_minotauro.png",
+      sprite: "img/monsters/sprite_minotauro.webp",
       maxHp:205, difficulty:"difícil", damageMultiplier:1.3,
       special:{ name:"Rugido nasal", description:"Si fallas m/n, castiga más.", type:"extraOnBigError", extra:10 },
       xpReward:145, goldReward:70, cardReward:"Carta M/N",
       rule:"Antes de ‘b’ y ‘p’ se escribe ‘m’ (imposible, también, empezar...)."
     },
     { id:"torvax", name:"Torvax", type:"Jefe · Reglas del pantano", world:"cienaga", isBoss:true,
-      sprite: "img/monsters/torvax.png",
+      sprite: "img/monsters/torvax.webp",
       maxHp:280, difficulty:"jefe", damageMultiplier:1.65,
       special:{ name:"Pantano perfecto", description:"Castiga cualquier fallo: aquí no hay excusas.", type:"extraOnBigError", extra:15 },
       xpReward:210, goldReward:90, cardReward:"Carta Torvax (Jefe)",
@@ -2710,42 +2710,42 @@
 
     // ===== Acantilados =====
     { id:"caoskrin", name:"Caoskrin", type:"Signos ¿? ¡! y puntuación", world:"acantilados",
-      sprite: "img/monsters/caoskrin.png",
+      sprite: "img/monsters/caoskrin.webp",
       maxHp:200, difficulty:"difícil", damageMultiplier:1.3,
       special:{ name:"Caos total", description:"Si puntúas mal, su daño se dispara.", type:"extraOnBigError", extra:11 },
       xpReward:145, goldReward:70, cardReward:"Carta Signos",
       rule:"Interrogación y exclamación se abren y se cierran. Usa puntos y comas."
     },
     { id:"hiatikus", name:"Hiatikus", type:"Hiato", world:"acantilados",
-      sprite: "img/monsters/hiatikus.png",
+      sprite: "img/monsters/hiatikus.webp",
       maxHp:205, difficulty:"difícil", damageMultiplier:1.3,
       special:{ name:"Corte de vocales", description:"Si fallas tildes de hiato, castiga más.", type:"extraOnBigError", extra:10 },
       xpReward:150, goldReward:75, cardReward:"Carta Hiato",
       rule:"Recuerda hiatos con vocal cerrada tónica: río, oíste, país, raíz..."
     },
     { id:"momia", name:"Momia", type:"H", world:"acantilados",
-      sprite: "img/monsters/momia.png",
+      sprite: "img/monsters/momia.webp",
       maxHp:210, difficulty:"difícil", damageMultiplier:1.25,
       special:{ name:"Vendaje mudo", description:"Errores de h = castigo extra.", type:"extraOnBigError", extra:10 },
       xpReward:150, goldReward:75, cardReward:"Carta H",
       rule:"H en ‘haber’, ‘hecho’, ‘hola’, ‘humor’, ‘horrible’… y cuidado con ‘a/ha/ah’."
     },
     { id:"rugiton", name:"Rugiton", type:"R / RR", world:"acantilados",
-      sprite: "img/monsters/rugiton.png",
+      sprite: "img/monsters/rugiton.webp",
       maxHp:215, difficulty:"difícil", damageMultiplier:1.3,
       special:{ name:"Rugido doble", description:"Si fallas r/rr, su daño sube.", type:"extraOnBigError", extra:10 },
       xpReward:155, goldReward:80, cardReward:"Carta R/RR",
       rule:"Entre vocales, ‘rr’; al inicio de palabra, ‘r’ (roca). Distingue ‘caro/carro’."
     },
     { id:"zombie", name:"Zombie", type:"C / S / Z", world:"acantilados",
-      sprite:"img/monsters/sprite_zombie_cz.png",
+      sprite:"img/monsters/sprite_zombie_cz.webp",
       maxHp:220, difficulty:"difícil", damageMultiplier:1.35,
       special:{ name:"Mordisco seseante", description:"Si confundes c/s/z, te hace mucho daño.", type:"extraOnBigError", extra:11 },
       xpReward:160, goldReward:85, cardReward:"Carta C/S/Z (Zombie)",
       rule:"Distingue c, s y z: zapato, gracias, cereza, empezar..."
     },
     { id:"sintaxion", name:"Sintaxion", type:"Jefe · Sintaxis", world:"acantilados", isBoss:true,
-      sprite: "img/monsters/sintaxion.png",
+      sprite: "img/monsters/sintaxion.webp",
       maxHp:300, difficulty:"jefe", damageMultiplier:1.7,
       special:{ name:"Nudo de oración", description:"Frases mal construidas = castigo brutal.", type:"extraOnBigError", extra:15 },
       xpReward:230, goldReward:100, cardReward:"Carta Sintaxion (Jefe)",
@@ -2754,42 +2754,42 @@
 
     // ===== Volcán =====
     { id:"gravikus", name:"Gravikus", type:"Llanas", world:"volcan",
-      sprite: "img/monsters/gravikus.png",
+      sprite: "img/monsters/gravikus.webp",
       maxHp:215, difficulty:"difícil", damageMultiplier:1.35,
       special:{ name:"Peso ardiente", description:"Tildes llanas olvidadas = castigo.", type:"extraOnBigError", extra:10 },
       xpReward:160, goldReward:85, cardReward:"Carta Llanas (Volcán)",
       rule:"Llanas con tilde cuando NO terminan en vocal, n o s."
     },
     { id:"jarkon", name:"Jarkon", type:"G/J", world:"volcan",
-      sprite: "img/monsters/jarkon.png",
+      sprite: "img/monsters/jarkon.webp",
       maxHp:220, difficulty:"difícil", damageMultiplier:1.35,
       special:{ name:"Chispa confusa", description:"G/J mal = castigo extra.", type:"extraOnBigError", extra:11 },
       xpReward:165, goldReward:90, cardReward:"Carta G/J (Volcán)",
       rule:"Verbos -ger/-gir con g; ‘exigir’, ‘dirigir’, ‘recoger’, ‘corregir’..."
     },
     { id:"ortograf", name:"Ortograf", type:"Mezcla de reglas", world:"volcan",
-      sprite: "img/monsters/ortograf.png",
+      sprite: "img/monsters/ortograf.webp",
       maxHp:230, difficulty:"difícil", damageMultiplier:1.4,
       special:{ name:"Fallo múltiple", description:"Cada error suma castigo.", type:"extraOnBigError", extra:12 },
       xpReward:175, goldReward:95, cardReward:"Carta Repaso",
       rule:"Repaso general: tildes, h, b/v, comas, signos, mayúsculas..."
     },
     { id:"siseus", name:"Siseus", type:"X / S", world:"volcan",
-      sprite: "img/monsters/siseus.png",
+      sprite: "img/monsters/siseus.webp",
       maxHp:235, difficulty:"difícil", damageMultiplier:1.4,
       special:{ name:"Explosión", description:"Si fallas x/s, castigo extra.", type:"extraOnBigError", extra:12 },
       xpReward:180, goldReward:100, cardReward:"Carta X/S",
       rule:"Distingue x/s en palabras frecuentes: examen, éxito, exacto, explicar, exceso..."
     },
     { id:"ciclope", name:"Cíclope", type:"C/QU/K", world:"volcan",
-      sprite:"img/monsters/sprite_ciclope_ojo.png",
+      sprite:"img/monsters/sprite_ciclope_ojo.webp",
       maxHp:245, difficulty:"difícil", damageMultiplier:1.45,
       special:{ name:"Ojo único", description:"Se fija en una letra: si fallas, duele.", type:"extraOnBigError", extra:12 },
       xpReward:190, goldReward:110, cardReward:"Carta C/QU/K (Cíclope)",
       rule:"‘qu’ ante e/i (queso, quiero). Evita grafías con k cuando no tocan."
     },
     { id:"don_pablo", name:"Don Pablo", type:"Jefe final · Examen total", world:"volcan", isBoss:true,
-      sprite: "img/monsters/donpablo.png",
+      sprite: "img/monsters/donpablo.webp",
       maxHp:360, difficulty:"jefe final", damageMultiplier:1.9,
       special:{ name:"Rúbrica implacable", description:"Cualquier fallo se paga. Bienvenido al jefe final.", type:"extraOnBigError", extra:18 },
       xpReward:350, goldReward:180, cardReward:"Carta Don Pablo (Final)",
@@ -2802,80 +2802,80 @@
 
   
   const monsterSprites = {
-    "H-Ghoul":"img/monsters/sprite_h_ghoul.png",
-    "Vampiro de la V":"img/monsters/sprite_vampiro_v.png",
-    "Gargantúa G/J":"img/monsters/sprite_gargantua_gj.png",
-    "Espectro Agudo":"img/monsters/sprite_espectro_agudo.png",
-    "Serpiente Comata":"img/monsters/sprite_serpiente_comata.png",
-    "Lexikon": "img/monsters/lexikon.png",
+    "H-Ghoul":"img/monsters/sprite_h_ghoul.webp",
+    "Vampiro de la V":"img/monsters/sprite_vampiro_v.webp",
+    "Gargantúa G/J":"img/monsters/sprite_gargantua_gj.webp",
+    "Espectro Agudo":"img/monsters/sprite_espectro_agudo.webp",
+    "Serpiente Comata":"img/monsters/sprite_serpiente_comata.webp",
+    "Lexikon": "img/monsters/lexikon.webp",
 
-    "Diacritik": "img/monsters/diacritik.png",
-    "Oxiton": "img/monsters/oxiton.png",
-    "Llanor": "img/monsters/llanor.png",
-    "Puntor": "img/monsters/puntor.png",
-    "Kalkor": "img/monsters/kalkor.png",
-    "Paper": "img/monsters/paper.png",
+    "Diacritik": "img/monsters/diacritik.webp",
+    "Oxiton": "img/monsters/oxiton.webp",
+    "Llanor": "img/monsters/llanor.webp",
+    "Puntor": "img/monsters/puntor.webp",
+    "Kalkor": "img/monsters/kalkor.webp",
+    "Paper": "img/monsters/paper.webp",
 
-    "Esdrulia": "img/monsters/esdrulia.png",
-    "Muxlor": "img/monsters/muxlor.png",
-    "Prosodion": "img/monsters/prosodion.png",
-    "Zarruk": "img/monsters/zarruk.png",
-    "Minotauro": "img/monsters/sprite_minotauro.png",
-    "Torvax": "img/monsters/torvax.png",
+    "Esdrulia": "img/monsters/esdrulia.webp",
+    "Muxlor": "img/monsters/muxlor.webp",
+    "Prosodion": "img/monsters/prosodion.webp",
+    "Zarruk": "img/monsters/zarruk.webp",
+    "Minotauro": "img/monsters/sprite_minotauro.webp",
+    "Torvax": "img/monsters/torvax.webp",
 
-    "Caoskrin": "img/monsters/caoskrin.png",
-    "Hiatikus": "img/monsters/hiatikus.png",
-    "Momia": "img/monsters/momia.png",
-    "Rugiton": "img/monsters/rugiton.png",
-    "Zombie": "img/monsters/sprite_zombie_cz.png",
-    "Sintaxion": "img/monsters/sintaxion.png",
+    "Caoskrin": "img/monsters/caoskrin.webp",
+    "Hiatikus": "img/monsters/hiatikus.webp",
+    "Momia": "img/monsters/momia.webp",
+    "Rugiton": "img/monsters/rugiton.webp",
+    "Zombie": "img/monsters/sprite_zombie_cz.webp",
+    "Sintaxion": "img/monsters/sintaxion.webp",
 
-    "Gravikus": "img/monsters/gravikus.png",
-    "Jarkon": "img/monsters/jarkon.png",
-    "Ortograf": "img/monsters/ortograf.png",
-    "Siseus": "img/monsters/siseus.png",
-    "Cíclope":"img/monsters/sprite_ciclope_ojo.png",
-    "Don Pablo": "img/monsters/donpablo.png"
+    "Gravikus": "img/monsters/gravikus.webp",
+    "Jarkon": "img/monsters/jarkon.webp",
+    "Ortograf": "img/monsters/ortograf.webp",
+    "Siseus": "img/monsters/siseus.webp",
+    "Cíclope":"img/monsters/sprite_ciclope_ojo.webp",
+    "Don Pablo": "img/monsters/donpablo.webp"
   };
 
 
   const SHOP_ITEMS = [
-    { id:"pluma_maestra", name:"Pluma maestra", cost:40, description:"Aumenta tu vida máxima en +20 y te cura por completo.", effect:{ type:"maxHpUp", amount:20 }, icon:"img/items/item_pluma_maestra.png" },
-    { id:"cuaderno_descanso", name:"Cuaderno de descanso", cost:20, description:"Restaura toda tu vida al instante.", effect:{ type:"healFull" }, icon:"img/items/item_cuaderno_descanso.png" },
-    { id:"botas_corregidor", name:"Botas del Corregidor", cost:25, description:"No dan bonificación numérica, pero quedan genial en tu inventario.", effect:{ type:"cosmetic" }, icon:"img/items/item_botas_corregidor.png" },
-    { id:"pista_simple", name:"Pergamino de pista", cost:15, description:"Te permite pedir una pista ortográfica durante la batalla.", effect:{ type:"battleConsumable" }, icon:"img/items/item_pista_simple.png" },
-    { id:"pocion_tinta", name:"Poción de tinta", cost:25, description:"Inflige 25 puntos de daño directo al monstruo (no puede rematarlo).", effect:{ type:"battleConsumable" }, icon:"img/items/item_pocion_tinta.png" },
-    { id:"escudo_gramatical", name:"Escudo gramatical", cost:25, description:"Reduce a la mitad el daño del próximo ataque del monstruo.", effect:{ type:"battleConsumable" }, icon:"img/items/item_escudo_gramatical.png" },
-    { id:"pocion_debilitante", name:"Poción debilitante", cost:30, description:"Debilita al monstruo: sus próximos ataques hacen menos daño.", effect:{ type:"battleConsumable" }, icon:"img/items/item_pocion_debilitante.png" },
-    { id:"tinta_corrosiva", name:"Tinta corrosiva", cost:30, description:"Tus ataques infligen daño extra durante varios turnos.", effect:{ type:"battleConsumable" }, icon:"img/items/item_tinta_corrosiva.png" },
-    { id:"expansor_tildes", name:"Expansor de tildes", cost:25, description:"Tu próximo ataque perfecto hará más daño gracias a las tildes.", effect:{ type:"battleConsumable" }, icon:"img/items/item_expansor_tildes.png" }
+    { id:"pluma_maestra", name:"Pluma maestra", cost:40, description:"Aumenta tu vida máxima en +20 y te cura por completo.", effect:{ type:"maxHpUp", amount:20 }, icon:"img/items/item_pluma_maestra.webp" },
+    { id:"cuaderno_descanso", name:"Cuaderno de descanso", cost:20, description:"Restaura toda tu vida al instante.", effect:{ type:"healFull" }, icon:"img/items/item_cuaderno_descanso.webp" },
+    { id:"botas_corregidor", name:"Botas del Corregidor", cost:25, description:"No dan bonificación numérica, pero quedan genial en tu inventario.", effect:{ type:"cosmetic" }, icon:"img/items/item_botas_corregidor.webp" },
+    { id:"pista_simple", name:"Pergamino de pista", cost:15, description:"Te permite pedir una pista ortográfica durante la batalla.", effect:{ type:"battleConsumable" }, icon:"img/items/item_pista_simple.webp" },
+    { id:"pocion_tinta", name:"Poción de tinta", cost:25, description:"Inflige 25 puntos de daño directo al monstruo (no puede rematarlo).", effect:{ type:"battleConsumable" }, icon:"img/items/item_pocion_tinta.webp" },
+    { id:"escudo_gramatical", name:"Escudo gramatical", cost:25, description:"Reduce a la mitad el daño del próximo ataque del monstruo.", effect:{ type:"battleConsumable" }, icon:"img/items/item_escudo_gramatical.webp" },
+    { id:"pocion_debilitante", name:"Poción debilitante", cost:30, description:"Debilita al monstruo: sus próximos ataques hacen menos daño.", effect:{ type:"battleConsumable" }, icon:"img/items/item_pocion_debilitante.webp" },
+    { id:"tinta_corrosiva", name:"Tinta corrosiva", cost:30, description:"Tus ataques infligen daño extra durante varios turnos.", effect:{ type:"battleConsumable" }, icon:"img/items/item_tinta_corrosiva.webp" },
+    { id:"expansor_tildes", name:"Expansor de tildes", cost:25, description:"Tu próximo ataque perfecto hará más daño gracias a las tildes.", effect:{ type:"battleConsumable" }, icon:"img/items/item_expansor_tildes.webp" }
   ];
 
-  const DEFAULT_ITEM_ICON = "img/items/item_pista_simple.png";
+  const DEFAULT_ITEM_ICON = "img/items/item_pista_simple.webp";
 
   const ITEM_DEFS = {
-    "Fragmento de Diccionario": { icon:"img/items/item_fragmento_diccionario.png", rarity:"common", desc:"Un trozo de sabiduría olvidada. Al usarlo, obtienes un pequeño extra de experiencia." },
-    "Polvo de Tilde": { icon:"img/items/item_polvo_tilde.png", rarity:"common", desc:"Un leve brillo recorre tus palabras. Aumenta ligeramente tu precisión en el próximo turno." },
-    "Píxel Roto": { icon:"img/items/item_pixel_roto.png", rarity:"common", desc:"Restos de un mundo antiguo. No sirve en combate, pero puede venderse por unas monedas." },
-    "Mancha de Tinta": { icon:"img/items/item_mancha_tinta.png", rarity:"common", desc:"La tinta te cubre como una armadura improvisada. Reduce el daño del próximo ataque enemigo." },
-    "Coma Semilla": { icon:"img/items/item_coma_semilla.png", rarity:"common", desc:"Planta una coma en el texto y observa cómo crece el sentido. Te da una pista sencilla sobre la frase." },
-    "Eco Agudo": { icon:"img/items/item_eco_agudo.png", rarity:"common", desc:"Un sonido punzante resuena en tu mente. Recarga ligeramente la barra de habilidad del héroe." },
-    "Pergamino Roto": { icon:"img/items/item_pergamino_roto.png", rarity:"common", desc:"Solo se lee un fragmento… pero basta. Revela una pista sencilla." },
+    "Fragmento de Diccionario": { icon:"img/items/item_fragmento_diccionario.webp", rarity:"common", desc:"Un trozo de sabiduría olvidada. Al usarlo, obtienes un pequeño extra de experiencia." },
+    "Polvo de Tilde": { icon:"img/items/item_polvo_tilde.webp", rarity:"common", desc:"Un leve brillo recorre tus palabras. Aumenta ligeramente tu precisión en el próximo turno." },
+    "Píxel Roto": { icon:"img/items/item_pixel_roto.webp", rarity:"common", desc:"Restos de un mundo antiguo. No sirve en combate, pero puede venderse por unas monedas." },
+    "Mancha de Tinta": { icon:"img/items/item_mancha_tinta.webp", rarity:"common", desc:"La tinta te cubre como una armadura improvisada. Reduce el daño del próximo ataque enemigo." },
+    "Coma Semilla": { icon:"img/items/item_coma_semilla.webp", rarity:"common", desc:"Planta una coma en el texto y observa cómo crece el sentido. Te da una pista sencilla sobre la frase." },
+    "Eco Agudo": { icon:"img/items/item_eco_agudo.webp", rarity:"common", desc:"Un sonido punzante resuena en tu mente. Recarga ligeramente la barra de habilidad del héroe." },
+    "Pergamino Roto": { icon:"img/items/item_pergamino_roto.webp", rarity:"common", desc:"Solo se lee un fragmento… pero basta. Revela una pista sencilla." },
 
-    "H Perdida": { icon:"img/items/item_h_perdida.png", rarity:"unique", desc:"Corrige automáticamente un error de h en el siguiente combate (pista potente)." },
-    "Colmillo Ortográfico": { icon:"img/items/item_colmillo_bv.png", rarity:"unique", desc:"Te da una pista clara sobre B/V en tu próximo ataque." },
-    "Garra Confusora": { icon:"img/items/item_garra_gj.png", rarity:"unique", desc:"Te da una pista clara sobre G/J." },
-    "Acento Condensado": { icon:"img/items/item_acento_condensado.png", rarity:"unique", desc:"Te ayuda con tildes (pista potente) en el siguiente ataque." },
-    "Colmillo Comático": { icon:"img/items/item_colmillo_comas.png", rarity:"unique", desc:"Te indica dónde deberían ir comas (pista potente)." },
+    "H Perdida": { icon:"img/items/item_h_perdida.webp", rarity:"unique", desc:"Corrige automáticamente un error de h en el siguiente combate (pista potente)." },
+    "Colmillo Ortográfico": { icon:"img/items/item_colmillo_bv.webp", rarity:"unique", desc:"Te da una pista clara sobre B/V en tu próximo ataque." },
+    "Garra Confusora": { icon:"img/items/item_garra_gj.webp", rarity:"unique", desc:"Te da una pista clara sobre G/J." },
+    "Acento Condensado": { icon:"img/items/item_acento_condensado.webp", rarity:"unique", desc:"Te ayuda con tildes (pista potente) en el siguiente ataque." },
+    "Colmillo Comático": { icon:"img/items/item_colmillo_comas.webp", rarity:"unique", desc:"Te indica dónde deberían ir comas (pista potente)." },
 
-    "Pluma Arcana": { icon:"img/items/item_pluma_arcana.png", rarity:"rare", desc:"Rellena parte de la barra de habilidad." },
-    "Gema de Conjugación": { icon:"img/items/item_gema_conjugacion.png", rarity:"rare", desc:"Permite una ayuda extra en el próximo ataque." },
-    "Cristal Vocálico": { icon:"img/items/item_cristal_vocalico.png", rarity:"rare", desc:"Evita penalizaciones durante un turno." },
-    "Runas de Coherencia": { icon:"img/items/item_runas_coherencia.png", rarity:"rare", desc:"Reduce errores generales en tu próximo ataque." },
+    "Pluma Arcana": { icon:"img/items/item_pluma_arcana.webp", rarity:"rare", desc:"Rellena parte de la barra de habilidad." },
+    "Gema de Conjugación": { icon:"img/items/item_gema_conjugacion.webp", rarity:"rare", desc:"Permite una ayuda extra en el próximo ataque." },
+    "Cristal Vocálico": { icon:"img/items/item_cristal_vocalico.webp", rarity:"rare", desc:"Evita penalizaciones durante un turno." },
+    "Runas de Coherencia": { icon:"img/items/item_runas_coherencia.webp", rarity:"rare", desc:"Reduce errores generales en tu próximo ataque." },
 
-    "Orbe de la Ortografía Perfecta": { icon:"img/items/item_orbe_ortografia.png", rarity:"legendary", desc:"Te vuelve muy indulgente el siguiente ataque." },
-    "Corona del Corrector Supremo": { icon:"img/items/item_corona_corrector.png", rarity:"legendary", desc:"Potencia el daño durante un combate." },
-    "Libro Viviente": { icon:"img/items/item_libro_viviente.png", rarity:"legendary", desc:"Te da una pista muy potente." }
+    "Orbe de la Ortografía Perfecta": { icon:"img/items/item_orbe_ortografia.webp", rarity:"legendary", desc:"Te vuelve muy indulgente el siguiente ataque." },
+    "Corona del Corrector Supremo": { icon:"img/items/item_corona_corrector.webp", rarity:"legendary", desc:"Potencia el daño durante un combate." },
+    "Libro Viviente": { icon:"img/items/item_libro_viviente.webp", rarity:"legendary", desc:"Te da una pista muy potente." }
   };
 
   const COMMON_ITEMS = ["Fragmento de Diccionario","Polvo de Tilde","Píxel Roto","Mancha de Tinta","Coma Semilla","Eco Agudo","Pergamino Roto"];
@@ -3599,7 +3599,7 @@
 
     // PNG esperado + fallback SVG (si el PNG no existe, el SVG siempre funciona)
     const svg = makeWorldBattleBgSvg(w);
-    const val = `url("img/backgrounds/battle_bg_${id}.png"), url("${svg}")`;
+    const val = `url("img/backgrounds/battle_bg_${id}.webp"), url("${svg}")`;
     battleScreenEl.style.setProperty("--battle-bg-image", val);
 
     // Disparar transición
@@ -3823,7 +3823,7 @@ clearTimeout(applyBattleWorldBackground._t);
       mapSubEl.innerHTML = `Zona actual: <strong>${world.emoji} ${world.name}</strong>. Tu próximo rival es <strong>${(monsters[currentMonsterIndex]||boss).name}</strong>.`;
     }
 
-    const bgImg = `<img class="map-bg" src="img/backgrounds/battle_bg_${world.id}.png" data-fallback="${makeWorldMapSvg(world)}" alt="Mapa de ${world.name}" onerror="this.onerror=null; this.src=this.dataset.fallback;">`;
+    const bgImg = `<img class="map-bg" src="img/backgrounds/battle_bg_${world.id}.webp" data-fallback="${makeWorldMapSvg(world)}" alt="Mapa de ${world.name}" onerror="this.onerror=null; this.src=this.dataset.fallback;">`;
     mapCanvasEl.innerHTML = bgImg;
     renderMapStages();
   }
@@ -3850,7 +3850,7 @@ clearTimeout(applyBattleWorldBackground._t);
       return `
         <div class="map-stage ${statusClass} ${bossClass}">
           <div class="map-stage-inner">
-            <div class="map-stage-icon"><img src="${m.sprite}" data-alt="img/monsters/${m.id}.png" data-fallback="${makeMonsterSprite(m.name, worldId)}" alt="${m.name}" onerror="if(this.dataset.alt && this.src.indexOf(this.dataset.alt)===-1){this.src=this.dataset.alt; return;} this.onerror=null; this.src=this.dataset.fallback;"></div>
+            <div class="map-stage-icon"><img src="${m.sprite}" data-alt="img/monsters/${m.id}.webp" data-fallback="${makeMonsterSprite(m.name, worldId)}" alt="${m.name}" onerror="if(this.dataset.alt && this.src.indexOf(this.dataset.alt)===-1){this.src=this.dataset.alt; return;} this.onerror=null; this.src=this.dataset.fallback;"></div>
             <div class="map-stage-label">${localIdx+1}. ${shortName}${m.isBoss ? " 👑" : ""}</div>
             <div class="map-stage-tooltip"><strong>${m.name}</strong><br>${m.rule}</div>
           </div>
@@ -4244,8 +4244,8 @@ clearTimeout(applyBattleWorldBackground._t);
     monsterNameEl.textContent = monster.name;
     monsterTypeEl.textContent = `${monster.type} · Dificultad: ${monster.difficulty}`;
 
-    // Sprite con fallback (nuevo formato: img/monsters/<id>.png)
-    const altSprite = `img/monsters/${monster.id}.png`;
+    // Sprite con fallback (nuevo formato: img/monsters/<id>.webp)
+    const altSprite = `img/monsters/${monster.id}.webp`;
     const fallbackSprite = makeMonsterSprite(monster.name, monster.world);
     monsterSpriteImg.onerror = function(){
       if(this.src.indexOf(altSprite) === -1){ this.src = altSprite; return; }
