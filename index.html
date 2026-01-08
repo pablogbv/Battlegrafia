@@ -646,7 +646,10 @@
     .monster-visual.hit-flash{ animation: monsterHitFlash 0.18s linear 0s 2; }
     @keyframes monsterHitFlash{
       0%{ filter:brightness(1); }
-      50%{ filter:brightness(2.2) hue-rotate(-25deg) saturate(1.6); }
+      
+    .death-flash{ animation: deathFlash .28s steps(2) 2; }
+    @keyframes deathFlash{ 50%{ filter: brightness(2) contrast(1.2) saturate(1.2); } }
+50%{ filter:brightness(2.2) hue-rotate(-25deg) saturate(1.6); }
       100%{ filter:brightness(1); }
     }
 
@@ -1372,174 +1375,6 @@
   #splash-logo{ animation: none !important; }
 }
 
-
-/* ===== Pantalla final (victoria) ===== */
-.final-screen{
-  position:fixed; inset:0; z-index:9999;
-  display:none;
-  background: radial-gradient(1200px 600px at 50% 10%, rgba(255,255,255,0.10), transparent 60%),
-              linear-gradient(180deg, rgba(0,0,0,0.90), rgba(0,0,0,0.92));
-  backdrop-filter: blur(6px);
-  padding: 22px;
-}
-.final-inner{
-  max-width: 1100px;
-  margin: 0 auto;
-  height: 100%;
-  display:flex;
-  flex-direction:column;
-  gap: 14px;
-}
-.final-top{
-  display:flex;
-  gap: 14px;
-  align-items: stretch;
-  flex-wrap:wrap;
-}
-.final-banner{
-  flex: 1 1 560px;
-  border: 3px solid #000;
-  border-radius: 16px;
-  overflow:hidden;
-  background:#0b1220;
-  position:relative;
-  min-height: 210px;
-}
-.final-banner img.final-bg{
-  position:absolute; inset:0;
-  width:100%; height:100%; object-fit:cover;
-  filter: saturate(1.15) contrast(1.05) brightness(.85);
-}
-.final-banner::after{
-  content:"";
-  position:absolute; inset:0;
-  background: linear-gradient(90deg, rgba(0,0,0,0.72), rgba(0,0,0,0.15));
-}
-.final-title{
-  position:relative;
-  padding: 16px 16px 14px 16px;
-  display:flex;
-  flex-direction:column;
-  gap: 6px;
-}
-.final-title h1{
-  margin:0;
-  font-size: 1.45rem;
-  letter-spacing: .3px;
-  text-shadow: 0 2px 0 #000;
-}
-.final-title .final-sub{
-  opacity:.92;
-  line-height:1.25;
-  font-size:.95rem;
-}
-.final-portraits{
-  position:relative;
-  display:flex;
-  gap: 10px;
-  align-items:flex-end;
-  padding: 0 16px 16px 16px;
-}
-.final-portrait{
-  width: 86px; height: 86px;
-  border: 3px solid #000;
-  border-radius: 14px;
-  background: rgba(10,16,28,.85);
-  overflow:hidden;
-  box-shadow: 0 10px 20px rgba(0,0,0,.35);
-}
-.final-portrait img{ width:100%; height:100%; object-fit:contain; image-rendering: pixelated; }
-.final-vs{
-  align-self:center;
-  font-weight:900;
-  letter-spacing: .6px;
-  background: rgba(0,0,0,.55);
-  border: 2px solid #000;
-  border-radius: 999px;
-  padding: 4px 10px;
-}
-.final-side{
-  flex: 0 1 380px;
-  border: 3px solid #000;
-  border-radius: 16px;
-  background:#0b1220;
-  padding: 14px;
-}
-.final-side .box-title{ margin:0 0 6px 0; }
-.final-kpis{
-  display:grid;
-  grid-template-columns: repeat(2, minmax(0,1fr));
-  gap: 10px;
-  margin-top: 10px;
-}
-.final-kpi{
-  border: 2px solid #000;
-  border-radius: 12px;
-  padding: 10px 10px 8px;
-  background: rgba(255,255,255,0.04);
-}
-.final-kpi .k{ opacity:.8; font-size:.78rem; }
-.final-kpi .v{ font-size: 1.15rem; font-weight: 900; margin-top: 2px; }
-.final-mid{
-  display:grid;
-  grid-template-columns: 1.2fr .8fr;
-  gap: 14px;
-  flex: 1;
-  min-height: 0;
-}
-.final-card{
-  border: 3px solid #000;
-  border-radius: 16px;
-  background:#0b1220;
-  padding: 14px;
-  min-height: 0;
-}
-.final-bars{ display:flex; flex-direction:column; gap:10px; margin-top:10px; }
-.final-bar{
-  display:flex; gap:10px; align-items:center;
-}
-.final-bar .lbl{
-  width: 120px;
-  opacity:.9;
-  font-size:.85rem;
-}
-.final-bar .track{
-  flex: 1;
-  height: 12px;
-  border: 2px solid #000;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.06);
-  overflow:hidden;
-}
-.final-bar .fill{ height:100%; width:0%; background: rgba(120,220,255,0.85); }
-.final-bar .pct{
-  width: 70px;
-  text-align:right;
-  font-variant-numeric: tabular-nums;
-  opacity:.92;
-  font-size:.85rem;
-}
-.final-list{
-  margin: 10px 0 0 0;
-  padding-left: 18px;
-  opacity:.92;
-  line-height:1.25;
-  font-size:.92rem;
-}
-.final-actions{
-  display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
-  padding-top: 4px;
-}
-.final-actions .btn{ border-radius: 12px; }
-@media (max-width: 860px){
-  .final-mid{ grid-template-columns: 1fr; }
-  .final-bar .lbl{ width: 105px; }
-}
-
-.death-flash{ animation: deathFlash .25s steps(2) 2; }
-@keyframes deathFlash { 50% { filter: brightness(2) contrast(1.2); } }
-
-
 </style>
 </head>
 
@@ -1808,83 +1643,7 @@
 
       </div>
 
-      
-        <!-- Pantalla final -->
-        <div id="final-screen" class="final-screen" aria-hidden="true">
-          <div class="final-inner">
-            <div class="final-top">
-              <div class="final-banner">
-                <img id="final-bg" class="final-bg" src="img/backgrounds/battle_bg_acantilados.png" alt="Victoria" onerror="this.onerror=null; this.src='img/backgrounds/battle_bg_montanas.png';">
-                <div class="final-title">
-                  <h1 id="final-title">🏁 Victoria final</h1>
-                  <div id="final-sub" class="final-sub">Has devuelto la luz a Ortographia. La tinta tiembla... y la RAE toma nota.</div>
-                </div>
-                <div class="final-portraits">
-                  <div class="final-portrait"><img id="final-hero-img" src="img/heros/sprite_hero_mago.png" alt="Héroe" onerror="this.onerror=null; this.src='img/logo.png';"></div>
-                  <div class="final-vs">VS</div>
-                  <div class="final-portrait"><img id="final-boss-img" src="img/monsters/sprite_gargantua_gj.png" alt="Jefe" onerror="this.onerror=null; this.src='img/logo.png';"></div>
-                </div>
-              </div>
-
-              <div class="final-side">
-                <div class="box-title">Resumen rápido</div>
-                <div class="final-sub" style="opacity:.9;">Tu partida, en números. (Sí, esto también cuenta como estudiar).</div>
-                <div class="final-kpis">
-                  <div class="final-kpi"><div class="k">Derrotas (vida a 0)</div><div class="v" id="final-kpi-deaths">0</div></div>
-                  <div class="final-kpi"><div class="k">EXP neta</div><div class="v" id="final-kpi-xpnet">0</div></div>
-                  <div class="final-kpi"><div class="k">Objetos usados</div><div class="v" id="final-kpi-items">0</div></div>
-                  <div class="final-kpi"><div class="k">Turnos</div><div class="v" id="final-kpi-turns">0</div></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="final-mid">
-              <div class="final-card">
-                <div class="box-title">Precisión lingüística</div>
-                <div class="final-sub" style="opacity:.9;">Porcentaje sobre el total de turnos.</div>
-                <div class="final-bars">
-                  <div class="final-bar">
-                    <div class="lbl">✨ Perfectas</div>
-                    <div class="track"><div class="fill" id="final-bar-perfect"></div></div>
-                    <div class="pct" id="final-pct-perfect">0%</div>
-                  </div>
-                  <div class="final-bar">
-                    <div class="lbl">✅ Correctas</div>
-                    <div class="track"><div class="fill" id="final-bar-correct"></div></div>
-                    <div class="pct" id="final-pct-correct">0%</div>
-                  </div>
-                  <div class="final-bar">
-                    <div class="lbl">❌ Incorrectas</div>
-                    <div class="track"><div class="fill" id="final-bar-wrong"></div></div>
-                    <div class="pct" id="final-pct-wrong">0%</div>
-                  </div>
-                </div>
-
-                <ul class="final-list" id="final-extra">
-                  <li><strong>Nivel:</strong> <span id="final-level">1</span> · <strong>Oro:</strong> <span id="final-gold">0</span> · <strong>Cartas:</strong> <span id="final-cards">0</span></li>
-                  <li><strong>Pistas usadas:</strong> <span id="final-hints">0</span> · <strong>Habilidades usadas:</strong> <span id="final-abilities">0</span></li>
-                  <li><strong>Victorias:</strong> <span id="final-wins">0</span> · <strong>Monstruos purificados:</strong> <span id="final-uniq">0</span></li>
-                </ul>
-              </div>
-
-              <div class="final-card">
-                <div class="box-title">Sello final</div>
-                <div id="final-stamp" class="final-sub" style="opacity:.95; line-height:1.35;">
-                  “La letra bien puesta es más fuerte que la bestia más bruta.”
-                </div>
-
-                <div class="final-actions" style="margin-top:12px;">
-                  <button class="btn secondary" id="final-open-ach">Ver logros</button>
-                  <button class="btn secondary" id="final-go-map">Ir al mapa</button>
-                  <button class="btn primary" id="final-close">Cerrar</button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-<!-- DERECHA -->
+      <!-- DERECHA -->
       <div class="panel-right">
         <div class="hero-panel" id="hero-panel">
           <div class="box-title">Héroe</div>
@@ -3149,7 +2908,8 @@
     weakenTurns:0,
     poisonTurns:0,
     perfectTildeBonus:false,
-    damageBoostTurns:0
+    damageBoostTurns:0,
+    isDeathAnimating:false
   };
 
   function resetBattleState(){
@@ -3162,7 +2922,8 @@
       weakenTurns:0,
       poisonTurns:0,
       perfectTildeBonus:false,
-      damageBoostTurns:0
+      damageBoostTurns:0,
+      isDeathAnimating:false
     };
   }
 
@@ -3394,7 +3155,6 @@
 
   function addXp(amount){
     player.xp += amount;
-    try{ if(typeof ensureAchievements==='function') { ensureAchievements(); inc('xpGained', amount); } }catch(e){}
     let subidas = 0;
     while(player.xp >= player.xpToNext){
       player.xp -= player.xpToNext;
@@ -4447,147 +4207,6 @@ clearTimeout(applyBattleWorldBackground._t);
     setLog(`<span class="good">¡Has purificado a todos los monstruos actuales!</span> Has completado toda la aventura (por ahora). Si añades más mundos, aquí seguirá tu leyenda.`);
   }
 
-
-  // ===== Pantalla final (tras derrotar al jefe final) =====
-  function pct(n, d){
-    if(!d || d<=0) return 0;
-    return Math.max(0, Math.min(100, Math.round((n/d)*100)));
-  }
-
-  function computeFinalStats(){
-    try{ if(typeof ensureAchievements==='function') ensureAchievements(); }catch(e){}
-    const turns = (typeof prog==='function') ? prog("turns", (player?.diary?.length||0)) : (player?.diary?.length||0);
-    const correct = (typeof prog==='function') ? prog("correctTurns", 0) : 0;
-    const perfect = (typeof prog==='function') ? prog("perfectTurns", 0) : 0;
-    const wrong = Math.max(0, (turns||0) - (correct||0));
-
-    const deaths = (typeof prog==='function') ? prog("deaths", 0) : 0;
-    const itemsUsed = (typeof prog==='function') ? prog("itemsUsed", 0) : 0;
-    const hintsUsed = (typeof prog==='function') ? prog("hintsUsed", 0) : 0;
-    const abilitiesUsed = (typeof prog==='function') ? prog("abilitiesUsed", 0) : 0;
-
-    const xpGained = (typeof prog==='function') ? prog("xpGained", 0) : 0;
-    const xpLost   = (typeof prog==='function') ? prog("xpLost", 0) : 0;
-
-    const wins = (typeof prog==='function') ? prog("wins", (player?.defeatedMonsters?.length||0)) : (player?.defeatedMonsters?.length||0);
-    const uniq = (typeof prog==='function') ? prog("uniqueMonstersDefeated", (player?.defeatedMonsters?.length||0)) : (player?.defeatedMonsters?.length||0);
-
-    return {
-      turns, correct, perfect, wrong,
-      deaths, itemsUsed, hintsUsed, abilitiesUsed,
-      xpGained, xpLost, xpNet: (xpGained - xpLost),
-      wins, uniq
-    };
-  }
-
-  function renderFinalSummary(finalBoss){
-    const s = computeFinalStats();
-
-    const el = (id)=>document.getElementById(id);
-
-    // KPIs
-    if(el("final-kpi-deaths")) el("final-kpi-deaths").textContent = s.deaths;
-    if(el("final-kpi-items")) el("final-kpi-items").textContent = s.itemsUsed;
-    if(el("final-kpi-turns")) el("final-kpi-turns").textContent = s.turns;
-    if(el("final-kpi-xpnet")) el("final-kpi-xpnet").textContent = s.xpNet;
-
-    // Barras
-    const pPerfect = pct(s.perfect, s.turns);
-    const pCorrect = pct(Math.max(0, s.correct - s.perfect), s.turns);
-    const pWrong   = pct(s.wrong, s.turns);
-
-    const setBar = (barId, pctVal)=>{
-      const b = el(barId);
-      if(b) b.style.width = pctVal + "%";
-    };
-    setBar("final-bar-perfect", pPerfect);
-    setBar("final-bar-correct", pCorrect);
-    setBar("final-bar-wrong", pWrong);
-
-    if(el("final-pct-perfect")) el("final-pct-perfect").textContent = pPerfect + "%";
-    if(el("final-pct-correct")) el("final-pct-correct").textContent = pCorrect + "%";
-    if(el("final-pct-wrong"))   el("final-pct-wrong").textContent   = pWrong + "%";
-
-    // Extras
-    if(el("final-level")) el("final-level").textContent = (player?.level||1);
-    if(el("final-gold"))  el("final-gold").textContent  = (player?.gold||0);
-    if(el("final-cards")) el("final-cards").textContent = (player?.cards?.length||0);
-    if(el("final-hints")) el("final-hints").textContent = s.hintsUsed;
-    if(el("final-abilities")) el("final-abilities").textContent = s.abilitiesUsed;
-    if(el("final-wins")) el("final-wins").textContent = s.wins;
-    if(el("final-uniq")) el("final-uniq").textContent = s.uniq;
-
-    // Título y lore
-    const bossName = finalBoss?.name || "el jefe final";
-    if(el("final-title")) el("final-title").textContent = "🏁 Victoria final";
-    if(el("final-sub")) el("final-sub").innerHTML =
-      `Has derrotado a <strong>${bossName}</strong>. Tu aventura queda registrada en tinta indeleble.`;
-
-    // Sprites (mejor intento: los que ya están en batalla)
-    try{
-      const hi = el("final-hero-img");
-      if(hi && window.heroSpriteImg && heroSpriteImg.src) hi.src = heroSpriteImg.src;
-    }catch(e){}
-    try{
-      const bi = el("final-boss-img");
-      if(bi && window.monsterSpriteImg && monsterSpriteImg.src) bi.src = monsterSpriteImg.src;
-    }catch(e){}
-
-    // Fondo: intenta usar el mundo del jefe
-    try{
-      const worldId = finalBoss?.world || (window.getMonsterWorldId ? getMonsterWorldId(monsters.length-1) : null);
-      const bg = el("final-bg");
-      if(bg && worldId) bg.src = `img/backgrounds/battle_bg_${worldId}.png`;
-    }catch(e){}
-  }
-
-  function showFinalSummary(finalBoss){
-    const screen = document.getElementById("final-screen");
-    if(!screen) return;
-
-    renderFinalSummary(finalBoss);
-
-    screen.style.display = "block";
-    screen.setAttribute("aria-hidden","false");
-
-    // botones
-    const closeBtn = document.getElementById("final-close");
-    const goMapBtn = document.getElementById("final-go-map");
-    const openAchBtn = document.getElementById("final-open-ach");
-
-    if(closeBtn && !closeBtn.dataset.bound){
-      closeBtn.dataset.bound="1";
-      closeBtn.onclick = ()=> hideFinalSummary();
-    }
-    if(goMapBtn && !goMapBtn.dataset.bound){
-      goMapBtn.dataset.bound="1";
-      goMapBtn.onclick = ()=>{ hideFinalSummary(); try{ switchTo("map"); }catch(e){} };
-    }
-    if(openAchBtn && !openAchBtn.dataset.bound){
-      openAchBtn.dataset.bound="1";
-      openAchBtn.onclick = ()=>{ hideFinalSummary(); try{ switchTo("achievements"); }catch(e){ try{ showAchievements(); }catch(_){} } };
-    }
-
-    // cerrar con ESC
-    if(!screen.dataset.esc){
-      screen.dataset.esc="1";
-      window.addEventListener("keydown", (e)=>{
-        if(e.key === "Escape"){
-          const fs = document.getElementById("final-screen");
-          if(fs && fs.style.display === "block") hideFinalSummary();
-        }
-      });
-    }
-  }
-
-  function hideFinalSummary(){
-    const screen = document.getElementById("final-screen");
-    if(!screen) return;
-    screen.style.display = "none";
-    screen.setAttribute("aria-hidden","true");
-  }
-
-
   function loadMonster(){
     if(currentMonsterIndex >= monsters.length){
       endRunWinAll();
@@ -4654,8 +4273,6 @@ clearTimeout(applyBattleWorldBackground._t);
     const realXpLoss = Math.min(player.xp, xpLoss);
     player.xp -= realXpLoss;
 
-    try{ if(typeof ensureAchievements==='function') { ensureAchievements(); inc('xpLost', realXpLoss); } }catch(e){}
-
     player.hp = Math.max(1, Math.round(player.maxHp * HP_AFTER_DEATH_RATIO));
 
     currentMonsterHp = monster.maxHp;
@@ -4675,6 +4292,125 @@ clearTimeout(applyBattleWorldBackground._t);
     campMessageEl.innerHTML = `<span class="hint">Has sido derrotado por ${monster.name}. Has perdido algo de oro y experiencia, pero puedes descansar y volver a intentarlo.</span>`;
     switchTo("camp");
   }
+
+// ===== FX: Desintegración del monstruo (canvas) =====
+function disintegrateImg(imgEl, onDone, opts = {}) {
+  try{
+    const {
+      duration = 950,      // ms
+      step = 3,            // 1 = más partículas, 4 = menos (mejor para Chromebooks)
+      spread = 85,         // dispersión
+      gravity = 0.10,      // caída
+      fade = true
+    } = opts;
+
+    if(!imgEl) { onDone && onDone(); return; }
+    const parent = imgEl.parentElement;
+    if(!parent) { onDone && onDone(); return; }
+
+    // Si la imagen no ha cargado aún, evitamos líos
+    if(!imgEl.complete || imgEl.naturalWidth === 0){
+      onDone && onDone();
+      return;
+    }
+
+    // Canvas overlay en el mismo contenedor del sprite
+    const canvas = document.createElement("canvas");
+    const dpr = window.devicePixelRatio || 1;
+
+    const w = Math.max(1, imgEl.offsetWidth);
+    const h = Math.max(1, imgEl.offsetHeight);
+
+    // Asegura overlay correcto
+    const cs = getComputedStyle(parent);
+    if(cs.position === "static") parent.style.position = "relative";
+
+    canvas.style.position = "absolute";
+    canvas.style.left = imgEl.offsetLeft + "px";
+    canvas.style.top  = imgEl.offsetTop  + "px";
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
+    canvas.style.pointerEvents = "none";
+    canvas.style.zIndex = 9999;
+
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+
+    parent.appendChild(canvas);
+
+    const ctx = canvas.getContext("2d", { willReadFrequently:true });
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.imageSmoothingEnabled = false;
+
+    ctx.clearRect(0,0,w,h);
+    ctx.drawImage(imgEl, 0, 0, w, h);
+
+    let imgData;
+    try{
+      imgData = ctx.getImageData(0, 0, w, h);
+    }catch(e){
+      // Si por CORS u otros motivos no se puede leer, hacemos fallback
+      canvas.remove();
+      onDone && onDone();
+      return;
+    }
+    const data = imgData.data;
+
+    const parts = [];
+    for(let y=0; y<h; y+=step){
+      for(let x=0; x<w; x+=step){
+        const i = (y * w + x) * 4;
+        const a = data[i+3];
+        if(a > 20){
+          parts.push({
+            x, y,
+            vx: (Math.random()*2 - 1) * (spread/25),
+            vy: (Math.random()*2 - 1) * (spread/35) - 0.8,
+            r: data[i],
+            g: data[i+1],
+            b: data[i+2],
+            a: a/255
+          });
+        }
+      }
+    }
+
+    // Oculta la img real mientras el canvas la “rompe”
+    const prevVis = imgEl.style.visibility;
+    imgEl.style.visibility = "hidden";
+
+    const t0 = performance.now();
+    function frame(t){
+      const p = Math.min(1, (t - t0) / duration);
+      ctx.clearRect(0,0,w,h);
+
+      for(const pt of parts){
+        pt.x += pt.vx;
+        pt.y += pt.vy + gravity * (p * 18);
+        pt.vx *= 0.99;
+        pt.vy *= 0.99;
+
+        const alpha = fade ? pt.a * (1 - p) : pt.a;
+        if(alpha <= 0) continue;
+
+        ctx.fillStyle = `rgba(${pt.r},${pt.g},${pt.b},${alpha})`;
+        ctx.fillRect(pt.x, pt.y, step, step);
+      }
+
+      if(p < 1){
+        requestAnimationFrame(frame);
+      }else{
+        canvas.remove();
+        imgEl.style.visibility = prevVis;
+        onDone && onDone();
+      }
+    }
+    requestAnimationFrame(frame);
+  }catch(err){
+    // Nunca bloquear el juego por un efecto visual
+    try{ onDone && onDone(); }catch(e){}
+  }
+}
 
   function resolveTurn(){
     if(player.hp <= 0) return;
@@ -4867,17 +4603,28 @@ clearTimeout(applyBattleWorldBackground._t);
       return;
     }
 
-   // ¿Monstruo derrotado?
+
+
+// ¿Monstruo derrotado?
 if(currentMonsterHp <= 0){
 
-  // Evita dobles ejecuciones si llega otro click/turno mientras anima
-  if (player._isAnimatingDeath) return;
-  player._isAnimatingDeath = true;
+  // Evita dobles ejecuciones mientras muere (clicks/Enter)
+  if(battleState.isDeathAnimating) return;
+  battleState.isDeathAnimating = true;
 
-  const afterDeath = () => {
-    player._isAnimatingDeath = false;
+  // Bloqueo suave de controles durante la animación
+  try{
+    attackBtn.disabled = true;
+    answerEl.disabled = true;
+    useItemBtn.disabled = true;
+    abilityBtn.disabled = true;
+  }catch(e){}
 
-    const m = monsters[currentMonsterIndex];
+  const m = monsters[currentMonsterIndex];
+
+  const afterDeath = ()=>{
+    battleState.isDeathAnimating = false;
+
     player.monstersDefeated++;
     addGold(m.goldReward);
     addCard(m.cardReward);
@@ -4903,26 +4650,15 @@ if(currentMonsterHp <= 0){
       rewardText += `<br><span class="good">Botín adicional:</span> encuentras <strong>${extraItemName}</strong>.`;
     }
 
-monsterSpriteEl.classList.add("death-flash");
-setTimeout(()=> {
-  disintegrateImg(monsterSpriteEl, afterDeath, { duration: 1100, step: 3, spread: 85 });
-}, 250);
-
-
     addXp(m.xpReward);
     setLog(html + rewardText);
 
-    // ¿Jefe final derrotado? -> pantalla de resumen
-    const _isFinalBoss = (currentMonsterIndex === (monsters.length - 1));
-    if(_isFinalBoss){
-      currentMonsterIndex = monsters.length;
-      player.currentMonsterIndex = currentMonsterIndex;
-      currentMonsterHp = 0;
-      savePlayer();
-      try{ renderBigMap(); }catch(e){}
-      try{ showFinalSummary(m); }catch(e){}
-      return;
-    }
+    // Rehabilitar controles (la habilidad se recalcula luego)
+    try{
+      attackBtn.disabled = false;
+      answerEl.disabled = false;
+      useItemBtn.disabled = false;
+    }catch(e){}
 
     currentMonsterIndex++;
     player.currentMonsterIndex = currentMonsterIndex;
@@ -4937,21 +4673,28 @@ setTimeout(()=> {
     }
   };
 
-  // 1) Animación de muerte, 2) luego recompensas/flujo normal
-  if (typeof disintegrateImg === "function" && monsterSpriteEl) {
-    disintegrateImg(monsterSpriteEl, afterDeath, { duration: 1100, step: 3, spread: 85 });
-  } else {
-    // fallback: si no hay canvas o no encuentra el sprite
-    afterDeath();
-  }
+  // Mini destello + desintegración (si falla, seguimos igual)
+  try{
+    if(monsterSpriteImg){
+      monsterSpriteImg.classList.add("death-flash");
+      setTimeout(()=>monsterSpriteImg.classList.remove("death-flash"), 350);
 
-}else{
-  setTimeout(()=>{
-    pickNewPhrase();
-    setLog(`Nueva frase del mismo monstruo. Corrige con precisión para seguir dañándolo.`);
-  }, 1200);
-}
+      // IMPORTANTÍSIMO: parar aquí; continuamos en afterDeath()
+      disintegrateImg(monsterSpriteImg, afterDeath, { duration: 1050, step: 3, spread: 85 });
+      return;
+    }
+  }catch(e){}
 
+  // Fallback si no hay sprite/canvas
+  afterDeath();
+  return;
+
+    }else{
+      setTimeout(()=>{
+        pickNewPhrase();
+        setLog(`Nueva frase del mismo monstruo. Corrige con precisión para seguir dañándolo.`);
+      }, 1200);
+    }
   }
 
   attackBtn.addEventListener("click", resolveTurn);
