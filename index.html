@@ -4670,9 +4670,9 @@ function disintegrateImg(imgEl, onDone, opts = {}) {
 
     // Carga habilidad
     let abilityGain = 0;
-    if(dist === 0) abilityGain = 40;
-    else if(ratio <= 0.15) abilityGain = 25;
-    else abilityGain = 15;
+    if(dist === 0) abilityGain = 20;
+    else if(ratio <= 0.15) abilityGain = 12;
+    else abilityGain = 5;
     player.abilityCharge = Math.min(100, (player.abilityCharge || 0) + abilityGain);
 
     updateHpBars();
