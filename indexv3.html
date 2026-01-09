@@ -653,13 +653,6 @@
       100%{ filter:brightness(1); }
     }
 
-    /* Aparición del nuevo monstruo (evita parpadeo tras desintegración) */
-    .spawn-in{ animation: spawnIn 0.28s ease-out; }
-    @keyframes spawnIn{
-      from{ opacity:0; transform: translateY(3px) scale(0.985); }
-      to{ opacity:1; transform: none; }
-    }
-
     .hp-bar-wrap.shake{ animation: hpShake 0.3s ease-out; }
     @keyframes hpShake{
       0%{transform:translateX(0);} 20%{transform:translateX(-2px);}
@@ -4319,13 +4312,6 @@ clearTimeout(applyBattleWorldBackground._t);
     monsterTypeEl.textContent = `${monster.type} · Dificultad: ${monster.difficulty}`;
 
     // Sprite con fallback (nuevo formato: img/monsters/<id>.webp)
-    // Evita que reaparezca el monstruo anterior tras la desintegración
-    monsterSpriteImg.style.visibility = "hidden";
-    monsterSpriteImg.onload = function(){
-      this.style.visibility = "visible";
-      this.classList.add("spawn-in");
-      setTimeout(()=>this.classList.remove("spawn-in"), 320);
-    };
     const altSprite = `img/monsters/${monster.id}.webp`;
     const fallbackSprite = makeMonsterSprite(monster.name, monster.world);
     monsterSpriteImg.onerror = function(){
@@ -4378,14 +4364,11 @@ clearTimeout(applyBattleWorldBackground._t);
 function disintegrateImg(imgEl, onDone, opts = {}) {
   try{
     const {
-      duration = 950,        // ms
-      step = 3,              // 1 = más partículas, 4 = menos (mejor para Chromebooks)
-      spread = 85,           // dispersión
-      gravity = 0.10,        // caída
-      fade = true,
-      keepHiddenAfter = false, // si true, NO vuelve a mostrar la imagen al terminar
-      featherMask = true,      // difumina bordes del canvas (menos “cuadradote”)
-      blurPx = 0.7             // blur suave del canvas (0 = none)
+      duration = 950,      // ms
+      step = 3,            // 1 = más partículas, 4 = menos (mejor para Chromebooks)
+      spread = 85,         // dispersión
+      gravity = 0.10,      // caída
+      fade = true
     } = opts;
 
     if(!imgEl) { onDone && onDone(); return; }
@@ -4416,21 +4399,6 @@ function disintegrateImg(imgEl, onDone, opts = {}) {
     canvas.style.height = h + "px";
     canvas.style.pointerEvents = "none";
     canvas.style.zIndex = 9999;
-
-    // Suaviza el borde del efecto para que no sea un “bloque”
-    if(typeof blurPx === "number" && blurPx > 0){
-      canvas.style.filter = `blur(${blurPx}px)`;
-    }
-    if(featherMask){
-      // Feather con máscara radial (Safari/Chrome usan webkitMaskImage)
-      const mask = "radial-gradient(circle at 50% 50%, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%)";
-      canvas.style.webkitMaskImage = mask;
-      canvas.style.maskImage = mask;
-      canvas.style.webkitMaskRepeat = "no-repeat";
-      canvas.style.maskRepeat = "no-repeat";
-      canvas.style.webkitMaskSize = "100% 100%";
-      canvas.style.maskSize = "100% 100%";
-    }
 
     canvas.width = Math.floor(w * dpr);
     canvas.height = Math.floor(h * dpr);
@@ -4483,7 +4451,6 @@ function disintegrateImg(imgEl, onDone, opts = {}) {
       const p = Math.min(1, (t - t0) / duration);
       ctx.clearRect(0,0,w,h);
 
-      // Dibujamos “partículas” como rectángulos suavizados (con blur/mask en CSS)
       for(const pt of parts){
         pt.x += pt.vx;
         pt.y += pt.vy + gravity * (p * 18);
@@ -4501,9 +4468,7 @@ function disintegrateImg(imgEl, onDone, opts = {}) {
         requestAnimationFrame(frame);
       }else{
         canvas.remove();
-        if(!keepHiddenAfter){
-          imgEl.style.visibility = prevVis;
-        }
+        imgEl.style.visibility = prevVis;
         onDone && onDone();
       }
     }
@@ -4782,7 +4747,7 @@ if(currentMonsterHp <= 0){
       setTimeout(()=>monsterSpriteImg.classList.remove("death-flash"), 350);
 
       // IMPORTANTÍSIMO: parar aquí; continuamos en afterDeath()
-      disintegrateImg(monsterSpriteImg, afterDeath, { duration: 1050, step: 3, spread: 85, keepHiddenAfter: true, featherMask: true, blurPx: 0.8 });
+      disintegrateImg(monsterSpriteImg, afterDeath, { duration: 1050, step: 3, spread: 85 });
       return;
     }
   }catch(e){}
@@ -4975,13 +4940,7 @@ if(currentMonsterHp <= 0){
     if(startScreen) startScreen.style.display = "none";
     if(splashScreen) splashScreen.style.display = "flex";
 
-    // Helpers de selección de héroe
-    const HERO_PRESETS = {
-      mago: { label:"Mago de la tilde",  meta:"Especialista en acentos. Habilidad: EXPANSOR DE TILDES.", perks:["+precisión con tildes","pistas más claras"] },
-      guerrero:{ label:"Guerrero de la coma", meta:"Tanque disciplinado. Habilidad: ESCUDO GRAMATICAL.", perks:["+defensa temporal","aguanta más"] },
-      ninja:{ label:"Ninja del acento", meta:"Golpe rápido. Habilidad: PLUMA MAESTRA.", perks:["+daño puntual","racha fácil"] },
-      robot:{ label:"Corrector mecánico", meta:"Control y utilidades. Habilidad: AUTOCORRECTOR.", perks:["+ayuda al corregir","mejor contra errores repetidos"] }
-    };
+    
 
     function renderHeroDetails(id){
       const h = HERO_PRESETS[id];
