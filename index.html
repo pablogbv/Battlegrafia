@@ -1375,6 +1375,14 @@
   #splash-logo{ animation: none !important; }
 }
 
+index.html
+img/
+  items/
+  monsters/
+  heros/
+  backgrounds/
+
+
 </style>
 </head>
 
@@ -1693,6 +1701,9 @@
     </div>
   </div>
 
+<script src="assets-images.js"></script>
+
+
 <script>
   const STORAGE_KEY = "battlegrafia_player_pixel_historia_v6";
   // --- Guardado por ranuras (save slots) ---
@@ -1739,6 +1750,12 @@
       setActiveSlotId(id);
     }catch(e){}
   }
+
+function assetSrc(relPath){
+  // relPath debe ser EXACTAMENTE como lo referenciabas: "img/items/xxx.webp"
+  return (window.ASSET_IMAGES && window.ASSET_IMAGES[relPath]) ? window.ASSET_IMAGES[relPath] : relPath;
+}
+
 
 
   const GOLD_DEATH_PENALTY_RATIO = 0.30;
