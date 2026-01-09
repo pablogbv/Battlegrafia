@@ -1758,6 +1758,56 @@ function assetSrc(relPath){
 
 
 
+/* === Parche Chromebook: reescribe automáticamente <img src="img/..."> a Data-URI si existe en assets-images.js ===
+   - assets-images.js debe definir window.ASSET_IMAGES = { "img/...": "data:image/webp;base64,....", ... }
+   - Esto evita que el navegador tenga que "pedir" las imágenes como archivos aparte.
+*/
+function applyAssetSrcToImg(img){
+  try{
+    if(!img) return;
+    const raw = img.getAttribute("src") || "";
+    if(!raw) return;
+
+    // No tocar data/blob ya resueltos
+    if(raw.startsWith("data:") || raw.startsWith("blob:")) return;
+
+    const resolved = assetSrc(raw);
+
+    // Si cambia, sustitúyelo
+    if(resolved && resolved !== raw){
+      img.setAttribute("src", resolved);
+    }
+  }catch(e){}
+}
+
+function hydrateAllImages(root=document){
+  try{
+    root.querySelectorAll("img").forEach(applyAssetSrcToImg);
+  }catch(e){}
+}
+
+// Primera pasada
+document.addEventListener("DOMContentLoaded", ()=> hydrateAllImages(document));
+
+// Observa cambios (muchas imágenes se insertan con innerHTML durante el juego)
+try{
+  const obs = new MutationObserver((mutations)=>{
+    for(const m of mutations){
+      if(m.type === "childList"){
+        m.addedNodes && m.addedNodes.forEach(node=>{
+          if(node.nodeType !== 1) return; // ELEMENT_NODE
+          if(node.tagName === "IMG") applyAssetSrcToImg(node);
+          else hydrateAllImages(node);
+        });
+      }else if(m.type === "attributes" && m.target && m.target.tagName === "IMG" && m.attributeName === "src"){
+        applyAssetSrcToImg(m.target);
+      }
+    }
+  });
+  obs.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:["src"] });
+}catch(e){}
+
+
   const GOLD_DEATH_PENALTY_RATIO = 0.30;
   const XP_DEATH_PENALTY_RATIO   = 0.25;
   const HP_AFTER_DEATH_RATIO     = 0.50;
