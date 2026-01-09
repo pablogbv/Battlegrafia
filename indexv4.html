@@ -375,8 +375,7 @@
       letter-spacing:.5px;
       margin-bottom:.15rem;
     }
-    .log-text{ font-size:.8rem; line-height:1.35; height:7.2rem; overflow:auto; padding-right:.25rem; }
-    .log-box{ height:8.5rem; overflow:hidden; }
+    .log-text{ font-size:.8rem; line-height:1.35; }
     .log-text .good{color:var(--success);}
     .log-text .bad{color:var(--danger);}
     .log-text .hint{color:var(--muted);}
@@ -4679,16 +4678,12 @@ function disintegrateImg(imgEl, onDone, opts = {}) {
     updateAbilityUi();
     const subidas = addXp(xpGain);
 
-    let html = "";
-    if(dist === 0){
-      html = `<span class="good">PERFECT ✨</span> <span class="hint">+${xpGain} EXP · ${playerDamage} daño</span>`;
-      if(subidas > 0) html += `<br><span class="good">¡Has subido ${subidas} nivel(es)!</span>`;
-    }else{
-      const quality = (ratio <= 0.15) ? "Casi perfecto" : "Con errores";
-      html = `<span class="bad">${quality}.</span> <span class="hint">Acude al Diario para revisar tus fallos.</span>`;
-      html += `<br><span class="hint">+${xpGain} EXP · ${playerDamage} daño · recibes ${monsterDamage}</span>`;
-      if(subidas > 0) html += `<br><span class="good">¡Has subido ${subidas} nivel(es)!</span>`;
-    }
+    let html = `${feedback}<br><br>`;
+    html += `<span class="hint">Versión correcta:</span> <code>${currentPhrase.correct}</code><br>`;
+    html += `<span class="hint">Tu versión:</span> <code>${answerRaw}</code><br><br>`;
+    html += `<span class="hint">Daño al monstruo:</span> ${playerDamage} · <span class="hint">Daño al héroe:</span> ${monsterDamage}<br>`;
+    html += `<span class="hint">EXP ganada:</span> +${xpGain}`;
+    if(subidas > 0) html += `<br><span class="good">¡Has subido ${subidas} nivel(es)!</span>`;
 
     if(!Array.isArray(player.diary)) player.diary = [];
     player.diary.push({
