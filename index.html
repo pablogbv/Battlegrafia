@@ -5956,13 +5956,6 @@ if(currentMonsterHp <= 0){
     if(startScreen) startScreen.style.display = "none";
     if(splashScreen) splashScreen.style.display = "flex";
 
-    // Helpers de selección de héroe
-    const HERO_PRESETS = {
-      mago: { label:"Mago de la tilde",  meta:"Especialista en acentos. Habilidad: EXPANSOR DE TILDES.", perks:["+precisión con tildes","pistas más claras"] },
-      guerrero:{ label:"Guerrero de la coma", meta:"Tanque disciplinado. Habilidad: ESCUDO GRAMATICAL.", perks:["+defensa temporal","aguanta más"] },
-      ninja:{ label:"Ninja del acento", meta:"Golpe rápido. Habilidad: PLUMA MAESTRA.", perks:["+daño puntual","racha fácil"] },
-      robot:{ label:"Corrector mecánico", meta:"Control y utilidades. Habilidad: AUTOCORRECTOR.", perks:["+ayuda al corregir","mejor contra errores repetidos"] }
-    };
 
     function renderHeroDetails(id){
       const h = HERO_PRESETS[id];
