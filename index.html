@@ -2074,8 +2074,8 @@ footer.copyright{
      =========================== */
 
   // 1) RELLENA ESTO (Supabase > Project Settings > API)
-  const SUPABASE_URL = "https://dnqnpkkqugtttiuvkyke.supabase.co";      // ej: https://xxxx.supabase.co
-  const SUPABASE_ANON_KEY = "sb_publishable_k69VSqFUXXwZorBlWpKTzg_c-S06oAl"; // ej: eyJhbGciOi...
+  const SUPABASE_URL = "";      // ej: https://xxxx.supabase.co
+  const SUPABASE_ANON_KEY = ""; // ej: eyJhbGciOi...
 
   // Correos con permiso de "Profesor" (para ver progresos).
   // Nota: para que funcione de verdad necesitas políticas RLS en la BD.
@@ -2083,6 +2083,7 @@ footer.copyright{
 
   let sb = null;
   let currentUser = null;
+  let authView = "login"; // 'login' | 'signup'
   let remoteSaveTimer = null;
 
   function hasSupabaseConfig(){
@@ -2148,6 +2149,58 @@ footer.copyright{
       console.warn("Supabase init error:", e);
     }
   }
+  // --- Bind Auth UI ---
+  function bindAuthUi(){
+    const navAcc = document.getElementById("nav-account");
+    const navTeach = document.getElementById("nav-teacher");
+    const closeBtn = document.getElementById("authClose");
+    const overlay = document.getElementById("authOverlay");
+    const tabLogin = document.getElementById("tabLogin");
+    const tabSignup = document.getElementById("tabSignup");
+    const doLoginBtn = document.getElementById("authDoLogin");
+    const doSignupBtn = document.getElementById("authDoSignup");
+    const doLogoutBtn = document.getElementById("authDoLogout");
+
+    if(navAcc){
+      navAcc.addEventListener("click", ()=> openAuth());
+    }
+    if(navTeach){
+      navTeach.addEventListener("click", ()=>{
+        const p = document.getElementById("teacherPanel");
+        if(p) p.style.display = (p.style.display === "none" || !p.style.display) ? "block" : "none";
+      });
+    }
+    if(closeBtn) closeBtn.addEventListener("click", ()=> closeAuth());
+    if(overlay){
+      overlay.addEventListener("click", (e)=>{ if(e.target === overlay) closeAuth(); });
+    }
+
+    if(tabLogin) tabLogin.addEventListener("click", ()=>{ authView = "login"; renderAuthUi(); });
+    if(tabSignup) tabSignup.addEventListener("click", ()=>{ authView = "signup"; renderAuthUi(); });
+
+    if(doLoginBtn) doLoginBtn.addEventListener("click", ()=> doLogin());
+    if(doSignupBtn) doSignupBtn.addEventListener("click", ()=> doSignup());
+    if(doLogoutBtn) doLogoutBtn.addEventListener("click", ()=> doLogout());
+
+    const pass = document.getElementById("authPass");
+    if(pass){
+      pass.addEventListener("keydown", (e)=>{
+        if(e.key === "Enter"){
+          e.preventDefault();
+          if(currentUser) return;
+          if(authView === "signup") doSignup();
+          else doLogin();
+        }
+      });
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", ()=>{
+    bindAuthUi();
+    // Inicia Supabase (si está configurado). Si no, deja UI desactivada con aviso.
+    initSupabaseAuth().then(()=> renderAuthUi());
+  });
+
 
   function isTeacher(){
     const email = (currentUser && currentUser.email) ? currentUser.email.toLowerCase() : "";
@@ -2258,6 +2311,12 @@ footer.copyright{
     if(currentUser){
       navAcc.textContent = "Cuenta ✓";
       if(status) status.innerHTML = '<span class="good">Sesión iniciada:</span> ' + escapeHtml(currentUser.email || "");
+      const tabLogin = document.getElementById("tabLogin");
+      const tabSignup = document.getElementById("tabSignup");
+      if(tabLogin && tabSignup){
+        tabLogin.classList.add("is-active");
+        tabSignup.classList.remove("is-active");
+      }
       if(doLogin) doLogin.style.display = "none";
       if(doSignup) doSignup.style.display = "none";
       if(doLogout) doLogout.style.display = "";
@@ -2266,8 +2325,17 @@ footer.copyright{
     }else{
       navAcc.textContent = "Cuenta";
       if(status) status.textContent = "";
-      if(doLogin) doLogin.style.display = "";
-      if(doSignup) doSignup.style.display = "none";
+
+      // Tabs
+      const tabLogin = document.getElementById("tabLogin");
+      const tabSignup = document.getElementById("tabSignup");
+      if(tabLogin && tabSignup){
+        tabLogin.classList.toggle("is-active", authView === "login");
+        tabSignup.classList.toggle("is-active", authView === "signup");
+      }
+
+      if(doLogin) doLogin.style.display = (authView === "login") ? "" : "none";
+      if(doSignup) doSignup.style.display = (authView === "signup") ? "" : "none";
       if(doLogout) doLogout.style.display = "none";
       if(navTeach) navTeach.style.display = "none";
       if(teacherPanel) teacherPanel.style.display = "none";
@@ -5956,6 +6024,13 @@ if(currentMonsterHp <= 0){
     if(startScreen) startScreen.style.display = "none";
     if(splashScreen) splashScreen.style.display = "flex";
 
+    // Helpers de selección de héroe
+    const HERO_PRESETS = {
+      mago: { label:"Mago de la tilde",  meta:"Especialista en acentos. Habilidad: EXPANSOR DE TILDES.", perks:["+precisión con tildes","pistas más claras"] },
+      guerrero:{ label:"Guerrero de la coma", meta:"Tanque disciplinado. Habilidad: ESCUDO GRAMATICAL.", perks:["+defensa temporal","aguanta más"] },
+      ninja:{ label:"Ninja del acento", meta:"Golpe rápido. Habilidad: PLUMA MAESTRA.", perks:["+daño puntual","racha fácil"] },
+      robot:{ label:"Corrector mecánico", meta:"Control y utilidades. Habilidad: AUTOCORRECTOR.", perks:["+ayuda al corregir","mejor contra errores repetidos"] }
+    };
 
     function renderHeroDetails(id){
       const h = HERO_PRESETS[id];
