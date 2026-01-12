@@ -444,6 +444,119 @@
     .battle-screen > *{ position:relative; z-index:2; }
     .battle-fx{position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:1; mix-blend-mode:screen; opacity:.9; }
     .battle-fx.is-hidden{display:none;}
+    /* === FX DOM (ciénaga/castillo) y FX en mapa === */
+    .fx-layer{
+      position:absolute; inset:0; width:100%; height:100%;
+      pointer-events:none; overflow:hidden;
+      z-index:9; /* por encima de la UI para que SIEMPRE se vea */
+    }
+    /* Asegura que el lienzo del mapa permita superposiciones */
+    .map-canvas{ position:relative; overflow:hidden; }
+
+    .map-fx{ position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:2; mix-blend-mode:screen; opacity:.9; }
+    .map-fx.is-hidden{ display:none; }
+
+    /* === CIÉNAGA: burbujas === */
+    .fx-bubble{
+      position:absolute;
+      bottom:-42px;
+      left: var(--x, 50%);
+      width: var(--size, 14px);
+      height: var(--size, 14px);
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%,
+        rgba(255,255,255,.55),
+        rgba(255,255,255,.12) 45%,
+        rgba(255,255,255,.05) 70%,
+        rgba(255,255,255,0) 72%);
+      box-shadow: 0 0 10px rgba(140,255,210,.10);
+      filter: blur(.2px);
+      opacity:.95;
+      animation:
+        bubbleRise var(--dur, 2.8s) linear forwards,
+        bubbleWobble 1.1s ease-in-out infinite;
+    }
+    @keyframes bubbleRise{
+      0%   { transform: translateY(0) scale(.85); opacity:0; }
+      10%  { opacity:.95; }
+      100% { transform: translateY(calc(-1 * var(--h, 420px))) scale(1.15); opacity:0; }
+    }
+    @keyframes bubbleWobble{
+      0%,100% { margin-left: 0; }
+      50%     { margin-left: 10px; }
+    }
+    .fx-pop{
+      position:absolute;
+      width:6px;height:6px;border-radius:50%;
+      background: rgba(255,255,255,.6);
+      box-shadow: 0 0 14px rgba(255,255,255,.25);
+      transform: translate(-50%,-50%);
+      animation: pop 420ms ease-out forwards;
+    }
+    @keyframes pop{
+      0%   { opacity:.9; transform: translate(-50%,-50%) scale(1); }
+      100% { opacity:0;  transform: translate(-50%,-50%) scale(4.2); }
+    }
+
+    /* === CASTILLO: murciélagos (bandadas) === */
+    .fx-bat{
+      position:absolute;
+      left:-80px;
+      top: var(--y, 25%);
+      width: var(--w, 46px);
+      height: calc(var(--w, 46px) * .55);
+      opacity:.9;
+      box-shadow: 0 0 10px rgba(255,255,255,.35);
+      filter: drop-shadow(0 4px 3px rgba(0,0,0,.55)) drop-shadow(0 0 6px rgba(255,255,255,.35));
+      mix-blend-mode: normal;
+      animation:
+        batFly var(--dur, 4.8s) linear forwards,
+        batFlap 220ms ease-in-out infinite;
+    }
+    .fx-bat::before,
+    .fx-bat::after{
+      content:"";
+      position:absolute;
+      top:0;
+      width:55%;
+      height:100%;
+      background: rgba(230,230,240,.82);
+      border-radius: 100% 20% 100% 20%;
+    }
+    .fx-bat::before{ left:0;  transform-origin: 100% 50%; }
+    .fx-bat::after { right:0; transform-origin: 0% 50%;  }
+    @keyframes batFly{
+      0%   { transform: translateX(0) translateY(0) scale(.9); opacity:0; }
+      10%  { opacity:.9; }
+      100% { transform: translateX(120vw) translateY(var(--dy, 0px)) scale(1.05); opacity:0; }
+    }
+    @keyframes batFlap{
+      0%,100% { transform: rotateZ(0deg); }
+      50%     { transform: rotateZ(2deg); }
+    }
+    .fx-bat::before{ animation: wingL 220ms ease-in-out infinite; }
+    .fx-bat::after{  animation: wingR 220ms ease-in-out infinite; }
+    @keyframes wingL{ 0%,100%{ transform: rotate(18deg);} 50%{ transform: rotate(-10deg);} }
+    @keyframes wingR{ 0%,100%{ transform: rotate(-18deg);} 50%{ transform: rotate(10deg);} }
+
+
+    /* === CASTILLO (alternativa ultra-visible): murciélagos emoji === */
+    .fx-bat-emoji{
+      position:absolute;
+      left:-120px;
+      top: var(--y, 30%);
+      font-size: var(--fs, 72px);
+      line-height: 1;
+      opacity: .95;
+      text-shadow: 0 6px 10px rgba(0,0,0,.55), 0 0 10px rgba(255,255,255,.35);
+      filter: drop-shadow(0 4px 3px rgba(0,0,0,.55));
+      animation: batEmojiFly var(--dur, 4.6s) linear forwards;
+    }
+    @keyframes batEmojiFly{
+      0%   { transform: translateX(0) translateY(0) rotate(-6deg) scale(.9); opacity:0; }
+      8%   { opacity:.95; }
+      100% { transform: translateX(125vw) translateY(var(--dy, 0px)) rotate(6deg) scale(1.05); opacity:0; }
+    }
 
 
     /* Transición al cambiar de mundo */
@@ -485,7 +598,7 @@
       inset:0;
       border-radius:4px;
       border-top:3px solid rgba(248,191,36,0.9);
-      opacity:.85;
+      opacity:.95;
       pointer-events:none;
     }
     .hero-box::before{ border-top-color:#22c55e; }
@@ -647,11 +760,14 @@
     .monster-visual.hit-flash{ animation: monsterHitFlash 0.18s linear 0s 2; }
     @keyframes monsterHitFlash{
       0%{ filter:brightness(1); }
-      
-    .death-flash{ animation: deathFlash .28s steps(2) 2; }
-    @keyframes deathFlash{ 50%{ filter: brightness(2) contrast(1.2) saturate(1.2); } }
-50%{ filter:brightness(2.2) hue-rotate(-25deg) saturate(1.6); }
+      50%{ filter:brightness(2.2) hue-rotate(-25deg) saturate(1.6); }
       100%{ filter:brightness(1); }
+    }
+
+    /* Flash muerte (muy breve) */
+    .death-flash{ animation: deathFlash .28s steps(2) 2; }
+    @keyframes deathFlash{
+      50%{ filter: brightness(2) contrast(1.2) saturate(1.2); }
     }
 
     /* Aparición del nuevo monstruo (evita parpadeo tras desintegración) */
@@ -1391,12 +1507,93 @@ img/
   backgrounds/
 
 
+
+/* ===== Layout para footer al final sin superponerse ===== */
+body.layout-flex{
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+}
+#gameRoot{
+  flex:1 0 auto;
+}
+
+/* ===== Footer ===== */
+footer.copyright{
+  flex:0 0 auto;
+  margin-top:22px;
+  padding:16px 18px;
+  text-align:center;
+  font-size:11px;
+  line-height:1.4;
+  color:rgba(235,235,235,.9);
+  background:rgba(0,0,0,.35);
+  border-top:1px solid rgba(255,255,255,.12);
+  letter-spacing:.35px;
+  font-family: "Cinzel","IM Fell English",Georgia,"Times New Roman",serif;
+}
+
+/* ===== CASTILLO – NIEBLA TIPO NUBES QUE PASAN ===== */
+.fx-fog-cloud{
+  position:absolute;
+  top: var(--top, 25%);
+  left: -50%;
+  width: var(--w, 75%);
+  height: var(--h, 26%);
+  opacity: var(--op, .18);
+  filter: blur(18px);
+  background:
+    radial-gradient(circle at 25% 55%, rgba(255,255,255,.26), transparent 62%),
+    radial-gradient(circle at 55% 45%, rgba(255,255,255,.18), transparent 66%),
+    radial-gradient(circle at 75% 60%, rgba(255,255,255,.20), transparent 64%);
+  animation: fogCloudMove var(--dur, 18s) linear infinite;
+  will-change: transform;
+  pointer-events:none;
+  mix-blend-mode: screen;
+}
+
+@keyframes fogCloudMove{
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(240%); }
+}
+
+
+/* ===== Layout fix: footer below without overlap ===== */
+body.layout-flex{
+  display:flex !important;
+  flex-direction:column !important;
+  min-height:100vh !important;
+  justify-content:flex-start !important;
+  align-items:stretch !important;
+  padding:1rem !important;
+}
+#gameRoot{
+  flex:1 0 auto !important;
+}
+.game-shell{
+  margin:0 auto; /* centra el panel del juego */
+}
+footer.copyright{
+  flex:0 0 auto;
+  max-width:1100px;
+  margin:22px auto 0;
+  padding:18px 18px 22px;
+  text-align:center;
+  font-size:11px;
+  line-height:1.45;
+  color:rgba(235,235,235,.9);
+  background:rgba(0,0,0,.35);
+  border-top:1px solid rgba(255,255,255,.12);
+  letter-spacing:.35px;
+  font-family: "Cinzel", "IM Fell English", Georgia, "Times New Roman", serif;
+}
 </style>
 </head>
 
-<body>
+<body class="layout-flex">
 
-  <!-- Splash -->
+  
+<div id="gameRoot"><!-- Splash -->
   <div id="splash-screen">
     <div class="splash-inner">
       <img id="splash-logo" src="img/backgrounds/logo.webp" alt="Battlegrafía">
@@ -1489,6 +1686,7 @@ img/
         <!-- Batalla -->
         <div id="battle-screen" class="battle-screen">
           <canvas id="battle-fx" class="battle-fx is-hidden" aria-hidden="true"></canvas>
+          <div id="battle-fx-dom" class="fx-layer" aria-hidden="true"></div>
           <div class="battle-top">
             <div class="entity-box hero-box">
               <div id="hero-name-label" class="entity-name">Héroe de Battlegrafía</div>
@@ -3849,11 +4047,331 @@ clearTimeout(applyBattleWorldBackground._t);
   }
 
   function setBattleFxForWorld(worldId){
+    // Canvas FX (ya existentes)
     if(worldId === "acantilados") setBattleFxMode("wind");
-    else if(worldId === "volcan") setBattleFxMode("fire");
+    else if(worldId === "volcan") setBattleFxMode("fire"); // lava
     else setBattleFxMode("none");
     seedBattleFx();
+
+    // FX DOM + FX en mapa (nuevo)
+    try{ setDomFxForWorld(worldId); }catch(e){}
+    try{ setMapFxForWorld(worldId); }catch(e){}
   }
+
+  /* =========================================================
+     FX DOM (CIÉNAGA/CAS-TILLO) + FX CANVAS EN MAPA (ACANTILADOS/VOLCÁN)
+     ========================================================= */
+  const battleFxDomEl = document.getElementById("battle-fx-dom");
+  let domFxTimers = [];
+  function clearDomFx(){
+    domFxTimers.forEach(t=>{ try{ clearInterval(t); }catch(e){} try{ clearTimeout(t); }catch(e){} });
+    domFxTimers = [];
+    if(battleFxDomEl) battleFxDomEl.innerHTML = "";
+    const mapDom = document.getElementById("map-fx-dom");
+    if(mapDom) mapDom.innerHTML = "";
+  }
+
+  function startSwampBubbles(layer){
+    if(!layer) return;
+    const t1 = setInterval(()=>spawnBubble(layer, 1.0), 240);
+    const t2 = setInterval(()=>spawnBubble(layer, 0.7), 380);
+    domFxTimers.push(t1,t2);
+  }
+  function spawnBubble(layer, intensity=1){
+    const b = document.createElement("div");
+    b.className = "fx-bubble";
+    const size = Math.round(8 + Math.random()*18);
+    const x = Math.random()*100;
+    const dur = (2.0 + Math.random()*2.4) / intensity;
+    const h = 300 + Math.random()*520;
+    b.style.setProperty("--size", size+"px");
+    b.style.setProperty("--x", x+"%");
+    b.style.setProperty("--dur", dur+"s");
+    b.style.setProperty("--h", h+"px");
+    b.style.opacity = (0.55 + Math.random()*0.4).toFixed(2);
+    layer.appendChild(b);
+
+    const popAt = dur*1000*(0.90 + Math.random()*0.08);
+    const popT = setTimeout(()=>{
+      try{
+        const rect = b.getBoundingClientRect();
+        const layerRect = layer.getBoundingClientRect();
+        const pop = document.createElement("div");
+        pop.className = "fx-pop";
+        pop.style.left = (rect.left - layerRect.left + rect.width/2) + "px";
+        pop.style.top  = (rect.top  - layerRect.top  + rect.height/2) + "px";
+        layer.appendChild(pop);
+        setTimeout(()=>pop.remove(), 520);
+      }catch(e){}
+    }, popAt);
+    domFxTimers.push(popT);
+
+    b.addEventListener("animationend", ()=> b.remove(), { once:true });
+  }
+
+  function startCastleBats(layer){
+    if(!layer) return;
+
+    // ARRANQUE DIFERIDO para evitar ancho/alto = 0 (muy típico en iframes)
+    const kick = setTimeout(()=>{
+      spawnBatFlock(layer);
+      const t = setInterval(()=>spawnBatFlock(layer), 900); // bandada cada 0,9s
+      domFxTimers.push(t);
+    }, 300);
+    domFxTimers.push(kick);
+  }
+
+  function spawnBatFlock(layer){
+    // Bandadas MUY visibles: 10–16 (y a veces doble bandada)
+    const count = 12 + Math.floor(Math.random()*11); // 12..22
+    const doubleWave = true;
+    for(let i=0;i<count;i++){
+      const delay = i*70; // más compactos
+      const t = setTimeout(()=>spawnBat(layer), delay);
+      domFxTimers.push(t);
+    }
+    if(doubleWave){
+      const extra = 6 + Math.floor(Math.random()*5); // 6..10
+      const baseDelay = 260 + Math.random()*220;
+      for(let j=0;j<extra;j++){
+        const delay = baseDelay + j*75;
+        const t = setTimeout(()=>spawnBat(layer), delay);
+        domFxTimers.push(t);
+      }
+    }
+  }
+
+  function spawnBat(layer){
+    if(!layer) return;
+
+    // Alternativa ultra-visible: emoji 🦇 (no depende de contraste del fondo)
+    const bat = document.createElement("div");
+    bat.className = "fx-bat-emoji";
+    bat.textContent = "🦇";
+
+    const y = (10 + Math.random()*55).toFixed(1) + "%";
+    const fs = Math.round(56 + Math.random()*48) + "px"; // 56..104
+    const dur = (3.2 + Math.random()*3.0).toFixed(1) + "s";
+    const dy = Math.round(-50 + Math.random()*100) + "px";
+
+    bat.style.setProperty("--y", y);
+    bat.style.setProperty("--fs", fs);
+    bat.style.setProperty("--dur", dur);
+    bat.style.setProperty("--dy", dy);
+
+    layer.appendChild(bat);
+    bat.addEventListener("animationend", ()=> bat.remove(), { once:true });
+  }
+
+  function startCastleFog(){
+  const layers = [
+    document.getElementById('mapFx'),
+    document.getElementById('battleFx')
+  ];
+
+  layers.forEach(layer => {
+    if(!layer) return;
+    layer.innerHTML = '';
+
+    // Nubes: movimiento evidente
+    const N = 7; // sube a 9-10 si quieres más
+    for(let i=0;i<N;i++){
+      const c = document.createElement('div');
+      c.className = 'fx-fog-cloud';
+
+      const top = 6 + Math.random()*72;      // %
+      const w   = 55 + Math.random()*75;     // %
+      const h   = 16 + Math.random()*22;     // %
+      const op  = 0.10 + Math.random()*0.16; // opacidad
+      const dur = 12 + Math.random()*18;     // segundos
+
+      c.style.setProperty('--top', top.toFixed(1) + '%');
+      c.style.setProperty('--w',   w.toFixed(1) + '%');
+      c.style.setProperty('--h',   h.toFixed(1) + '%');
+      c.style.setProperty('--op',  op.toFixed(2));
+      c.style.setProperty('--dur', dur.toFixed(1) + 's');
+
+      // Para que no arranquen todas a la vez desde el borde
+      c.style.animationDelay = (-Math.random()*dur).toFixed(1) + 's';
+
+      layer.appendChild(c);
+    }
+  });
+}
+
+
+  function setDomFxForWorld(worldId){
+    clearDomFx();
+    const mapDom = document.getElementById("map-fx-dom");
+
+    if(worldId === "cienaga"){
+      startSwampBubbles(battleFxDomEl);
+      startSwampBubbles(mapDom);
+    }else if(worldId === "castillo"){
+      startCastleFog(battleFxDomEl);
+      startCastleFog(mapDom);
+    }
+  }
+
+  // ===== FX CANVAS EN MAPA (wind / fire-lava) =====
+  let mapFxCanvas = null, mapFxCtx = null;
+  let mapFxMode = "none";
+  let mapFxParticles = [];
+  let mapFxLast = null;
+
+  function initMapFx(){
+    mapFxCanvas = document.getElementById("map-fx");
+    if(!mapFxCanvas) return;
+    mapFxCtx = mapFxCanvas.getContext("2d");
+    resizeMapFx();
+    seedMapFx();
+    if(!mapFxCanvas._started){
+      mapFxCanvas._started = true;
+      mapFxLast = null;
+      requestAnimationFrame(tickMapFx);
+    }
+  }
+
+  function resizeMapFx(){
+    if(!mapFxCanvas || !mapFxCtx) return;
+    const rect = mapFxCanvas.getBoundingClientRect();
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    mapFxCanvas.width  = Math.floor(rect.width  * dpr);
+    mapFxCanvas.height = Math.floor(rect.height * dpr);
+    mapFxCtx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  function setMapFxMode(mode){
+    mapFxMode = mode || "none";
+    if(!mapFxCanvas) return;
+
+    const wasHidden = mapFxCanvas.classList.contains("is-hidden");
+    if(mapFxMode === "none"){
+      mapFxCanvas.classList.add("is-hidden");
+      return;
+    }
+
+    mapFxCanvas.classList.remove("is-hidden");
+
+    // Importante: si el canvas estaba oculto, su getBoundingClientRect() podía ser 0x0.
+    // Al mostrarlo, re-dimensionamos en el siguiente frame para que los FX se vean.
+    if(wasHidden){
+      requestAnimationFrame(()=>{
+        try{ resizeMapFx(); }catch(e){}
+        try{ seedMapFx(); }catch(e){}
+      });
+    }
+  }
+
+  function seedMapFx(){
+    if(!mapFxCanvas || !mapFxCtx) return;
+    mapFxParticles = [];
+    const rect = mapFxCanvas.getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+
+    if(mapFxMode === "wind"){
+      const n = Math.round(18 + w/55);
+      for(let i=0;i<n;i++){
+        mapFxParticles.push({
+          x: Math.random()*w,
+          y: Math.random()*h*0.70,
+          vx: 170 + Math.random()*220,
+          vy:  40 + Math.random()*90,
+          len: 18 + Math.random()*32,
+          a: 0.10 + Math.random()*0.18
+        });
+      }
+    }else if(mapFxMode === "fire"){
+      const n = Math.round(26 + w/50);
+      for(let i=0;i<n;i++){
+        mapFxParticles.push({
+          x: Math.random()*w,
+          y: h + Math.random()*h*0.25,
+          vx: -20 + Math.random()*40,
+          vy: -(120 + Math.random()*240),
+          r: 1.2 + Math.random()*2.6,
+          a: 0.16 + Math.random()*0.24,
+          life: 0.7 + Math.random()*1.4
+        });
+      }
+    }
+  }
+
+  function tickMapFx(ts){
+    if(!mapFxCanvas || !mapFxCtx){ requestAnimationFrame(tickMapFx); return; }
+    if(!mapFxLast) mapFxLast = ts;
+    const dt = Math.min(0.05, (ts - mapFxLast)/1000);
+    mapFxLast = ts;
+
+    const rect = mapFxCanvas.getBoundingClientRect();
+    const w = rect.width, h = rect.height;
+    mapFxCtx.clearRect(0,0,w,h);
+
+    if(mapFxMode === "wind"){
+      mapFxCtx.lineCap = "round";
+      for(const p of mapFxParticles){
+        p.x += p.vx*dt;
+        p.y += p.vy*dt;
+        if(p.x - p.len > w || p.y - p.len > h){
+          p.x = -40 - Math.random()*120;
+          p.y = Math.random()*h*0.70;
+        }
+        const x2 = p.x - p.len;
+        const y2 = p.y - p.len*0.35;
+        mapFxCtx.strokeStyle = `rgba(210,230,255,${p.a})`;
+        mapFxCtx.lineWidth = 2;
+        mapFxCtx.beginPath();
+        mapFxCtx.moveTo(p.x, p.y);
+        mapFxCtx.lineTo(x2, y2);
+        mapFxCtx.stroke();
+      }
+    }else if(mapFxMode === "fire"){
+      // "lava": brillos + chispas subiendo
+      // brillo inferior
+      const g = mapFxCtx.createLinearGradient(0,h,0,h*0.65);
+      g.addColorStop(0, "rgba(255,90,30,0.30)");
+      g.addColorStop(1, "rgba(255,90,30,0.00)");
+      mapFxCtx.fillStyle = g;
+      mapFxCtx.fillRect(0,h*0.65,w,h*0.35);
+
+      for(const p of mapFxParticles){
+        p.x += p.vx*dt;
+        p.y += p.vy*dt;
+        p.life -= dt;
+        if(p.y < -20 || p.life <= 0){
+          p.x = Math.random()*w;
+          p.y = h + Math.random()*h*0.25;
+          p.vx = -20 + Math.random()*40;
+          p.vy = -(120 + Math.random()*240);
+          p.r  = 1.2 + Math.random()*2.6;
+          p.a  = 0.16 + Math.random()*0.24;
+          p.life = 0.7 + Math.random()*1.4;
+        }
+        mapFxCtx.beginPath();
+        mapFxCtx.fillStyle = `rgba(255,120,40,${p.a})`;
+        mapFxCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        mapFxCtx.fill();
+      }
+    }
+
+    requestAnimationFrame(tickMapFx);
+  }
+
+  function setMapFxForWorld(worldId){
+    if(!document.getElementById("map-fx")) return;
+    if(worldId === "acantilados") setMapFxMode("wind");
+    else if(worldId === "volcan") setMapFxMode("fire");
+    else setMapFxMode("none");
+
+    // Asegura tamaño correcto (sobre todo tras mostrar el canvas)
+    try{ resizeMapFx(); }catch(e){}
+    try{ seedMapFx(); }catch(e){}
+  }
+
+  window.addEventListener("resize", ()=>{
+    try{ initMapFx(); setMapFxForWorld(selectedWorldId || getMonsterWorldId(currentMonsterIndex)); }catch(e){}
+  });
+
 
   window.addEventListener("resize", ()=>{
     resizeBattleFx();
@@ -3899,7 +4417,8 @@ clearTimeout(applyBattleWorldBackground._t);
     }
 
     const bgImg = `<img class="map-bg" src="img/backgrounds/battle_bg_${world.id}.webp" data-fallback="${makeWorldMapSvg(world)}" alt="Mapa de ${world.name}" onerror="this.onerror=null; this.src=this.dataset.fallback;">`;
-    mapCanvasEl.innerHTML = bgImg;
+    mapCanvasEl.innerHTML = bgImg + `\n<canvas id="map-fx" class="map-fx is-hidden" aria-hidden="true"></canvas>\n<div id="map-fx-dom" class="fx-layer" aria-hidden="true"></div>`;
+    try{ initMapFx(); setMapFxForWorld(world.id); setDomFxForWorld(world.id); }catch(e){}
     renderMapStages();
   }
 
@@ -4998,7 +5517,7 @@ if(currentMonsterHp <= 0){
       heroDetailsBody.innerHTML = `
         <div style="font-weight:900; margin-bottom:6px;">${h.label}</div>
         <div style="opacity:.9; margin-bottom:8px;">${h.meta}</div>
-        <ul style="margin:0; padding-left:18px; opacity:.85;">
+        <ul style="margin:0; padding-left:18px; opacity:.95;">
           ${h.perks.map(p=>`<li>${p}</li>`).join("")}
         </ul>
       `;
@@ -5806,6 +6325,15 @@ function renderAchievements(){
 
   
 </script>
+
+
+</div><!-- /#gameRoot -->
+
+<footer class="copyright">
+  © 2026 Pablo García — Battlegrafía
+  <br>
+  Uso educativo exclusivo. Prohibida su reproducción total o parcial sin autorización expresa del autor.
+</footer>
 
 </body>
 </html>
