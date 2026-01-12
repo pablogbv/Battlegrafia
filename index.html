@@ -1518,6 +1518,153 @@ body.layout-flex{
   flex:1 0 auto;
 }
 
+
+/* ===== AUTH (guardar en la nube) ===== */
+.auth-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.62);
+  backdrop-filter: blur(4px);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  z-index:9999;
+}
+.auth-overlay.is-open{ display:flex; }
+.auth-modal{
+  width:min(560px, 96vw);
+  background:rgba(2,6,23,.96);
+  border:3px solid var(--border);
+  box-shadow:0 0 0 2px #020617, 0 14px 0 rgba(0,0,0,.55);
+  border-radius:12px;
+  padding:14px 14px 16px;
+}
+.auth-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+}
+.auth-title{
+  font-weight:900;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  color:var(--accent-soft);
+  font-size:.92rem;
+}
+.auth-sub{
+  color:var(--muted);
+  font-size:.78rem;
+  margin-top:2px;
+  line-height:1.35;
+}
+.auth-close{
+  border:2px solid var(--border);
+  background:#0b1220;
+  color:var(--text);
+  width:36px;height:36px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:900;
+}
+.auth-tabs{
+  display:flex;
+  gap:8px;
+  margin:10px 0 12px;
+}
+.auth-tab{
+  flex:1;
+  border:2px solid var(--border);
+  background:#0b1220;
+  color:var(--text);
+  padding:.45rem .6rem;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:800;
+  letter-spacing:.3px;
+  font-size:.8rem;
+}
+.auth-tab.is-active{
+  background:#111827;
+  border-color:rgba(255,255,255,.25);
+}
+.auth-body{ display:block; }
+.auth-label{
+  display:block;
+  font-size:.75rem;
+  color:var(--muted);
+  margin:.45rem 0 .25rem;
+}
+.auth-input{
+  width:100%;
+  border:2px solid var(--border);
+  background:#0b1220;
+  color:var(--text);
+  padding:.5rem .55rem;
+  border-radius:10px;
+  font-size:.9rem;
+}
+.auth-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+.auth-status{
+  margin-top:10px;
+  font-size:.78rem;
+  color:var(--muted);
+  min-height:1.2em;
+}
+.auth-status .good{color:var(--success);}
+.auth-status .bad{color:var(--danger);}
+.auth-hint{
+  margin-top:10px;
+  font-size:.72rem;
+  color:rgba(235,235,235,.75);
+  line-height:1.35;
+}
+.teacher-panel{
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid rgba(255,255,255,.12);
+}
+.teacher-title{
+  font-weight:900;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  color:var(--accent-soft);
+  font-size:.82rem;
+}
+.teacher-sub{
+  color:var(--muted);
+  font-size:.74rem;
+  margin-top:2px;
+}
+.teacher-actions{ margin:10px 0 8px; }
+.teacher-list{
+  max-height:38vh;
+  overflow:auto;
+  border:2px solid var(--border);
+  border-radius:10px;
+  background:#0b1220;
+  padding:8px;
+}
+.teacher-row{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:8px;
+  border-bottom:1px solid rgba(255,255,255,.10);
+  font-size:.78rem;
+}
+.teacher-row:last-child{ border-bottom:none; }
+.teacher-row b{ color:var(--text); }
+.teacher-row small{ color:var(--muted); }
+
 /* ===== Footer ===== */
 footer.copyright{
   flex:0 0 auto;
@@ -1676,6 +1823,8 @@ footer.copyright{
       <button id="nav-history" class="nav-btn secondary">Historia</button>
       <button id="nav-inventory" class="nav-btn secondary">Inventario</button>
       <button id="nav-achievements" class="nav-btn secondary">Logros</button>
+      <button id="nav-account" class="nav-btn secondary">Cuenta</button>
+      <button id="nav-teacher" class="nav-btn secondary" style="display:none;">Profesor</button>
     </div>
 
     <!-- Layout principal -->
@@ -1910,12 +2059,295 @@ footer.copyright{
 <script src="assets-images.js"></script>
 
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const STORAGE_KEY = "battlegrafia_player_pixel_historia_v6";
   // --- Guardado por ranuras (save slots) ---
   // Compatibilidad: si existe un guardado antiguo en STORAGE_KEY, lo migra a una ranura.
   const STORAGE_SLOTS_KEY = "battlegrafia_save_slots_v1";
   const ACTIVE_SLOT_KEY   = "battlegrafia_active_slot_v1";
+
+  /* ===========================
+     GUARDADO EN LA NUBE (Supabase)
+     - Email + contraseña
+     - Guarda / carga la partida por usuario
+     =========================== */
+
+  // 1) RELLENA ESTO (Supabase > Project Settings > API)
+  const SUPABASE_URL = "https://dnqnpkkqugtttiuvkyke.supabase.co";      // ej: https://xxxx.supabase.co
+  const SUPABASE_ANON_KEY = "sb_publishable_k69VSqFUXXwZorBlWpKTzg_c-S06oAl"; // ej: eyJhbGciOi...
+
+  // Correos con permiso de "Profesor" (para ver progresos).
+  // Nota: para que funcione de verdad necesitas políticas RLS en la BD.
+  const TEACHER_EMAILS = [];
+
+  let sb = null;
+  let currentUser = null;
+  let remoteSaveTimer = null;
+
+  function hasSupabaseConfig(){
+    return !!(SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase);
+  }
+
+  // Recalcula si el botón "Continuar partida" debe estar activo (basado en guardado local).
+  function refreshSplashContinueAvailability(){
+    try{
+      const splashContinueBtn = document.getElementById("splash-continue");
+      const splashNote = document.getElementById("splash-note");
+      if(!splashContinueBtn) return;
+
+      const hasLocal = (()=> {
+        try{
+          const saved = localStorage.getItem(STORAGE_KEY);
+          return !!(saved || (typeof getSaveSlots === "function" && getSaveSlots().length));
+        }catch(e){ return false; }
+      })();
+
+      if(hasLocal){
+        splashContinueBtn.disabled = false;
+        splashContinueBtn.classList.remove("secondary");
+        splashContinueBtn.classList.add("primary");
+        if(splashNote) splashNote.textContent = "Partida guardada encontrada. ¡Listo para continuar!";
+      }else{
+        splashContinueBtn.disabled = true;
+        splashContinueBtn.classList.add("secondary");
+        splashContinueBtn.classList.remove("primary");
+        if(splashNote) splashNote.textContent = "No hay partida guardada todavía.";
+      }
+    }catch(e){}
+  }
+
+
+  async function initSupabaseAuth(){
+    if(!hasSupabaseConfig()) return;
+    try{
+      sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      const { data } = await sb.auth.getSession();
+      currentUser = data && data.session ? data.session.user : null;
+      renderAuthUi();
+
+      sb.auth.onAuthStateChange((_event, session)=>{
+        currentUser = session ? session.user : null;
+        renderAuthUi();
+        // Si se acaba de loguear, intentamos cargar automáticamente la nube
+        if(currentUser){
+          // sin bloquear UI
+          loadSavedPlayer().then(p=>{
+            if(p){
+              try{
+                // al loguear, refrescamos botones "continuar"
+                refreshSplashContinueAvailability();
+              }catch(e){}
+            }
+          });
+        }else{
+          try{ refreshSplashContinueAvailability(); }catch(e){}
+        }
+      });
+    }catch(e){
+      console.warn("Supabase init error:", e);
+    }
+  }
+
+  function isTeacher(){
+    const email = (currentUser && currentUser.email) ? currentUser.email.toLowerCase() : "";
+    return email && TEACHER_EMAILS.map(x=>String(x).toLowerCase()).includes(email);
+  }
+
+  function scheduleRemoteSave(){
+    if(!sb || !currentUser) return;
+    if(remoteSaveTimer) clearTimeout(remoteSaveTimer);
+    remoteSaveTimer = setTimeout(async ()=>{
+      remoteSaveTimer = null;
+      try{ await remoteSaveNow(); }catch(e){ console.warn("Remote save error:", e); }
+    }, 900); // debounce
+  }
+
+  async function remoteSaveNow(){
+    if(!sb || !currentUser) return false;
+    if(!player) return false;
+
+    const progress = {
+      name: player.name || "",
+      level: player.level || 1,
+      xp: player.xp || 0,
+      monstersDefeated: player.monstersDefeated || 0,
+      world: player.world || "",
+      updatedAt: Date.now()
+    };
+
+    const payload = { player };
+
+    const { error } = await sb
+      .from("battlegrafia_saves")
+      .upsert({
+        user_id: currentUser.id,
+        slot: "main",
+        state: payload,
+        progress: progress,
+        updated_at: new Date().toISOString()
+      }, { onConflict: "user_id,slot" });
+
+    if(error) throw error;
+    return true;
+  }
+
+  async function remoteLoad(){
+    if(!sb || !currentUser) return null;
+    const { data, error } = await sb
+      .from("battlegrafia_saves")
+      .select("state, updated_at")
+      .eq("user_id", currentUser.id)
+      .eq("slot", "main")
+      .maybeSingle();
+
+    if(error) throw error;
+    if(!data || !data.state) return null;
+
+    // esperamos formato {player:{...}}
+    const st = data.state;
+    if(st.player) return st.player;
+    // por si en el futuro guardas "player" directamente
+    return st;
+  }
+
+  async function teacherFetchProgress(){
+    if(!sb || !currentUser || !isTeacher()) return [];
+    const { data, error } = await sb
+      .from("battlegrafia_saves")
+      .select("user_id, progress, updated_at")
+      .order("updated_at", { ascending:false })
+      .limit(200);
+    if(error) throw error;
+    return data || [];
+  }
+
+  function fmtWhen(ts){
+    try{
+      const d = new Date(ts);
+      return d.toLocaleString();
+    }catch(e){ return ""; }
+  }
+
+  function escapeHtml(s){
+    return String(s||"").replace(/[&<>"']/g, c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  }
+
+  function renderAuthUi(){
+    const navAcc = document.getElementById("nav-account");
+    const navTeach = document.getElementById("nav-teacher");
+    const status = document.getElementById("authStatus");
+    const doLogin = document.getElementById("authDoLogin");
+    const doSignup = document.getElementById("authDoSignup");
+    const doLogout = document.getElementById("authDoLogout");
+    const teacherPanel = document.getElementById("teacherPanel");
+
+    if(!navAcc) return;
+
+    if(!hasSupabaseConfig()){
+      navAcc.textContent = "Cuenta";
+      if(status) status.innerHTML = '<span class="bad">Cloud Save desactivado</span> (falta configurar Supabase).';
+      if(doLogin) doLogin.disabled = true;
+      if(doSignup) doSignup.disabled = true;
+      if(doLogout) doLogout.disabled = true;
+      if(navTeach) navTeach.style.display = "none";
+      if(teacherPanel) teacherPanel.style.display = "none";
+      return;
+    }
+
+    if(currentUser){
+      navAcc.textContent = "Cuenta ✓";
+      if(status) status.innerHTML = '<span class="good">Sesión iniciada:</span> ' + escapeHtml(currentUser.email || "");
+      if(doLogin) doLogin.style.display = "none";
+      if(doSignup) doSignup.style.display = "none";
+      if(doLogout) doLogout.style.display = "";
+      if(navTeach) navTeach.style.display = isTeacher() ? "" : "none";
+      if(teacherPanel) teacherPanel.style.display = isTeacher() ? "" : "none";
+    }else{
+      navAcc.textContent = "Cuenta";
+      if(status) status.textContent = "";
+      if(doLogin) doLogin.style.display = "";
+      if(doSignup) doSignup.style.display = "none";
+      if(doLogout) doLogout.style.display = "none";
+      if(navTeach) navTeach.style.display = "none";
+      if(teacherPanel) teacherPanel.style.display = "none";
+    }
+  }
+
+  function openAuth(){
+    const o = document.getElementById("authOverlay");
+    if(!o) return;
+    o.classList.add("is-open");
+    o.setAttribute("aria-hidden","false");
+    renderAuthUi();
+  }
+  function closeAuth(){
+    const o = document.getElementById("authOverlay");
+    if(!o) return;
+    o.classList.remove("is-open");
+    o.setAttribute("aria-hidden","true");
+  }
+
+  function setAuthMode(mode){
+    const tabLogin = document.getElementById("tabLogin");
+    const tabSignup = document.getElementById("tabSignup");
+    const doLogin = document.getElementById("authDoLogin");
+    const doSignup = document.getElementById("authDoSignup");
+    const pass = document.getElementById("authPass");
+
+    if(mode === "signup"){
+      if(tabLogin) tabLogin.classList.remove("is-active");
+      if(tabSignup) tabSignup.classList.add("is-active");
+      if(doLogin) doLogin.style.display = "none";
+      if(doSignup) doSignup.style.display = "";
+      if(pass) pass.setAttribute("autocomplete","new-password");
+    }else{
+      if(tabSignup) tabSignup.classList.remove("is-active");
+      if(tabLogin) tabLogin.classList.add("is-active");
+      if(doSignup) doSignup.style.display = "none";
+      if(doLogin) doLogin.style.display = "";
+      if(pass) pass.setAttribute("autocomplete","current-password");
+    }
+  }
+
+  async function doLogin(){
+    const email = (document.getElementById("authEmail")||{}).value || "";
+    const password = (document.getElementById("authPass")||{}).value || "";
+    const status = document.getElementById("authStatus");
+    if(status) status.textContent = "Entrando...";
+    try{
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if(error) throw error;
+      if(status) status.innerHTML = '<span class="good">¡Dentro!</span>';
+    }catch(e){
+      if(status) status.innerHTML = '<span class="bad">Error:</span> ' + escapeHtml(e.message || e);
+    }
+  }
+
+  async function doSignup(){
+    const email = (document.getElementById("authEmail")||{}).value || "";
+    const password = (document.getElementById("authPass")||{}).value || "";
+    const status = document.getElementById("authStatus");
+    if(status) status.textContent = "Creando cuenta...";
+    try{
+      const { error } = await sb.auth.signUp({ email, password });
+      if(error) throw error;
+      if(status) status.innerHTML = '<span class="good">Cuenta creada.</span> Si has activado verificación por correo, revisa tu email.';
+    }catch(e){
+      if(status) status.innerHTML = '<span class="bad">Error:</span> ' + escapeHtml(e.message || e);
+    }
+  }
+
+  async function doLogout(){
+    const status = document.getElementById("authStatus");
+    if(status) status.textContent = "Saliendo...";
+    try{
+      await sb.auth.signOut();
+      if(status) status.textContent = "";
+    }catch(e){
+      if(status) status.innerHTML = '<span class="bad">Error:</span> ' + escapeHtml(e.message || e);
+    }
+  }
 
   function getSaveSlots(){
     try{
@@ -3347,11 +3779,14 @@ try{
 
       // Compatibilidad: mantenemos el guardado antiguo (última partida activa)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(player));
+
+      // Si hay sesión, también guardamos en la nube (debounce)
+      try{ scheduleRemoteSave(); }catch(e){}
     }
     catch(e){ console.warn("No se pudo guardar la partida:", e); }
   }
 
-  function loadSavedPlayer(){
+  function loadSavedPlayerLocal(){
     try{
       migrateLegacySaveIfNeeded();
 
@@ -3402,6 +3837,28 @@ try{
       return null;
     }
   }
+
+  // Wrapper (nube -> local)
+  async function loadSavedPlayer(){
+    // Si hay sesión, intentamos primero nube. Si falla, cae a local.
+    if(sb && currentUser){
+      try{
+        const remote = await remoteLoad();
+        if(remote){
+          // Sincronizamos también el guardado local por compatibilidad
+          try{
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(remote));
+          }catch(e){}
+          return remote;
+        }
+      }catch(e){
+        console.warn("Remote load error:", e);
+      }
+    }
+    return loadSavedPlayerLocal();
+  }
+
+
 
   function showDamage(targetEl, amount, extraClass){
     if(!targetEl || !amount || amount <= 0) return;
@@ -5631,9 +6088,9 @@ if(currentMonsterHp <= 0){
         splashContinueBtn.classList.remove("secondary");
         splashContinueBtn.classList.add("primary");
         if(splashNote) splashNote.textContent = "Partida guardada encontrada. ¡Listo para continuar!";
-        splashContinueBtn.onclick = ()=>{
+        splashContinueBtn.onclick = async ()=>{
           // Continuar: cargar guardado y saltar a batalla
-          player = loadSavedPlayer();
+          player = await loadSavedPlayer();
           if(splashScreen) splashScreen.style.display = "none";
           if(startScreen) startScreen.style.display = "none";
           currentMonsterIndex = player.currentMonsterIndex || 0;
@@ -5656,9 +6113,9 @@ if(currentMonsterHp <= 0){
     // Botones originales de start-screen (por si los usas)
     if(saved){
       continueBlock.style.display = "block";
-      continueBtn.onclick = ()=>{
+      continueBtn.onclick = async ()=>{
         if(splashScreen) splashScreen.style.display = "none";
-        player = loadSavedPlayer();
+        player = await loadSavedPlayer();
         startScreen.style.display = "none";
         currentMonsterIndex = player.currentMonsterIndex || 0;
         if(player.hp <= 0) player.hp = player.maxHp;
@@ -5672,7 +6129,7 @@ if(currentMonsterHp <= 0){
       };
       // "Empezar nueva" desde bloque de guardado
       if(newFromSavedBtn){
-        newFromSavedBtn.onclick = ()=>{
+        newFromSavedBtn.onclick = async ()=>{
           try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
           if(startScreen) startScreen.style.display = "flex";
           if(continueBlock) continueBlock.style.display = "none";
@@ -6324,10 +6781,120 @@ function renderAchievements(){
 ;
 
   
+
+
+  /* ===========================
+     AUTH UI bind + init
+     =========================== */
+  (function(){
+    const navAcc = document.getElementById("nav-account");
+    const navTeach = document.getElementById("nav-teacher");
+    const overlay = document.getElementById("authOverlay");
+    const closeBtn = document.getElementById("authClose");
+    const tabLogin = document.getElementById("tabLogin");
+    const tabSignup = document.getElementById("tabSignup");
+    const doLoginBtn = document.getElementById("authDoLogin");
+    const doSignupBtn = document.getElementById("authDoSignup");
+    const doLogoutBtn = document.getElementById("authDoLogout");
+    const teacherRefresh = document.getElementById("teacherRefresh");
+
+    if(navAcc) navAcc.addEventListener("click", openAuth);
+    if(closeBtn) closeBtn.addEventListener("click", closeAuth);
+    if(overlay) overlay.addEventListener("click", (e)=>{ if(e.target === overlay) closeAuth(); });
+
+    if(tabLogin) tabLogin.addEventListener("click", ()=>setAuthMode("login"));
+    if(tabSignup) tabSignup.addEventListener("click", ()=>setAuthMode("signup"));
+
+    if(doLoginBtn) doLoginBtn.addEventListener("click", ()=>{ if(sb) doLogin(); });
+    if(doSignupBtn) doSignupBtn.addEventListener("click", ()=>{ if(sb) doSignup(); });
+    if(doLogoutBtn) doLogoutBtn.addEventListener("click", ()=>{ if(sb) doLogout(); });
+
+    if(navTeach) navTeach.addEventListener("click", openAuth);
+
+    async function refreshTeacher(){
+      const list = document.getElementById("teacherList");
+      if(!list) return;
+      list.innerHTML = "Cargando...";
+      try{
+        const rows = await teacherFetchProgress();
+        if(!rows.length){
+          list.innerHTML = "<div class='teacher-row'><small>No hay datos o no tienes permisos.</small></div>";
+          return;
+        }
+        list.innerHTML = rows.map(r=>{
+          const p = r.progress || {};
+          const name = escapeHtml(p.name || "Alumno");
+          const lvl = (p.level ?? "-");
+          const md  = (p.monstersDefeated ?? "-");
+          const when = fmtWhen(r.updated_at || p.updatedAt || Date.now());
+          return "<div class='teacher-row'><div><b>"+name+"</b><br><small>Nivel "+lvl+" · "+md+" monstruos</small></div><small>"+escapeHtml(when)+"</small></div>";
+        }).join("");
+      }catch(e){
+        list.innerHTML = "<div class='teacher-row'><small>Error: "+escapeHtml(e.message || e)+"</small></div>";
+      }
+    }
+
+    if(teacherRefresh) teacherRefresh.addEventListener("click", refreshTeacher);
+
+    // init Supabase (si está configurado)
+    initSupabaseAuth().then(()=>{ try{ renderAuthUi(); }catch(e){} });
+  })();
+
 </script>
 
 
 </div><!-- /#gameRoot -->
+
+
+  <!-- =========================
+       AUTH MODAL (Cloud Save)
+       ========================= -->
+  <div id="authOverlay" class="auth-overlay" aria-hidden="true">
+    <div class="auth-modal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+      <div class="auth-head">
+        <div>
+          <div id="authTitle" class="auth-title">Cuenta Battlegrafía</div>
+          <div class="auth-sub">Inicia sesión para guardar en la nube y continuar en cualquier dispositivo.</div>
+        </div>
+        <button id="authClose" class="auth-close" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="auth-tabs">
+        <button id="tabLogin" class="auth-tab is-active">Entrar</button>
+        <button id="tabSignup" class="auth-tab">Crear cuenta</button>
+      </div>
+
+      <div class="auth-body">
+        <label class="auth-label">Correo</label>
+        <input id="authEmail" class="auth-input" type="email" autocomplete="email" placeholder="nombre@colegio.com">
+
+        <label class="auth-label">Contraseña</label>
+        <input id="authPass" class="auth-input" type="password" autocomplete="current-password" placeholder="••••••••">
+
+        <div class="auth-row">
+          <button id="authDoLogin" class="btn primary">Entrar</button>
+          <button id="authDoSignup" class="btn secondary" style="display:none;">Crear cuenta</button>
+          <button id="authDoLogout" class="btn secondary" style="display:none;">Cerrar sesión</button>
+        </div>
+
+        <div id="authStatus" class="auth-status"></div>
+
+        <div class="auth-hint">
+          * Si tu centro bloquea el correo personal, puedes usar el del cole.  
+          * Para evaluación: el profe podrá ver tu progreso si se activa el modo profesor en el servidor.
+        </div>
+      </div>
+
+      <div id="teacherPanel" class="teacher-panel" style="display:none;">
+        <div class="teacher-title">Panel del profesor</div>
+        <div class="teacher-sub">Lista rápida de progreso (requiere permisos en Supabase).</div>
+        <div class="teacher-actions">
+          <button id="teacherRefresh" class="btn secondary">Actualizar</button>
+        </div>
+        <div id="teacherList" class="teacher-list"></div>
+      </div>
+    </div>
+  </div>
 
 <footer class="copyright">
   © 2026 Pablo García — Battlegrafía
