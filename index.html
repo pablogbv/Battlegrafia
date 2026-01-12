@@ -2387,6 +2387,8 @@ footer.copyright{
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if(error) throw error;
       if(status) status.innerHTML = '<span class="good">¡Dentro!</span>';
+      if(status) status.textContent = "Cargando progreso…";
+      await proceedAfterAuth();
     }catch(e){
       if(status) status.innerHTML = '<span class="bad">Error:</span> ' + escapeHtml(e.message || e);
     }
@@ -2415,6 +2417,66 @@ footer.copyright{
     }catch(e){
       if(status) status.innerHTML = '<span class="bad">Error:</span> ' + escapeHtml(e.message || e);
     }
+  }
+
+  // Tras login: cerrar overlay, cargar progreso (nube→local), y entrar directamente a la partida si existe.
+  async function proceedAfterAuth(){
+    // Asegura currentUser
+    try{
+      const u = await sb.auth.getUser();
+      currentUser = u?.data?.user || null;
+    }catch(e){}
+
+    // Intenta cargar guardado (nube si hay sesión)
+    let loaded = null;
+    try{
+      loaded = await loadSavedPlayer();
+    }catch(e){
+      console.warn("post-login load error:", e);
+    }
+
+    // Refresca UI de splash por si había que habilitar continuar
+    try{ refreshSplashContinueAvailability(); }catch(e){}
+
+    // Si hay partida, entramos directamente
+    if(loaded){
+      try{
+        player = loaded;
+
+        const splashScreen = document.getElementById("splash-screen");
+        const startScreen  = document.getElementById("start-screen");
+
+        if(splashScreen) splashScreen.style.display = "none";
+        if(startScreen)  startScreen.style.display = "none";
+
+        currentMonsterIndex = player.currentMonsterIndex || 0;
+        if(player.hp <= 0) player.hp = player.maxHp;
+
+        updateHeroUi();
+        renderBigMap();
+        loadMonster();
+        renderShop();
+        updateHpBars();
+        switchTo("battle");
+      }catch(e){
+        console.warn("post-login start error:", e);
+      }
+    }else{
+      // Si no hay partida, llevamos al inicio de creación sin recargar
+      try{
+        const splashScreen = document.getElementById("splash-screen");
+        const startScreen  = document.getElementById("start-screen");
+        const continueBlock = document.getElementById("continue-block");
+        if(splashScreen) splashScreen.style.display = "none";
+        if(startScreen)  startScreen.style.display = "flex";
+        if(continueBlock) continueBlock.style.display = "none";
+        if(typeof bindAvatarGrid === "function") bindAvatarGrid();
+        try{ document.getElementById("player-name")?.focus?.(); }catch(e){}
+      }catch(e){}
+    }
+
+    // Cierra overlay (al final para que no “parpadee”)
+    try{ closeAuth(); }catch(e){}
   }
 
   function getSaveSlots(){
