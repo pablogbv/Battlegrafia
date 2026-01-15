@@ -1889,7 +1889,7 @@ footer.copyright{
                 <div class="camp-rest-text">
                   Siéntate junto al fuego, repasa tus errores y recupera toda tu vida. Es caro, pero más caro es caer en combate.
                 </div>
-                <button id="camp-rest-btn">Descansar (25 de oro)</button>
+                <button id="camp-rest-btn">Descansar (100 de oro)</button>
                 <div class="camp-rest-stats">
                   Vida actual: <span id="camp-hp-info">0 / 0</span><br>
                   Oro disponible: <span id="camp-gold-info">0</span>
@@ -5242,7 +5242,7 @@ clearTimeout(applyBattleWorldBackground._t);
   }
 
   campRestBtn.addEventListener("click", ()=>{
-    const restCost = 25;
+    const restCost = 100;
     if(player.hp === player.maxHp){
       campMessageEl.innerHTML = `<span class="hint">Ya estás al máximo de vida. No necesitas descansar ahora.</span>`;
       return;
