@@ -1734,6 +1734,9 @@ footer.copyright{
   letter-spacing:.35px;
   font-family: "Cinzel", "IM Fell English", Georgia, "Times New Roman", serif;
 }
+
+    /* Ocultar gestión de ranuras (guardado local) */
+    #splash-slot-select, #splash-slot-rename-btn{ display:none !important; }
 </style>
 </head>
 
@@ -1755,7 +1758,7 @@ footer.copyright{
   <div class="game-shell">
 
     <!-- Pantalla de inicio -->
-    <div id="start-screen" class="start-screen">
+    <div id="start-screen" class="start-screen" style="display:none">
       <div class="start-panel">
         <div class="start-title">Battlegrafía</div>
         <div class="start-sub">La ortografía te da poder. Corrige para ganar experiencia, oro, objetos y criaturas.</div>
@@ -2613,6 +2616,48 @@ try{
     ninja: "img/heros/sprite_hero_ninja.webp",
     robot: "img/heros/sprite_hero_robot.webp"
   };
+
+  // Presets de héroes (para la pantalla de elección y descripciones)
+  // Claves: deben coincidir con data-id de .avatar-option y con player.avatarId
+  const HERO_PRESETS = {
+    mago: {
+      label: "Mago de la Tinta",
+      meta: "Control y precisión. Ideal si prefieres jugar con cabeza y margen de seguridad.",
+      perks: [
+        "Recupera recursos con facilidad (estilo: control).",
+        "Muy bueno contra enemigos con mecánicas molestas.",
+        "Perfecto para quien quiere una partida estable."
+      ]
+    },
+    guerrero: {
+      label: "Guerrero del Corrector",
+      meta: "Resistencia y aguante. Entra fuerte, aguanta golpes y no se viene abajo.",
+      perks: [
+        "Más supervivencia en combates largos.",
+        "Perdona errores cuando la cosa se complica.",
+        "Recomendado para principiantes."
+      ]
+    },
+    ninja: {
+      label: "Ninja del Acento",
+      meta: "Velocidad y riesgo. Premia las decisiones rápidas y castiga los despistes.",
+      perks: [
+        "Estilo ofensivo: empuja el ritmo del combate.",
+        "Brilla cuando encadenas aciertos.",
+        "Si te distraes… te lo hace pagar 😅"
+      ]
+    },
+    robot: {
+      label: "Mech de la Gramática",
+      meta: "Potencia y tecnología. Menos romanticismo, más resultados.",
+      perks: [
+        "Golpes contundentes cuando aciertas.",
+        "Buena sinergia con objetos y mejoras.",
+        "Para quien quiere sentirse ‘OP’ con método."
+      ]
+    }
+  };
+
 
   const STORY_CHAPTERS = [
     "Un murmullo recorre los pasillos del instituto: en los textos empiezan a aparecer faltas extrañas y los profesores sospechan que algo se esconde más allá de los libros.",
@@ -4269,7 +4314,7 @@ try{
 
     const xpPercent = Math.max(0, Math.min(100, (player.xp / player.xpToNext) * 100));
     xpBarFill.style.width = xpPercent + "%";
-    xpText.textContent = `EXP ${player.xp} / ${player.xpToNext}`;
+    xpText.textContent = `EXP ${player.xp} / ${Number.isFinite(player.xpToNext)?player.xpToNext:100}`;
 
     heroGoldEl.textContent = `Oro: ${player.gold}`;
     heroCardsCountEl.textContent = `Cartas: ${player.cards.length}`;
@@ -6039,8 +6084,7 @@ if(currentMonsterHp <= 0){
         <div style="opacity:.9;">Elegir partida guardada:</div>
         <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; justify-content:center;">
           <select id="splash-slot-select" style="padding:.35rem .45rem; background:#0b1220; color:#f9fafb; border:2px solid #000; font-size:.85rem; max-width:260px;"></select>
-          <button id="splash-slot-rename-btn" class="btn secondary" style="padding:.35rem .55rem;">Renombrar</button>
-        </div>
+</div>
       `;
 
       const sel = document.getElementById("splash-slot-select");
@@ -6153,6 +6197,8 @@ if(currentMonsterHp <= 0){
         avatarId,
         level:1,
         xp:0,
+        
+        xpToNext:100,
         hp:100,
         maxHp:100,
         gold:0,
