@@ -1967,7 +1967,7 @@ footer.copyright{
                 <div class="camp-rest-text">
                   Siéntate junto al fuego, repasa tus errores y recupera toda tu vida. Es caro, pero más caro es caer en combate.
                 </div>
-                <button id="camp-rest-btn">Descansar (25 de oro)</button>
+                <button id="camp-rest-btn">Descansar (100 de oro)</button>
                 <div class="camp-rest-stats">
                   Vida actual: <span id="camp-hp-info">0 / 0</span><br>
                   Oro disponible: <span id="camp-gold-info">0</span>
@@ -2168,10 +2168,12 @@ footer.copyright{
 
   // Correos con permiso de "Profesor" (para ver progresos).
   // Nota: para que funcione de verdad necesitas políticas RLS en la BD.
-  const TEACHER_EMAILS = [];
+  const TEACHER_EMAILS = ['pgarciab@fomento.edu'];
 
   let sb = null;
   let currentUser = null;
+  // Permiso de profesor (se resuelve por tabla en Supabase y se cachea en memoria)
+  let teacherAllowed = false;
   let authView = "login"; // 'login' | 'signup'
   let remoteSaveTimer = null;
 
@@ -2249,11 +2251,14 @@ footer.copyright{
       sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
       const { data } = await sb.auth.getSession();
       currentUser = data && data.session ? data.session.user : null;
+	      // Resuelve permiso de profesor al arrancar (si hay sesión)
+	      try{ await refreshTeacherAllowed(); }catch(e){}
       renderAuthUi();
 
       sb.auth.onAuthStateChange((_event, session)=>{
         currentUser = session ? session.user : null;
-        renderAuthUi();
+	        // Actualiza permiso de profesor y refresca UI
+	        refreshTeacherAllowed().finally(()=>{ try{ renderAuthUi(); }catch(e){} });
         // Si se acaba de loguear, intentamos cargar automáticamente la nube
         if(currentUser){
           // sin bloquear UI
@@ -2341,9 +2346,26 @@ footer.copyright{
   });
 
 
+  async function refreshTeacherAllowed(){
+    teacherAllowed = false;
+    if(!sb || !currentUser) return false;
+    // Vía recomendada: tabla battlegrafia_teachers con user_id
+    try{
+      const { data, error } = await sb
+        .from('battlegrafia_teachers')
+        .select('user_id')
+        .eq('user_id', currentUser.id)
+        .maybeSingle();
+      if(!error && data && data.user_id) teacherAllowed = true;
+    }catch(e){}
+    return teacherAllowed;
+  }
+
   function isTeacher(){
-    const email = (currentUser && currentUser.email) ? currentUser.email.toLowerCase() : "";
-    return email && TEACHER_EMAILS.map(x=>String(x).toLowerCase()).includes(email);
+    // Fallback: lista de correos (por si quieres hardcodearlo)
+    const email = (currentUser && currentUser.email) ? String(currentUser.email).toLowerCase() : "";
+    const byEmail = email && TEACHER_EMAILS.map(x=>String(x).toLowerCase()).includes(email);
+    return !!(teacherAllowed || byEmail);
   }
 
   function scheduleRemoteSave(){
@@ -5640,7 +5662,7 @@ clearTimeout(applyBattleWorldBackground._t);
   }
 
   campRestBtn.addEventListener("click", ()=>{
-    const restCost = 25;
+    const restCost = 100;
     if(player.hp === player.maxHp){
       campMessageEl.innerHTML = `<span class="hint">Ya estás al máximo de vida. No necesitas descansar ahora.</span>`;
       return;
